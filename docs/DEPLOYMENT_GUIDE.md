@@ -10,6 +10,8 @@ This guide covers deploying MCP Sentinel Scanner in various environments:
 - 🌊 Bitbucket Pipelines
 - 💻 Local development
 
+📊 **[View Interactive Infographic](INFOGRAPHIC.html)** for visual deployment workflows and architecture diagrams.
+
 ---
 
 ## Table of Contents

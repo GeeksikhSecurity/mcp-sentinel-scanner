@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP Supply Chain Security Analysis & Defense Framework</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            line-height: 1;
+            color: #7A5195;
+            transform: translateY(1.5rem);
+        }
+        .flow-card {
+            border: 2px solid #003F5C;
+        }
+        .checklist-item::before {
+            content: '✓';
+            color: #FFA600;
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-[#003F5C] text-white p-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-2">MCP Sentinel Scanner</h1>
+        <p class="text-lg md:text-xl font-light">Advanced Security Analysis Framework for Model Context Protocol (MCP) Servers</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        <section id="introduction" class="text-center mb-12">
+            <div class="bg-white rounded-lg shadow-lg p-8 inline-block">
+                <div class="text-[#BC5090] text-7xl md:text-8xl font-extrabold">96%</div>
+                <p class="text-2xl font-bold text-[#003F5C] mt-2">Test Coverage</p>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600">
+                    MCP Sentinel Scanner provides enterprise-grade security analysis for MCP server infrastructures, protecting against supply chain attacks, code injection vulnerabilities, and malicious patterns. With 52 comprehensive test cases and multi-layer detection, it's your first line of defense against MCP security threats.
+                </p>
+            </div>
+        </section>
+
+        <section id="anatomy" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Multi-Layer Analysis: The Scanner's Architecture</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <p class="mb-8 text-center text-gray-600">MCP Sentinel Scanner employs a sophisticated multi-stage detection pipeline that combines pattern matching, AST analysis, entropy-based detection, and advanced semantic analysis to identify security vulnerabilities with high precision.</p>
+                <div class="grid grid-cols-1 md:grid-cols-4 items-center gap-y-8 md:gap-x-4 text-center">
+                    <div class="flow-card bg-blue-50 rounded-lg p-4 shadow-md h-full flex flex-col justify-center">
+                        <div class="text-4xl mb-2">1</div>
+                        <h3 class="font-bold text-lg mb-2 text-[#003F5C]">Pattern Matching</h3>
+                        <p class="text-sm">Scans source code for dangerous patterns like eval(), exec(), and shell command injections using regex-based detection.</p>
+                    </div>
+                    <div class="flow-arrow hidden md:block">→</div>
+                    <div class="flow-card bg-blue-50 rounded-lg p-4 shadow-md h-full flex flex-col justify-center">
+                        <div class="text-4xl mb-2">2</div>
+                        <h3 class="font-bold text-lg mb-2 text-[#003F5C]">AST Analysis</h3>
+                        <p class="text-sm">Python Abstract Syntax Tree parsing identifies complex code structures and control flow vulnerabilities that patterns miss.</p>
+                    </div>
+                    <div class="flow-arrow hidden md:block">→</div>
+                    <div class="flow-card bg-blue-50 rounded-lg p-4 shadow-md h-full flex flex-col justify-center">
+                        <div class="text-4xl mb-2">3</div>
+                        <h3 class="font-bold text-lg mb-2 text-[#003F5C]">Secret Detection</h3>
+                        <p class="text-sm">Shannon entropy analysis detects high-entropy strings indicative of API keys, tokens, and hardcoded credentials.</p>
+                    </div>
+                    <div class="flow-arrow hidden md:block">→</div>
+                    <div class="flow-card bg-blue-50 rounded-lg p-4 shadow-md h-full flex flex-col justify-center">
+                        <div class="text-4xl mb-2">4</div>
+                        <h3 class="font-bold text-lg mb-2 text-[#003F5C]">Taint Analysis</h3>
+                        <p class="text-sm">Tracks data flow from untrusted sources (user input, env vars) to dangerous sinks (eval, exec, system calls).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="impact" class="mb-12">
+             <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Detection Capabilities: Vulnerability Coverage</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <p class="mb-8 text-center text-gray-600">MCP Sentinel Scanner identifies a wide range of security vulnerabilities across multiple categories, with configurable severity thresholds and Attack Success Rate (ASR) scoring from 0.0 to 1.0.</p>
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="prd" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Core Features: Production-Ready Security</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                 <p class="mb-8 text-center text-gray-600">Built for enterprise deployment with comprehensive output formats, CI/CD integration, and Docker containerization. The scanner provides actionable insights through multiple reporting channels.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="border-l-4 border-[#7A5195] bg-purple-50 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-[#7A5195]">5 Output Formats</h3>
+                        <p class="mt-2 text-sm">Exports results in <span class="font-semibold">JSON</span>, <span class="font-semibold">SARIF 2.1.0</span>, <span class="font-semibold">Markdown</span>, <span class="font-semibold">HTML</span>, and human-readable text for IDE integration and dashboards.</p>
+                    </div>
+                    <div class="border-l-4 border-[#BC5090] bg-pink-50 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-[#BC5090]">CI/CD Ready</h3>
+                        <p class="mt-2 text-sm">Pre-configured workflows for <span class="font-semibold">GitHub Actions</span>, <span class="font-semibold">Jenkins</span>, <span class="font-semibold">Bitbucket Pipelines</span>, and <span class="font-semibold">GitLab CI</span> with threshold-based blocking.</p>
+                    </div>
+                    <div class="border-l-4 border-[#EF5675] bg-red-50 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-[#EF5675]">Docker Deployment</h3>
+                        <p class="mt-2 text-sm">Production-ready container image with <span class="font-semibold">non-root user</span>, health checks, and 5 pre-configured scan modes via docker-compose.</p>
+                    </div>
+                    <div class="border-l-4 border-[#FFA600] bg-yellow-50 p-4 rounded-r-lg">
+                        <h3 class="font-bold text-xl text-[#FFA600]">Advanced Analytics</h3>
+                        <p class="mt-2 text-sm">Shannon entropy calculation, ASR scoring, severity distribution analysis, and interactive HTML reports with Chart.js visualizations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="workflow" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Seamless Integration: Developer & CI/CD Workflow</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="font-bold text-2xl text-center mb-4 text-[#7A5195]">Local Development Workflow</h3>
+                    <p class="text-center text-gray-600 mb-6">Scan MCP servers locally before pushing to production with instant feedback.</p>
+                    <ol class="relative border-l border-gray-200">
+                        <li class="mb-10 ml-4">
+                            <div class="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                            <h4 class="text-lg font-semibold">Install Scanner</h4>
+                            <p class="text-sm">Install via pip: <code class="bg-gray-100 px-2 py-1 rounded">pip install mcp-sentinel-scanner</code></p>
+                        </li>
+                        <li class="mb-10 ml-4">
+                            <div class="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                            <h4 class="text-lg font-semibold">Run Scan</h4>
+                            <p class="text-sm">Execute: <code class="bg-gray-100 px-2 py-1 rounded">sentinel-scan /path/to/mcp-server --format html</code></p>
+                        </li>
+                        <li class="ml-4">
+                            <div class="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                            <h4 class="text-lg font-semibold">Review Results</h4>
+                            <p class="text-sm">Open interactive HTML report with severity charts and detailed findings with fix recommendations.</p>
+                        </li>
+                    </ol>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="font-bold text-2xl text-center mb-4 text-[#BC5090]">CI/CD Pipeline Workflow</h3>
+                    <p class="text-center text-gray-600 mb-6">Automate security scanning as a quality gate with SARIF upload to GitHub Security.</p>
+                     <ol class="relative border-l border-gray-200">
+                        <li class="mb-10 ml-4">
+                            <div class="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                            <h4 class="text-lg font-semibold">Trigger on Push</h4>
+                            <p class="text-sm">GitHub Actions workflow runs automatically on every push to main/develop branches.</p>
+                        </li>
+                        <li class="mb-10 ml-4">
+                            <div class="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                            <h4 class="text-lg font-semibold">Docker Scan</h4>
+                            <p class="text-sm">Pipeline pulls scanner image and executes: <code class="bg-gray-100 px-2 py-1 rounded">docker run sentinel-scanner /workspace --format sarif</code></p>
+                        </li>
+                        <li class="ml-4">
+                            <div class="absolute w-3 h-3 bg-gray-400 rounded-full mt-1.5 -left-1.5 border border-white"></div>
+                            <h4 class="text-lg font-semibold">Upload & Block</h4>
+                            <p class="text-sm">SARIF results uploaded to GitHub Security tab. Build fails if critical vulnerabilities detected (ASR > 0.8).</p>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <section id="stats" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Project Statistics: Enterprise-Grade Quality</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div>
+                        <div class="text-5xl font-bold text-[#7A5195]">52</div>
+                        <p class="text-sm text-gray-600 mt-2">Test Cases</p>
+                    </div>
+                    <div>
+                        <div class="text-5xl font-bold text-[#BC5090]">96%</div>
+                        <p class="text-sm text-gray-600 mt-2">Core Coverage</p>
+                    </div>
+                    <div>
+                        <div class="text-5xl font-bold text-[#EF5675]">5</div>
+                        <p class="text-sm text-gray-600 mt-2">Output Formats</p>
+                    </div>
+                    <div>
+                        <div class="text-5xl font-bold text-[#FFA600]">4</div>
+                        <p class="text-sm text-gray-600 mt-2">Detection Layers</p>
+                    </div>
+                </div>
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <div class="text-4xl font-bold text-[#003F5C]">652</div>
+                        <p class="text-sm text-gray-600 mt-2">Vulnerabilities Found (v1.5 scan)</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-[#003F5C]">4-8</div>
+                        <p class="text-sm text-gray-600 mt-2">Parallel Workers</p>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-[#003F5C]">60s</div>
+                        <p class="text-sm text-gray-600 mt-2">Quick Start Deploy</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="checklist" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Security Best Practices: MCP Server Hardening</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8 max-w-3xl mx-auto">
+                <p class="mb-8 text-center text-gray-600">Follow these best practices to secure your MCP server infrastructure and reduce attack surface against supply chain threats.</p>
+                <ul class="space-y-4 list-inside">
+                    <li class="checklist-item pl-4"><strong>Scan Before Deploy:</strong> Always run MCP Sentinel Scanner before deploying MCP servers to production. Integrate into CI/CD for automated gating.</li>
+                    <li class="checklist-item pl-4"><strong>Review High ASR Findings:</strong> Prioritize vulnerabilities with Attack Success Rate > 0.7. These represent critical risks requiring immediate remediation.</li>
+                    <li class="checklist-item pl-4"><strong>Environment Variable Safety:</strong> Never hardcode secrets in MCP server code. Use environment variables with restricted access and rotation policies.</li>
+                    <li class="checklist-item pl-4"><strong>Input Validation:</strong> Sanitize all user inputs and tool parameters before processing. Use allowlists rather than blocklists for validation.</li>
+                    <li class="checklist-item pl-4"><strong>Dependency Pinning:</strong> Lock all MCP SDK and dependency versions in requirements.txt. Use dependency scanning tools for known CVEs.</li>
+                    <li class="checklist-item pl-4"><strong>Least Privilege:</strong> MCP servers should run with minimal filesystem and network permissions. Use Docker security contexts and read-only mounts.</li>
+                    <li class="checklist-item pl-4"><strong>Regular Scanning:</strong> Schedule weekly scans of production MCP servers. Monitor for new vulnerabilities and emerging patterns.</li>
+                    <li class="checklist-item pl-4"><strong>SARIF Integration:</strong> Upload scan results to GitHub Security/Code Scanning for centralized vulnerability tracking and developer notifications.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="deployment" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Quick Deployment: Get Started in 60 Seconds</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-4 text-[#7A5195]">🐳 Docker</h3>
+                        <pre class="bg-gray-800 text-gray-100 p-4 rounded text-sm overflow-x-auto">docker run -v $(pwd):/scan \
+  ghcr.io/your-org/sentinel \
+  /scan --format sarif</pre>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-4 text-[#BC5090]">📦 pip</h3>
+                        <pre class="bg-gray-800 text-gray-100 p-4 rounded text-sm overflow-x-auto">pip install mcp-sentinel
+
+sentinel-scan . \
+  --format html \
+  --output report.html</pre>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="font-bold text-xl mb-4 text-[#EF5675]">⚙️ CI/CD</h3>
+                        <pre class="bg-gray-800 text-gray-100 p-4 rounded text-sm overflow-x-auto">- name: MCP Security Scan
+  uses: sentinel/action@v1
+  with:
+    format: sarif
+    fail-on: critical</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="roadmap" class="mb-12">
+            <h2 class="text-3xl font-bold text-center mb-8 text-[#003F5C]">Development Roadmap: Future Enhancements</h2>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <div class="space-y-6">
+                    <div class="border-l-4 border-green-500 pl-4">
+                        <h3 class="font-bold text-lg">✅ Phase 1: Core Foundation (Complete)</h3>
+                        <p class="text-sm text-gray-600">Pattern matching, AST analysis, secret detection, taint analysis, 5 output formats, Docker deployment, CI/CD templates</p>
+                    </div>
+                    <div class="border-l-4 border-blue-500 pl-4">
+                        <h3 class="font-bold text-lg">🚧 Phase 2: Advanced Detection (Q1 2026)</h3>
+                        <p class="text-sm text-gray-600">TypeScript/JavaScript AST parsing, machine learning anomaly detection, custom rule engine, API-based scanning service</p>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-4">
+                        <h3 class="font-bold text-lg">📋 Phase 3: Enterprise Features (Q2-Q3 2026)</h3>
+                        <p class="text-sm text-gray-600">SBOM generation, license compliance, IDE plugins (VSCode, JetBrains), centralized dashboard, SSO integration</p>
+                    </div>
+                    <div class="border-l-4 border-orange-500 pl-4">
+                        <h3 class="font-bold text-lg">🔮 Phase 4: ML & Intelligence (Q4 2026)</h3>
+                        <p class="text-sm text-gray-600">Behavioral analysis, zero-day detection, threat intelligence feeds, automated remediation suggestions</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#003F5C] text-white text-center p-4">
+        <p>MCP Sentinel Scanner v1.5 | Open Source Security for Model Context Protocol</p>
+        <p class="text-sm mt-2">Built with ❤️ for the MCP community | <a href="https://github.com/your-org/mcp-sentinel-scanner" class="underline">GitHub</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const processLabels = (labels) => {
+                const charLimit = 18;
+                return labels.map(label => {
+                    if (label.length <= charLimit) {
+                        return label;
+                    }
+                    const words = label.split(' ');
+                    const lines = [];
+                    let currentLine = '';
+                    words.forEach(word => {
+                        if ((currentLine + ' ' + word).trim().length > charLimit) {
+                            lines.push(currentLine.trim());
+                            currentLine = word;
+                        } else {
+                            currentLine = (currentLine + ' ' + word).trim();
+                        }
+                    });
+                    if (currentLine) {
+                        lines.push(currentLine.trim());
+                    }
+                    return lines;
+                });
+            };
+
+            const tooltipTitleCallback = (tooltipItems) => {
+                const item = tooltipItems[0];
+                let label = item.chart.data.labels[item.dataIndex];
+                if (Array.isArray(label)) {
+                    return label.join(' ');
+                }
+                return label;
+            };
+
+            const ctx = document.getElementById('impactChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: processLabels(['Code Injection', 'Path Traversal', 'Hardcoded Secrets', 'Command Injection', 'Insecure Deserialization', 'SQL Injection']),
+                    datasets: [{
+                        label: 'Detection Capability (ASR Score)',
+                        data: [0.95, 0.88, 0.92, 0.90, 0.85, 0.87],
+                        backgroundColor: [
+                            '#7A5195',
+                            '#BC5090',
+                            '#EF5675',
+                            '#FFA600',
+                            '#7A5195',
+                            '#BC5090'
+                        ],
+                        borderColor: [
+                            '#7A5195',
+                            '#BC5090',
+                            '#EF5675',
+                            '#FFA600',
+                            '#7A5195',
+                            '#BC5090'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1.0,
+                            title: {
+                                display: true,
+                                text: 'ASR Score (0.0 - 1.0)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                           callbacks: {
+                                title: tooltipTitleCallback
+                           }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -18,6 +18,10 @@ The MCP Sentinel Scanner is a research-inspired security analysis tool designed 
 - 🔄 **CI/CD Integration** - GitHub Actions, Jenkins, Bitbucket pipelines
 - 🛡️ **Advanced Detection** - Taint analysis, auth bypass, crypto misuse
 
+## 📊 Interactive Infographic
+
+🎨 **[View the Interactive Security Infographic](docs/INFOGRAPHIC.html)** - Visual guide to MCP Sentinel Scanner's architecture, detection capabilities, deployment workflows, and security best practices.
+
 ## 🚀 Quick Start
 
 ### Docker (Recommended)
