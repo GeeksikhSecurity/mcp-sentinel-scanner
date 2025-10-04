@@ -1,0 +1,21 @@
+# Compiler / build
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+
+# Environments
+.venv/
+.env
+
+# Reports
+*.html
+*.json
+*.md.tmp
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
