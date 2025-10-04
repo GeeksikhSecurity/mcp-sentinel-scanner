@@ -7,6 +7,10 @@ import json
 import sys
 from pathlib import Path
 
+# Add parent directory to path for standalone execution
+if __name__ == "__main__" and __package__ is None:
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from colorama import Fore, Style, init as colorama_init
 from tabulate import tabulate
 
@@ -26,7 +30,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "-f",
         "--format",
-        choices=["json", "markdown", "terminal"],
+        choices=["json", "markdown", "terminal", "sarif", "html"],
         default="terminal",
         help="Output format",
     )
@@ -127,6 +131,10 @@ def main(argv: list[str] | None = None) -> int:
         output_text = scanner.to_json(result)
     elif args.format == "markdown":
         output_text = scanner.to_markdown(result)
+    elif args.format == "sarif":
+        output_text = scanner.to_sarif(result, args.target)
+    elif args.format == "html":
+        output_text = scanner.to_html(result)
     else:
         output_text = format_terminal(result, use_color=not args.no_colors)
 

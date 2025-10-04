@@ -186,6 +186,22 @@ class MCPSentinelScanner:
         }
         return json.dumps(payload, indent=2)
 
+    def to_sarif(self, result: ScanResult, source_root: str = ".") -> str:
+        """Generate SARIF format output."""
+        try:
+            from .reporters.sarif_reporter import SARIFReporter
+            return SARIFReporter.generate(result, source_root)
+        except ImportError:
+            raise ImportError("SARIF reporter not available")
+
+    def to_html(self, result: ScanResult, title: str = "MCP Sentinel Security Report") -> str:
+        """Generate HTML format output."""
+        try:
+            from .reporters.html_reporter import HTMLReporter
+            return HTMLReporter.generate(result, title)
+        except ImportError:
+            raise ImportError("HTML reporter not available")
+
     def to_markdown(self, result: ScanResult) -> str:
         lines = [
             "# MCP Sentinel Scanner Report",

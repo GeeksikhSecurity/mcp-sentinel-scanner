@@ -1,0 +1,414 @@
+{
+  "version": "2.1.0",
+  "Schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "MCP Sentinel Scanner",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/mcp-security/mcp-sentinel-scanner",
+          "rules": [
+            {
+              "id": "sql_injection",
+              "name": "Sql Injection",
+              "shortDescription": {
+                "text": "Potential SQL string concatenation"
+              },
+              "fullDescription": {
+                "text": "Use parameterized queries."
+              },
+              "help": {
+                "text": "Use parameterized queries.",
+                "markdown": "## sql_injection\n\nUse parameterized queries."
+              },
+              "properties": {
+                "tags": [
+                  "critical",
+                  "sql_injection",
+                  "CWE-89"
+                ],
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "command_injection",
+              "name": "Command Injection",
+              "shortDescription": {
+                "text": "Shell execution with user input"
+              },
+              "fullDescription": {
+                "text": "Avoid shell=True or sanitize input."
+              },
+              "help": {
+                "text": "Avoid shell=True or sanitize input.",
+                "markdown": "## command_injection\n\nAvoid shell=True or sanitize input."
+              },
+              "properties": {
+                "tags": [
+                  "critical",
+                  "command_injection",
+                  "CWE-78"
+                ],
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "insecure_deserialization",
+              "name": "Insecure Deserialization",
+              "shortDescription": {
+                "text": "Potential insecure deserialization"
+              },
+              "fullDescription": {
+                "text": "Use safe loaders or avoid loading untrusted data."
+              },
+              "help": {
+                "text": "Use safe loaders or avoid loading untrusted data.",
+                "markdown": "## insecure_deserialization\n\nUse safe loaders or avoid loading untrusted data."
+              },
+              "properties": {
+                "tags": [
+                  "critical",
+                  "insecure_deserialization",
+                  "CWE-502"
+                ],
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "weak_crypto",
+              "name": "Weak Crypto",
+              "shortDescription": {
+                "text": "Weak cryptographic hash function"
+              },
+              "fullDescription": {
+                "text": "Replace with SHA-256 or stronger."
+              },
+              "help": {
+                "text": "Replace with SHA-256 or stronger.",
+                "markdown": "## weak_crypto\n\nReplace with SHA-256 or stronger."
+              },
+              "properties": {
+                "tags": [
+                  "medium",
+                  "weak_crypto",
+                  "CWE-327"
+                ],
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "hardcoded_secret",
+              "name": "Hardcoded Secret",
+              "shortDescription": {
+                "text": "Potential secret detected (entropy=4.21)"
+              },
+              "fullDescription": {
+                "text": "Move secrets to environment variables or a secret manager."
+              },
+              "help": {
+                "text": "Move secrets to environment variables or a secret manager.",
+                "markdown": "## hardcoded_secret\n\nMove secrets to environment variables or a secret manager."
+              },
+              "properties": {
+                "tags": [
+                  "high",
+                  "hardcoded_secret",
+                  "CWE-798"
+                ],
+                "precision": "medium"
+              }
+            },
+            {
+              "id": "dangerous_function",
+              "name": "Dangerous Function",
+              "shortDescription": {
+                "text": "Use of dangerous function: eval"
+              },
+              "fullDescription": {
+                "text": "Avoid dangerous dynamic execution functions or validate inputs."
+              },
+              "help": {
+                "text": "Avoid dangerous dynamic execution functions or validate inputs.",
+                "markdown": "## dangerous_function\n\nAvoid dangerous dynamic execution functions or validate inputs."
+              },
+              "properties": {
+                "tags": [
+                  "critical",
+                  "dangerous_function",
+                  "CWE-95"
+                ],
+                "precision": "high"
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "sql_injection",
+          "level": "error",
+          "message": {
+            "text": "Potential SQL string concatenation"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "snippet": {
+                    "text": "query = \"SELECT * FROM users WHERE username = '\" + username + \"'\""
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.75,
+            "recommendation": "Use parameterized queries.",
+            "cweId": "CWE-89"
+          }
+        },
+        {
+          "ruleId": "command_injection",
+          "level": "error",
+          "message": {
+            "text": "Shell execution with user input"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 20,
+                  "snippet": {
+                    "text": "return subprocess.run(cmd, shell=True, capture_output=True)"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.8,
+            "recommendation": "Avoid shell=True or sanitize input.",
+            "cweId": "CWE-78"
+          }
+        },
+        {
+          "ruleId": "insecure_deserialization",
+          "level": "error",
+          "message": {
+            "text": "Potential insecure deserialization"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 24,
+                  "snippet": {
+                    "text": "return pickle.loads(data)"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.7,
+            "recommendation": "Use safe loaders or avoid loading untrusted data.",
+            "cweId": "CWE-502"
+          }
+        },
+        {
+          "ruleId": "weak_crypto",
+          "level": "warning",
+          "message": {
+            "text": "Weak cryptographic hash function"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 28,
+                  "snippet": {
+                    "text": "return hashlib.md5(password.encode()).hexdigest()"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.7,
+            "recommendation": "Replace with SHA-256 or stronger.",
+            "cweId": "CWE-327"
+          }
+        },
+        {
+          "ruleId": "hardcoded_secret",
+          "level": "error",
+          "message": {
+            "text": "Potential secret detected (entropy=4.21)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 8,
+                  "snippet": {
+                    "text": "API_KEY = \"sk-1234567890abcdef1234567890abcdef\""
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.7024995504432087,
+            "recommendation": "Move secrets to environment variables or a secret manager.",
+            "cweId": "CWE-798"
+          }
+        },
+        {
+          "ruleId": "hardcoded_secret",
+          "level": "error",
+          "message": {
+            "text": "Potential secret detected (entropy=4.44)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 9,
+                  "snippet": {
+                    "text": "AWS_SECRET = \"aws_secret_key_AKIAIOSFODNN7EXAMPLE\""
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.7393344908884925,
+            "recommendation": "Move secrets to environment variables or a secret manager.",
+            "cweId": "CWE-798"
+          }
+        },
+        {
+          "ruleId": "hardcoded_secret",
+          "level": "error",
+          "message": {
+            "text": "Potential secret detected (entropy=5.00)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 57,
+                  "snippet": {
+                    "text": "HIGH_ENTROPY_SECRET = \"zX9vB7mK3pQ5wA2sD8fG1hJ6nL4tY0rE\""
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.8333333333333334,
+            "recommendation": "Move secrets to environment variables or a secret manager.",
+            "cweId": "CWE-798"
+          }
+        },
+        {
+          "ruleId": "dangerous_function",
+          "level": "error",
+          "message": {
+            "text": "Use of dangerous function: eval"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 36,
+                  "snippet": {
+                    "text": "def dangerous_eval(expr):\n    return eval(expr)\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.95,
+            "recommendation": "Avoid dangerous dynamic execution functions or validate inputs.",
+            "cweId": "CWE-95"
+          }
+        },
+        {
+          "ruleId": "dangerous_function",
+          "level": "error",
+          "message": {
+            "text": "Use of dangerous function: exec"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/Volumes/2TBSSD/Development/Git/Work/mcp-sentinel-scanner/tests/vulnerable_test.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 50,
+                  "snippet": {
+                    "text": "    def execute(self, payload):\n        exec(payload)\n"
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": 0.95,
+            "recommendation": "Avoid dangerous dynamic execution functions or validate inputs.",
+            "cweId": "CWE-95"
+          }
+        }
+      ],
+      "columnKind": "utf16CodeUnits",
+      "properties": {
+        "scanSummary": {
+          "filesScanned": 1,
+          "totalLines": 57,
+          "vulnerabilitiesFound": 9,
+          "asrScore": 0.8611111111111112,
+          "scanTime": 0.001467374968342483
+        }
+      }
+    }
+  ]
+}

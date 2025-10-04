@@ -47,8 +47,12 @@ class AdvancedDetectionEngine:
             path = Path(file_path)
             if not path.exists() or path.suffix != ".py":
                 continue
-            source = path.read_text(errors="ignore")
-            advanced_findings.extend(self._run_semantic_checks(path, source))
+            try:
+                source = path.read_text(errors="ignore")
+                advanced_findings.extend(self._run_semantic_checks(path, source))
+            except (PermissionError, OSError):
+                # Skip files we can't read
+                continue
         return advanced_findings
 
     def _run_semantic_checks(self, path: Path, source: str) -> List[AdvancedFinding]:
