@@ -20,7 +20,6 @@ class SARIFReporter:
         """Generate SARIF format report."""
         sarif_report: Dict[str, Any] = {
             "version": SARIFReporter.SARIF_VERSION,
-            "Schema": f"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-{SARIFReporter.SARIF_VERSION}.json",
             "$schema": f"https://json.schemastore.org/sarif-{SARIFReporter.SARIF_VERSION}.json",
             "runs": [{
                 "tool": {
