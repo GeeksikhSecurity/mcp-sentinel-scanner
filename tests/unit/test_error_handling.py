@@ -65,10 +65,11 @@ class TestErrorHandling:
         binary_file.write_bytes(b"\x00\x01\x02\x03\xff\xfe")
 
         scanner = MCPSentinelScanner()
-        result = scanner.scan(tmp_path)
 
         # Binary files should be skipped (not in SUPPORTED_EXTENSIONS)
-        assert result.summary.files_scanned == 0
+        # Scanner should raise FileNotFoundError when no scannable files exist
+        with pytest.raises(FileNotFoundError, match="No scannable files found"):
+            scanner.scan(tmp_path)
 
     def test_unicode_edge_cases(self, tmp_path):
         """Test scanning files with various unicode characters."""
@@ -98,10 +99,11 @@ class TestErrorHandling:
         no_ext_file.write_text("all:\n\techo 'test'")
 
         scanner = MCPSentinelScanner()
-        result = scanner.scan(tmp_path)
 
         # Should be skipped (not in SUPPORTED_EXTENSIONS)
-        assert result.summary.files_scanned == 0
+        # Scanner should raise FileNotFoundError when no scannable files exist
+        with pytest.raises(FileNotFoundError, match="No scannable files found"):
+            scanner.scan(tmp_path)
 
     def test_syntax_error_in_python_file(self, tmp_path):
         """Test scanning a Python file with syntax errors."""
