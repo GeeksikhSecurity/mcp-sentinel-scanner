@@ -1,0 +1,45 @@
+{
+  "exclude": [
+    "node_modules",
+    "*.d.ts",
+    "dist",
+    "build",
+    ".git",
+    "vendor",
+    "__pycache__",
+    "*.pyc",
+    ".venv",
+    ".pytest_cache",
+    "htmlcov",
+    "tests/**",
+    "test_*.py",
+    "**/*_test.py",
+    "**/*test*.py",
+    "docs/**",
+    "examples/**"
+  ],
+  "severity_threshold": "MEDIUM",
+  "parallel_workers": 8,
+  "deep_scan": true,
+  "false_positive_patterns": [
+    {
+      "file": "src/taint_analysis.py",
+      "pattern": "SINKS\\s*=|SOURCES\\s*=",
+      "reason": "Taint analyzer detection rule definitions - not executable code"
+    },
+    {
+      "file": "src/advanced_detection.py",
+      "pattern": "DANGEROUS_FUNCTIONS|PATTERNS|CRYPTO_WEAK",
+      "reason": "Pattern definitions for detection engine"
+    },
+    {
+      "file": "src/mcp_sentinel_scanner.py",
+      "pattern": "SUPPORTED_EXTENSIONS|DEFAULT_PATTERNS",
+      "reason": "Configuration constants"
+    }
+  ],
+  "custom_rules_file": "configs/security_rules.json",
+  "priority_severities": ["CRITICAL", "HIGH"],
+  "fail_on_critical": true,
+  "fail_on_high": false
+}

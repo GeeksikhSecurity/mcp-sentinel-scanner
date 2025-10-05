@@ -10,8 +10,21 @@
     "*.pyc",
     ".venv",
     ".pytest_cache",
-    "htmlcov"
+    "htmlcov",
+    "vulnerable_test"
   ],
   "severity_threshold": "LOW",
-  "parallel_workers": 4
+  "parallel_workers": 4,
+  "false_positive_patterns": [
+    {
+      "file": "src/taint_analysis.py",
+      "pattern": "SINKS|SOURCES",
+      "reason": "Detection rule definitions"
+    },
+    {
+      "file": "src/advanced_detection.py",
+      "pattern": "DANGEROUS_FUNCTIONS|PATTERNS",
+      "reason": "Detection rule definitions"
+    }
+  ]
 }

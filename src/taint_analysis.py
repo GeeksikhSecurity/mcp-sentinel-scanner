@@ -30,13 +30,13 @@ class TaintAnalyzer:
         "socket.recv", "socket.recvfrom",
     }
 
-    # Dangerous sinks
-    SINKS = {
+    # Dangerous sinks - these are pattern definitions for detection, not actual code
+    SINKS = {  # nosec: B403 - These are string literals for taint analysis, not executable code
         "eval", "exec", "compile", "__import__",
         "os.system", "os.popen", "os.spawn",
         "subprocess.call", "subprocess.run", "subprocess.Popen",
         "open", "file",
-        "pickle.loads", "yaml.load",
+        "pickle.loads", "yaml.load",  # nosec: Pattern definitions, not actual deserialization
         "cursor.execute", "execute",
     }
 

@@ -1,0 +1,96 @@
+{
+  "custom_rules": [
+    {
+      "id": "mcp-auth-bypass",
+      "name": "MCP Authentication Bypass",
+      "severity": "CRITICAL",
+      "category": "authentication",
+      "pattern": "if\\s+(True|1\\s*==\\s*1|False\\s*or\\s*True)",
+      "description": "Always-true authentication condition - potential bypass",
+      "cwe": "CWE-287",
+      "recommendation": "Implement proper authentication checks with actual credential validation"
+    },
+    {
+      "id": "mcp-secret-exposure",
+      "name": "MCP Server Secret Exposure",
+      "severity": "CRITICAL",
+      "category": "secret_exposure",
+      "pattern": "(api[_-]?key|secret[_-]?key|password|token|auth[_-]?token)\\s*=\\s*['\"][^'\"]{20,}['\"]",
+      "description": "Hardcoded API key or secret detected",
+      "cwe": "CWE-798",
+      "recommendation": "Use environment variables or secure vault for secrets"
+    },
+    {
+      "id": "mcp-unsafe-tool-execution",
+      "name": "MCP Unsafe Tool Execution",
+      "severity": "HIGH",
+      "category": "code_injection",
+      "pattern": "tools\\.execute\\([^)]*\\+[^)]*\\)",
+      "description": "MCP tool execution with string concatenation",
+      "cwe": "CWE-94",
+      "recommendation": "Validate and sanitize all tool inputs before execution"
+    },
+    {
+      "id": "mcp-unvalidated-input",
+      "name": "MCP Unvalidated User Input",
+      "severity": "HIGH",
+      "category": "input_validation",
+      "pattern": "def\\s+\\w+\\([^)]*\\):[^{]*(?:eval|exec|os\\.system|subprocess)\\(",
+      "description": "Function accepts input and uses dangerous functions without validation",
+      "cwe": "CWE-20",
+      "recommendation": "Implement input validation with allowlists, not blocklists"
+    },
+    {
+      "id": "mcp-weak-crypto",
+      "name": "MCP Weak Cryptography",
+      "severity": "HIGH",
+      "category": "cryptography",
+      "pattern": "(MD5|SHA1|DES|RC4|ECB)\\(",
+      "description": "Use of weak or broken cryptographic algorithm",
+      "cwe": "CWE-327",
+      "recommendation": "Use SHA-256, SHA-3, AES-256-GCM, or other modern algorithms"
+    },
+    {
+      "id": "mcp-insecure-random",
+      "name": "MCP Insecure Random",
+      "severity": "MEDIUM",
+      "category": "cryptography",
+      "pattern": "random\\.(random|randint|choice)\\(",
+      "description": "Insecure random number generator for security-sensitive operations",
+      "cwe": "CWE-338",
+      "recommendation": "Use secrets module for cryptographic randomness"
+    }
+  ],
+  "false_positive_filters": [
+    {
+      "description": "Ignore string literals in detection rules",
+      "file_pattern": "taint_analysis\\.py|patterns\\.py|detection\\.py",
+      "code_pattern": "SINKS|SOURCES|PATTERNS",
+      "reason": "These are detection rule definitions, not actual vulnerable code"
+    },
+    {
+      "description": "Ignore intentional vulnerable test code",
+      "file_pattern": "tests/vulnerable_test\\.py|tests/.*_vuln\\.py",
+      "code_pattern": ".*",
+      "reason": "Test files with intentionally vulnerable code for validation"
+    },
+    {
+      "description": "Ignore test fixtures with dangerous patterns",
+      "file_pattern": "tests/test_.*\\.py",
+      "line_pattern": "# NOQA:|# nosec|# test:",
+      "reason": "Marked as safe test code"
+    }
+  ],
+  "severity_overrides": {
+    "tests/**": "LOW",
+    "docs/**": "INFO",
+    "examples/**": "LOW"
+  },
+  "priority_categories": [
+    "authentication",
+    "command_injection",
+    "sql_injection",
+    "code_injection",
+    "insecure_deserialization"
+  ]
+}

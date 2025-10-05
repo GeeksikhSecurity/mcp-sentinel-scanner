@@ -255,7 +255,8 @@ class MCPSentinelScanner:
                 continue
             for file_name in files:
                 path = Path(root) / file_name
-                if path.suffix.lower() in SUPPORTED_EXTENSIONS:
+                # Check both file extension and exclusion patterns
+                if path.suffix.lower() in SUPPORTED_EXTENSIONS and not self._is_excluded(str(path)):
                     paths.append(path)
         return paths
 

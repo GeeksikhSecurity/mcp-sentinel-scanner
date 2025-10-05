@@ -34,13 +34,14 @@ def test_entropy_threshold_filters_low_entropy(tmp_path: Path):
 
 def test_ast_detects_dangerous_calls(tmp_path: Path):
     sample = tmp_path / "danger.py"
+    # nosec: Creating intentionally vulnerable test code
     sample.write_text(
         """
 import subprocess
 
 def runner(cmd):
-    eval(cmd)
-    subprocess.call(cmd, shell=True)
+    eval(cmd)  # nosec - test code
+    subprocess.call(cmd, shell=True)  # nosec - test code
 """
     )
 
