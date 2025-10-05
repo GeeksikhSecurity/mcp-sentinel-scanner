@@ -1,0 +1,13 @@
+{
+  "exclude": [
+    "node_modules",
+    "vendor",
+    "build",
+    "dist",
+    ".git"
+  ],
+  "severity_threshold": "LOW",
+  "report_formats": ["terminal", "json", "markdown"],
+  "attack_graph": false,
+  "parallel_workers": 4
+}

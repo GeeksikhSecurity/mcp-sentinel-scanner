@@ -8,10 +8,11 @@ __pycache__/
 .venv/
 .env
 
-# Reports (exclude docs/INFOGRAPHIC.html)
+# Reports (exclude docs/INFOGRAPHIC.html and configs/*.json)
 *.html
 !docs/INFOGRAPHIC.html
 *.json
+!configs/*.json
 *.md.tmp
 
 # IDE

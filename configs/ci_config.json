@@ -1,0 +1,17 @@
+{
+  "exclude": [
+    "node_modules",
+    "*.d.ts",
+    "dist",
+    "build",
+    ".git",
+    "vendor",
+    "__pycache__",
+    "*.pyc",
+    ".venv",
+    ".pytest_cache",
+    "htmlcov"
+  ],
+  "severity_threshold": "LOW",
+  "parallel_workers": 4
+}

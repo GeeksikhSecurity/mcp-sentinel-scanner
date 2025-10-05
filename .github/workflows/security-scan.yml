@@ -8,6 +8,11 @@ on:
   schedule:
     - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
 
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
 jobs:
   security-scan:
     name: MCP Sentinel Security Scan
@@ -34,7 +39,7 @@ jobs:
       - name: Run security scan (JSON)
         run: |
           python -m scripts.sentinel_cli . \
-            --exclude "node_modules" "*.d.ts" "dist" "build" ".git" \
+            --config configs/ci_config.json \
             --format json \
             -o reports/scan-results.json \
             --severity LOW
@@ -43,7 +48,7 @@ jobs:
       - name: Run security scan (SARIF)
         run: |
           python -m scripts.sentinel_cli . \
-            --exclude "node_modules" "*.d.ts" "dist" "build" ".git" \
+            --config configs/ci_config.json \
             --format sarif \
             -o reports/results.sarif \
             --severity LOW
@@ -52,7 +57,7 @@ jobs:
       - name: Run security scan (HTML)
         run: |
           python -m scripts.sentinel_cli . \
-            --exclude "node_modules" "*.d.ts" "dist" "build" ".git" \
+            --config configs/ci_config.json \
             --format html \
             -o reports/security-report.html \
             --severity LOW
@@ -60,14 +65,15 @@ jobs:
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('reports/results.sarif') != ''
         with:
           sarif_file: reports/results.sarif
           category: mcp-sentinel
+        continue-on-error: true
 
       - name: Upload HTML report as artifact
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('reports/security-report.html') != ''
         with:
           name: security-report
           path: reports/security-report.html
@@ -75,7 +81,7 @@ jobs:
 
       - name: Upload JSON results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && hashFiles('reports/scan-results.json') != ''
         with:
           name: scan-results
           path: reports/scan-results.json
