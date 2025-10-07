@@ -50,7 +50,9 @@ def runner(cmd):
 
     categories = {finding.category for finding in result.findings}
     assert "dangerous_function" in categories
-    severities = {finding.severity for finding in result.findings if finding.category == "dangerous_function"}
+    severities = {
+        finding.severity for finding in result.findings if finding.category == "dangerous_function"
+    }
     assert "CRITICAL" in severities
 
 

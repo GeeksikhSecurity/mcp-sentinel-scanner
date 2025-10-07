@@ -15,6 +15,7 @@ from colorama import Fore, Style, init as colorama_init
 from tabulate import tabulate
 
 from src import MCPSentinelScanner
+from src.unified_scanner import UnifiedScanner
 
 colorama_init()
 
@@ -42,6 +43,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--no-colors", action="store_true", help="Disable colored output")
     parser.add_argument("--parallel", type=int, default=4, help="Number of parallel workers")
     parser.add_argument("--deep-scan", action="store_true", help="Enable advanced detection modules")
+    parser.add_argument("--unified", action="store_true", help="Use unified scanner with all tools")
     return parser.parse_args(argv)
 
 
@@ -114,7 +116,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Failed to load configuration: {exc}", file=sys.stderr)
         return 2
 
-    scanner = MCPSentinelScanner(config=config, parallel_workers=args.parallel)
+    if args.unified:
+        scanner = UnifiedScanner(config=config)
+    else:
+        scanner = MCPSentinelScanner(config=config, parallel_workers=args.parallel)
 
     try:
         result = scanner.scan(args.target)

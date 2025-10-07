@@ -238,7 +238,10 @@ class HTMLReporter:
 """
 
         # Add findings
-        for finding in sorted(result.findings, key=lambda f: {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}[f.severity]):
+        for finding in sorted(
+            result.findings,
+            key=lambda f: {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3}[f.severity],
+        ):
             sev_class = finding.severity.lower()
             html += f"""
             <div class="finding {sev_class}">

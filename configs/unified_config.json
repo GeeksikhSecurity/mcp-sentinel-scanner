@@ -1,0 +1,57 @@
+{
+  "version": "1.0",
+  "tools": {
+    "truffleHog": {
+      "enabled": true,
+      "exclude": ["**/*.test.*", "**/node_modules/**"]
+    },
+    "semgrep": {
+      "enabled": true,
+      "rules": ["auto"],
+      "config": "auto"
+    },
+    "mcp_scanner": {
+      "enabled": true
+    }
+  },
+  "scan": {
+    "exclude": ["node_modules", "*.d.ts", "dist", ".git", "coverage"],
+    "includeTests": false,
+    "maxFileSize": 1048576,
+    "followSymlinks": false
+  },
+  "falsePositives": {
+    "mlModel": {
+      "enabled": true,
+      "confidenceThreshold": 0.7
+    },
+    "patterns": [
+      {
+        "file": "**/*.test.*",
+        "pattern": "MOCK_.*|TEST_.*|EXAMPLE_.*",
+        "reason": "Test fixtures with mock credentials"
+      },
+      {
+        "file": "**/storybook/**",
+        "pattern": ".*",
+        "reason": "Component documentation"
+      }
+    ],
+    "excludeTestFiles": true,
+    "excludeStorybook": true
+  },
+  "output": {
+    "formats": ["terminal"],
+    "verbose": false,
+    "quiet": false
+  },
+  "severity": {
+    "threshold": "LOW",
+    "failOn": ["CRITICAL", "HIGH"]
+  },
+  "performance": {
+    "parallelWorkers": 4,
+    "cacheEnabled": false,
+    "incrementalScan": false
+  }
+}

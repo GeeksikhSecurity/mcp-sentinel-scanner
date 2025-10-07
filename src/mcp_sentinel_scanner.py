@@ -87,7 +87,9 @@ class MCPSentinelScanner:
         self.parallel_workers = max(1, parallel_workers)
         self.advanced_engine = AdvancedDetectionEngine(self.config)
         self.patterns = self._load_default_patterns()
-        self.secret_regex = re.compile(r"(api|secret|token|password|key)[\s:=]+['\"]?([A-Za-z0-9/+=_-]{12,})", re.IGNORECASE)
+        self.secret_regex = re.compile(
+            r"(api|secret|token|password|key)[\s:=]+['\"]?([A-Za-z0-9/+=_-]{12,})", re.IGNORECASE
+        )
 
     # region public API
     def scan(self, target: str | Path) -> ScanResult:
@@ -134,7 +136,9 @@ class MCPSentinelScanner:
                     line_count += lines
                 work_queue.task_done()
 
-        threads = [threading.Thread(target=worker, daemon=True) for _ in range(self.parallel_workers)]
+        threads = [
+            threading.Thread(target=worker, daemon=True) for _ in range(self.parallel_workers)
+        ]
         for thread in threads:
             thread.start()
         for thread in threads:
@@ -190,6 +194,7 @@ class MCPSentinelScanner:
         """Generate SARIF format output."""
         try:
             from .reporters.sarif_reporter import SARIFReporter
+
             return SARIFReporter.generate(result, source_root)
         except ImportError:
             raise ImportError("SARIF reporter not available")
@@ -198,6 +203,7 @@ class MCPSentinelScanner:
         """Generate HTML format output."""
         try:
             from .reporters.html_reporter import HTMLReporter
+
             return HTMLReporter.generate(result, title)
         except ImportError:
             raise ImportError("HTML reporter not available")
@@ -335,7 +341,14 @@ class MCPSentinelScanner:
 
             def visit_Call(self, node: ast.Call) -> None:  # type: ignore[override]
                 callee = self._resolve_name(node.func)
-                if callee in {"eval", "exec", "compile", "os.system", "subprocess.Popen", "subprocess.call"}:
+                if callee in {
+                    "eval",
+                    "exec",
+                    "compile",
+                    "os.system",
+                    "subprocess.Popen",
+                    "subprocess.call",
+                }:
                     self.calls.append((node.lineno, callee))
                 self.generic_visit(node)
 
@@ -441,7 +454,9 @@ class MCPSentinelScanner:
     def _calculate_asr(self, distribution: Dict[str, int]) -> float:
         if not distribution:
             return 0.0
-        numerator = sum(SEVERITY_WEIGHTS.get(sev, 0.25) * count for sev, count in distribution.items())
+        numerator = sum(
+            SEVERITY_WEIGHTS.get(sev, 0.25) * count for sev, count in distribution.items()
+        )
         denominator = sum(distribution.values())
         return min(1.0, numerator / max(1, denominator))
 

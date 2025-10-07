@@ -21,27 +21,29 @@ class SARIFReporter:
         sarif_report: Dict[str, Any] = {
             "version": SARIFReporter.SARIF_VERSION,
             "$schema": f"https://json.schemastore.org/sarif-{SARIFReporter.SARIF_VERSION}.json",
-            "runs": [{
-                "tool": {
-                    "driver": {
-                        "name": SARIFReporter.TOOL_NAME,
-                        "version": SARIFReporter.TOOL_VERSION,
-                        "informationUri": "https://github.com/mcp-security/mcp-sentinel-scanner",
-                        "rules": SARIFReporter._generate_rules(result),
-                    }
-                },
-                "results": SARIFReporter._generate_results(result, source_root),
-                "columnKind": "utf16CodeUnits",
-                "properties": {
-                    "scanSummary": {
-                        "filesScanned": result.summary.files_scanned,
-                        "totalLines": result.summary.total_lines,
-                        "vulnerabilitiesFound": result.summary.vulnerabilities_found,
-                        "asrScore": result.summary.asr_score,
-                        "scanTime": result.summary.scan_time,
-                    }
+            "runs": [
+                {
+                    "tool": {
+                        "driver": {
+                            "name": SARIFReporter.TOOL_NAME,
+                            "version": SARIFReporter.TOOL_VERSION,
+                            "informationUri": "https://github.com/mcp-security/mcp-sentinel-scanner",
+                            "rules": SARIFReporter._generate_rules(result),
+                        }
+                    },
+                    "results": SARIFReporter._generate_results(result, source_root),
+                    "columnKind": "utf16CodeUnits",
+                    "properties": {
+                        "scanSummary": {
+                            "filesScanned": result.summary.files_scanned,
+                            "totalLines": result.summary.total_lines,
+                            "vulnerabilitiesFound": result.summary.vulnerabilities_found,
+                            "asrScore": result.summary.asr_score,
+                            "scanTime": result.summary.scan_time,
+                        }
+                    },
                 }
-            }]
+            ],
         }
 
         return json.dumps(sarif_report, indent=2)
@@ -57,20 +59,16 @@ class SARIFReporter:
                 rules[rule_id] = {
                     "id": rule_id,
                     "name": finding.category.replace("_", " ").title(),
-                    "shortDescription": {
-                        "text": finding.description
-                    },
-                    "fullDescription": {
-                        "text": finding.recommendation
-                    },
+                    "shortDescription": {"text": finding.description},
+                    "fullDescription": {"text": finding.recommendation},
                     "help": {
                         "text": finding.recommendation,
-                        "markdown": f"## {finding.category}\n\n{finding.recommendation}"
+                        "markdown": f"## {finding.category}\n\n{finding.recommendation}",
                     },
                     "properties": {
                         "tags": [finding.severity.lower(), finding.category],
                         "precision": "high" if finding.confidence > 0.8 else "medium",
-                    }
+                    },
                 }
 
                 if finding.cwe_id:
@@ -94,27 +92,25 @@ class SARIFReporter:
             sarif_result = {
                 "ruleId": finding.category,
                 "level": severity_map.get(finding.severity, "warning"),
-                "message": {
-                    "text": finding.description
-                },
-                "locations": [{
-                    "physicalLocation": {
-                        "artifactLocation": {
-                            "uri": finding.file_path,
-                            "uriBaseId": "%SRCROOT%"
-                        },
-                        "region": {
-                            "startLine": finding.line_number,
-                            "snippet": {
-                                "text": finding.code_snippet
-                            }
+                "message": {"text": finding.description},
+                "locations": [
+                    {
+                        "physicalLocation": {
+                            "artifactLocation": {
+                                "uri": finding.file_path,
+                                "uriBaseId": "%SRCROOT%",
+                            },
+                            "region": {
+                                "startLine": finding.line_number,
+                                "snippet": {"text": finding.code_snippet},
+                            },
                         }
                     }
-                }],
+                ],
                 "properties": {
                     "confidence": finding.confidence,
                     "recommendation": finding.recommendation,
-                }
+                },
             }
 
             if finding.cwe_id:

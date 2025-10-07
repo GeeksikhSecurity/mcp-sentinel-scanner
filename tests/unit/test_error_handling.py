@@ -74,7 +74,10 @@ class TestErrorHandling:
     def test_unicode_edge_cases(self, tmp_path):
         """Test scanning files with various unicode characters."""
         unicode_file = tmp_path / "unicode.py"
-        unicode_file.write_text("# Comment with emoji 🔒\n# Chinese: 中文\n# Arabic: العربية\nprint('test')", encoding="utf-8")
+        unicode_file.write_text(
+            "# Comment with emoji 🔒\n# Chinese: 中文\n# Arabic: العربية\nprint('test')",
+            encoding="utf-8",
+        )
 
         scanner = MCPSentinelScanner()
         result = scanner.scan(unicode_file)

@@ -60,9 +60,9 @@ class TestUtilityFunctions:
         scanner = MCPSentinelScanner()
         distribution = {
             "CRITICAL": 2,  # 2 * 1.0 = 2.0
-            "HIGH": 2,      # 2 * 0.75 = 1.5
-            "MEDIUM": 2,    # 2 * 0.5 = 1.0
-            "LOW": 2,       # 2 * 0.25 = 0.5
+            "HIGH": 2,  # 2 * 0.75 = 1.5
+            "MEDIUM": 2,  # 2 * 0.5 = 1.0
+            "LOW": 2,  # 2 * 0.25 = 0.5
         }
         # Total = 5.0, count = 8, ASR = 5.0/8 = 0.625
         asr = scanner._calculate_asr(distribution)

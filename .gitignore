@@ -13,7 +13,41 @@ __pycache__/
 !docs/INFOGRAPHIC.html
 *.json
 !configs/*.json
+!pyproject.toml
+!package.json
+!test_package.json
 *.md.tmp
+
+# Test coverage and results
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+.pytest_cache/
+test-report.*
+*-report.html
+*-scan-report.html
+self-scan-report.html
+unified-scan-report.html
+debug-report.html
+security-report.html
+reports/
+*.sarif
+
+# Test artifacts
+benchmark_test_files/
+vulnerable_react.jsx
+
+# Performance and benchmark results
+*.benchmark
+benchmark-results.json
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.tox/
+.mypy_cache/
 
 # IDE
 .idea/

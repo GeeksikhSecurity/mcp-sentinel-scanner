@@ -43,33 +43,47 @@ The MCP Sentinel Scanner is a research-inspired security analysis tool designed 
 
 ## 🚀 Quick Start
 
-### Docker (Recommended)
+### pip Install (Recommended)
+
+```bash
+# Install latest version
+pip install mcp-sentinel-scanner
+
+# Basic scan
+mcp-scan /path/to/code
+
+# Unified scan with all tools
+mcp-scan /path/to/code --unified --format html -o report.html
+```
+
+### Docker
 
 ```bash
 # Pull and run
 docker pull ghcr.io/mcp-security/mcp-sentinel-scanner:latest
-docker run --rm -v $(pwd):/scan ghcr.io/mcp-security/mcp-sentinel-scanner:latest /scan
+docker run --rm -v $(pwd):/scan ghcr.io/mcp-security/mcp-sentinel-scanner:latest /scan --unified
 
 # Generate HTML report
 docker run --rm -v $(pwd):/scan -v $(pwd)/reports:/reports \
   ghcr.io/mcp-security/mcp-sentinel-scanner:latest \
-  /scan --format html -o /reports/report.html
+  /scan --unified --format html -o /reports/security-report.html
 ```
 
-### pip Install
+### Development Setup
 
 ```bash
-pip install mcp-sentinel-scanner
-mcp-scan /path/to/code
-```
-
-### From Source
-
-```bash
+# Clone repository
 git clone https://github.com/mcp-security/mcp-sentinel-scanner.git
 cd mcp-sentinel-scanner
-pip install -r requirements.txt
-python -m scripts.sentinel_cli /path/to/code
+
+# Install in development mode
+pip install -e ".[dev]"
+
+# Run tests
+make test
+
+# Run unified scan
+python -m scripts.sentinel_cli /path/to/code --unified
 ```
 
 **👉 See [QUICK_START.md](QUICK_START.md) for more options**

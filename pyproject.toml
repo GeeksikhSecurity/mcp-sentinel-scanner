@@ -1,0 +1,249 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-sentinel-scanner"
+version = "1.5.0"
+description = "Advanced security scanner for Model Context Protocol services with multi-tool orchestration"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "MCP Security Team", email = "security@mcp-project.org"},
+]
+maintainers = [
+    {name = "MCP Security Team", email = "security@mcp-project.org"},
+]
+keywords = [
+    "security",
+    "scanner",
+    "mcp",
+    "vulnerability",
+    "static-analysis",
+    "react",
+    "npm",
+    "taint-analysis"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "colorama>=0.4.6",
+    "tabulate>=0.9.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-benchmark>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "bandit>=1.7.0",
+    "pre-commit>=3.0.0",
+    "tox>=4.0.0",
+]
+docs = [
+    "sphinx>=6.0.0",
+    "sphinx-autodoc-typehints>=1.20.0",
+    "sphinx-rtd-theme>=1.2.0",
+    "myst-parser>=1.0.0",
+    "jupyter>=1.0.0",
+    "nbsphinx>=0.9.0",
+]
+external-tools = [
+    # Optional external scanners (install separately)
+    # "trufflehog>=3.0.0",  # Requires Go installation
+    # "semgrep>=1.0.0",     # Requires separate installation
+]
+
+[project.urls]
+Homepage = "https://github.com/mcp-security/mcp-sentinel-scanner"
+Documentation = "https://mcp-sentinel-scanner.readthedocs.io"
+Repository = "https://github.com/mcp-security/mcp-sentinel-scanner.git"
+Issues = "https://github.com/mcp-security/mcp-sentinel-scanner/issues"
+Changelog = "https://github.com/mcp-security/mcp-sentinel-scanner/blob/main/CHANGELOG.md"
+
+[project.scripts]
+mcp-scan = "scripts.sentinel_cli:main"
+mcp-sentinel = "scripts.sentinel_cli:main"
+unified-scanner = "scripts.sentinel_cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src", "scripts", "configs"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/scripts", 
+    "/configs",
+    "/tests",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/CHANGELOG.md",
+    "/pyproject.toml",
+]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "external: marks tests that require external tools",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101", "B601"]  # Skip assert_used and shell_injection_process_args for tests
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".eggs",
+    "*.egg-info",
+    ".venv",
+    ".tox",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+envlist = py39,py310,py311,py312,lint,type-check,security
+isolated_build = true
+
+[testenv]
+deps = 
+    pytest>=7.0.0
+    pytest-cov>=4.0.0
+    pytest-mock>=3.10.0
+commands = pytest {posargs}
+
+[testenv:lint]
+deps = 
+    black
+    isort
+    flake8
+commands = 
+    black --check src scripts tests
+    isort --check-only src scripts tests
+    flake8 src scripts tests
+
+[testenv:type-check]
+deps = mypy
+commands = mypy src scripts
+
+[testenv:security]
+deps = bandit
+commands = bandit -r src scripts
+
+[testenv:docs]
+deps = 
+    sphinx
+    sphinx-rtd-theme
+    myst-parser
+commands = sphinx-build -b html docs docs/_build/html
+"""
