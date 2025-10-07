@@ -1,4 +1,5 @@
 """HTML report generator with interactive charts."""
+
 from __future__ import annotations
 
 from datetime import datetime

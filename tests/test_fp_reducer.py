@@ -1,4 +1,5 @@
 """Tests for false positive reduction."""
+
 from pathlib import Path
 
 import pytest

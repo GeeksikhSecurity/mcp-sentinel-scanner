@@ -1,4 +1,5 @@
 """Integration tests for the unified scanner."""
+
 import json
 from pathlib import Path
 

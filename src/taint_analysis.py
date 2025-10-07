@@ -10,6 +10,7 @@ Example:
     >>> for path in paths:
     ...     print(f"Taint flow: {path.source} -> {path.sink}")
 """
+
 from __future__ import annotations
 
 import ast

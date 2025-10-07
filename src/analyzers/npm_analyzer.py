@@ -1,4 +1,5 @@
 """npm package vulnerability analyzer."""
+
 import json
 import subprocess
 from pathlib import Path

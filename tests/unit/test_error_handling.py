@@ -1,4 +1,5 @@
 """Error handling tests for MCP Sentinel Scanner."""
+
 import json
 from pathlib import Path
 

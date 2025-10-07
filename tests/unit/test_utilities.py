@@ -1,4 +1,5 @@
 """Unit tests for utility functions in MCP Sentinel Scanner."""
+
 import math
 
 import pytest

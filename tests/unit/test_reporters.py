@@ -1,4 +1,5 @@
 """Unit tests for report generators."""
+
 import json
 
 import pytest

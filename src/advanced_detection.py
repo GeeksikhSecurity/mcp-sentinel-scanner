@@ -1,4 +1,5 @@
 """Advanced analysis modules for the MCP Sentinel Scanner."""
+
 from __future__ import annotations
 
 import ast

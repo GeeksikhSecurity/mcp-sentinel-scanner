@@ -1,4 +1,5 @@
 """Unit tests for taint analysis module."""
+
 from pathlib import Path
 
 import pytest

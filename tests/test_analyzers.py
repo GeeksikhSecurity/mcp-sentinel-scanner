@@ -1,4 +1,5 @@
 """Tests for specialized analyzers."""
+
 import json
 import subprocess
 from pathlib import Path

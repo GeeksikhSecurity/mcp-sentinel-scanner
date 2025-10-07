@@ -1,4 +1,5 @@
 """TruffleHog adapter for secret detection."""
+
 import json
 import subprocess
 from pathlib import Path

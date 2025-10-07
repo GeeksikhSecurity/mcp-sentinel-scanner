@@ -1,4 +1,5 @@
 """Semgrep adapter for pattern-based detection."""
+
 import json
 import subprocess
 from pathlib import Path
