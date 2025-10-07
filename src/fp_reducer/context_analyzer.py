@@ -47,6 +47,10 @@ class ContextAnalyzer:
         # Check for nosec comments
         if "nosec" in finding.code_snippet.lower():
             return True
+        
+        # Check for placeholder/example values
+        if finding.category == "hardcoded_secret" and self._is_placeholder_value(finding.code_snippet):
+            return True
 
         return False
 
@@ -86,6 +90,29 @@ class ContextAnalyzer:
             "exec(", "system(", "popen(", "subprocess"
         ]
         return any(ctx in code_snippet for ctx in dangerous_contexts)
+    
+    def _is_placeholder_value(self, code_snippet: str) -> bool:
+        """Check if secret is a placeholder/example value."""
+        placeholder_patterns = [
+            r"your_.*_key_here",
+            r"your_.*_token_here", 
+            r"your_.*_secret_here",
+            r"your.*api.*key.*here",
+            r"example_.*_key",
+            r"sample_.*_key",
+            r"placeholder",
+            r"xxx{3,}",
+            r"aaa{3,}",
+            r"123{3,}",
+            r"test.*key",
+            r"demo.*key",
+            r"fake.*key",
+            r"sk-123{3,}",
+            r".*key.*here$",
+            r".*token.*here$"
+        ]
+        code_lower = code_snippet.lower()
+        return any(re.search(pattern, code_lower) for pattern in placeholder_patterns)
 
     def _is_test_context(self, finding: VulnerabilityFinding, file_content: str) -> bool:
         """Check if finding is in test context."""
