@@ -2,8 +2,6 @@
 
 from pathlib import Path
 
-import pytest
-
 from src.taint_analysis import TaintAnalyzer, TaintPath
 
 
@@ -112,7 +110,7 @@ import sys
 arg = sys.argv[1]
 eval(arg)
 """
-        paths = analyzer.analyze(Path("test.py"), code)
+        analyzer.analyze(Path("test.py"), code)
         # Note: This might not detect due to indexing; analyzer tracks direct assignments
         # This test documents current behavior
 

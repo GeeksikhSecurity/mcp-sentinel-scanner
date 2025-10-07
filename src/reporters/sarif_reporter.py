@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
 from typing import Any, Dict
 
 from ..mcp_sentinel_scanner import ScanResult
@@ -28,7 +27,7 @@ class SARIFReporter:
                         "driver": {
                             "name": SARIFReporter.TOOL_NAME,
                             "version": SARIFReporter.TOOL_VERSION,
-                            "informationUri": "https://github.com/mcp-security/mcp-sentinel-scanner",
+                            "informationUri": "https://github.com/mcp-security/mcp-sentinel-scanner",  # noqa: E501
                             "rules": SARIFReporter._generate_rules(result),
                         }
                     },

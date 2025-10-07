@@ -3,7 +3,7 @@
 
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 from src.mcp_sentinel_scanner import MCPSentinelScanner
 from src.unified_scanner import UnifiedScanner

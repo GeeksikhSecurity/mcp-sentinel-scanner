@@ -3,7 +3,7 @@
 import json
 import subprocess
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from ..mcp_sentinel_scanner import VulnerabilityFinding
 
@@ -129,7 +129,7 @@ class NpmAnalyzer:
                     VulnerabilityFinding(
                         severity=severity,
                         category="npm_vulnerability",
-                        description=f"Known vulnerability in {name}: {vuln.get('title', 'Unknown')}",
+                        description=f"Known vulnerability in {name}: {vuln.get('title', 'Unknown')}",  # noqa: E501
                         file_path=str(project_dir / "package.json"),
                         line_number=1,
                         code_snippet=f"Vulnerable package: {name}",

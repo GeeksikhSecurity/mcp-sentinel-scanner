@@ -1,9 +1,5 @@
 """Tests for false positive reduction."""
 
-from pathlib import Path
-
-import pytest
-
 from src.fp_reducer import ContextAnalyzer, MLClassifier
 from src.mcp_sentinel_scanner import VulnerabilityFinding
 

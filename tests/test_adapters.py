@@ -5,8 +5,6 @@ import subprocess
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-import pytest
-
 from src.adapters import SemgrepAdapter, TruffleHogAdapter
 
 

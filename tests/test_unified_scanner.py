@@ -1,9 +1,7 @@
 """Tests for unified scanner."""
 
 from pathlib import Path
-from unittest.mock import Mock, patch
-
-import pytest
+from unittest.mock import patch
 
 from src.mcp_sentinel_scanner import VulnerabilityFinding
 from src.unified_scanner import UnifiedScanner

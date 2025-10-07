@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict
+from typing import Dict
 
 from ..mcp_sentinel_scanner import ScanResult
 
@@ -24,7 +24,7 @@ class HTMLReporter:
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;  # noqa: E501
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
@@ -197,7 +197,7 @@ class HTMLReporter:
     <div class="container">
         <div class="header">
             <h1>🛡️ MCP Sentinel Security Report</h1>
-            <div class="subtitle">Advanced Security Analysis · {datetime.now().strftime("%B %d, %Y at %H:%M")}</div>
+            <div class="subtitle">Advanced Security Analysis · {datetime.now().strftime("%B %d, %Y at %H:%M")}</div>  # noqa: E501
         </div>
 
         <div class="summary">
@@ -271,7 +271,7 @@ class HTMLReporter:
                     <div class="field">
                         <div class="field-label">Confidence: {finding.confidence:.0%}</div>
                         <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: {finding.confidence * 100}%"></div>
+                            <div class="confidence-fill" style="width: {finding.confidence * 100}%"></div>  # noqa: E501
                         </div>
                     </div>
                     <div class="field">

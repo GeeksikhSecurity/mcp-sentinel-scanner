@@ -8,12 +8,11 @@ import math
 import os
 import queue
 import re
-import statistics
 import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
+from typing import Dict, List, Optional, Sequence, Set, Tuple
 
 from .advanced_detection import AdvancedDetectionEngine, AdvancedFinding
 
@@ -371,7 +370,7 @@ class MCPSentinelScanner:
                     file_path=str(file_path),
                     line_number=lineno,
                     code_snippet=self._extract_line(text, lineno),
-                    recommendation="Avoid dangerous dynamic execution functions or validate inputs.",
+                    recommendation="Avoid dangerous dynamic execution functions or validate inputs.",  # noqa: E501
                     cwe_id="CWE-95",
                     confidence=0.95,
                 )

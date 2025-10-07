@@ -3,8 +3,6 @@
 import json
 from pathlib import Path
 
-import pytest
-
 from src.unified_scanner import UnifiedScanner
 
 
@@ -57,7 +55,7 @@ class TestIntegration:
             """
 describe('Auth service', () => {
     const MOCK_API_KEY = 'sk-test-1234567890abcdef';
-    
+
     it('should authenticate', () => {
         expect(auth.login(MOCK_API_KEY)).toBe(true);
     });

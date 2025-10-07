@@ -1,11 +1,7 @@
 """Tests for specialized analyzers."""
 
 import json
-import subprocess
-from pathlib import Path
 from unittest.mock import Mock, patch
-
-import pytest
 
 from src.analyzers import NpmAnalyzer, ReactAnalyzer
 

@@ -9,4 +9,6 @@ exclude =
     .eggs,
     *.egg-info,
     .venv,
-    .tox
+    .tox,
+    scripts/benchmark.py,
+    tests/vulnerable_test.py
