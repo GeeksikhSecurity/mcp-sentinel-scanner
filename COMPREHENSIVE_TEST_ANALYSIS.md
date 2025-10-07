@@ -2,15 +2,15 @@
 
 ## Executive Summary
 
-Tested the unified security scanner against **7 additional MCP repositories** across different tech stacks, scanning **19,695 files** and identifying **9,541 vulnerabilities** in **332.9 seconds** (59.2 files/sec average).
+Tested the unified security scanner against **8 additional MCP repositories** across different tech stacks, scanning **19,842 files** and identifying **9,590 vulnerabilities** in **352.7 seconds** (56.3 files/sec average).
 
 ## Critical Finding: Massive False Positive Problem
 
 ### The Numbers Tell the Story
-- **9,541 total vulnerabilities found**
-- **8,467 import statement false positives** (88.7% of all findings)
-- **9,541 test file false positives** (100% of findings in test contexts)
-- **8,859 path traversal alerts** (92.8% of all findings)
+- **9,590 total vulnerabilities found**
+- **8,482 import statement false positives** (88.4% of all findings)
+- **9,590 test file false positives** (100% of findings in test contexts)
+- **8,874 path traversal alerts** (92.5% of all findings)
 
 **This represents a scanner accuracy crisis requiring immediate attention.**
 
@@ -66,13 +66,22 @@ Tested the unified security scanner against **7 additional MCP repositories** ac
 - **Issue**: Both findings in test context
 - **ASR Score**: 0.875
 
+### 8. Official MCP Servers (Multi-Server Repository) ⭐
+- **Files**: 147 TypeScript/Python files
+- **Vulnerabilities**: 49 findings (24 HIGH)
+- **Speed**: 7.4 files/sec
+- **Issue**: 15 import false positives (30.6%)
+- **ASR Score**: 0.597
+- **Notable**: Official repository with filesystem server security focus
+
 ## Performance Analysis
 
 ### Speed by Technology Stack
 - **Python Projects**: 16.8 files/sec average (good accuracy)
 - **TypeScript Projects**: 37.2 files/sec average (high false positives)
+- **Mixed Projects**: 7.4 files/sec (official MCP servers)
 - **Large Codebases**: 94.9 files/sec (ActivePieces anomaly)
-- **Overall Average**: 59.2 files/sec (meets target but accuracy poor)
+- **Overall Average**: 56.3 files/sec (meets target but accuracy poor)
 
 ### Bottleneck Analysis
 1. **TypeScript Processing**: Slower but more false positives
@@ -90,7 +99,7 @@ import { utils } from '../helpers/validator';
 import config from '../../config/database';
 ```
 
-**Impact**: 8,467 false positives across TypeScript projects
+**Impact**: 8,482 false positives across TypeScript projects
 
 #### 2. Test File Contamination (100% in test contexts)
 ```python
@@ -108,7 +117,7 @@ def test_path_validation():
 - Legitimate path operations flagged incorrectly
 
 ### False Positive Breakdown by Category
-- **path_traversal**: 8,859 findings (92.8% of total)
+- **path_traversal**: 8,874 findings (92.5% of total)
 - **hardcoded_secret**: 348 findings (many in test fixtures)
 - **security_issue**: 243 findings (Semgrep over-reporting)
 - **npm_vulnerability**: 67 findings (legitimate)
@@ -130,6 +139,12 @@ def test_path_validation():
 - **Observation**: 17,808 files scanned efficiently
 - **Problem**: 9,286 false positives overwhelm real issues
 - **Impact**: Scanner becomes unusable at enterprise scale
+
+### Official MCP Repositories (MCP Servers)
+- **Observation**: Mixed TypeScript/Python with security-focused filesystem server
+- **Problem**: 15 import statement false positives in test files
+- **Positive**: Some legitimate Docker security findings (missing USER directive)
+- **Pattern**: Better accuracy than pure TypeScript projects but still test contamination
 
 ## Immediate Refinements Required
 
@@ -218,7 +233,7 @@ The comprehensive test reveals a **critical accuracy crisis** in the scanner:
 - **Coverage**: Scans multiple languages and frameworks
 
 ### The Critical Issues ❌
-- **88.7% false positive rate** makes scanner unusable
+- **88.4% false positive rate** makes scanner unusable
 - **100% of findings in test contexts** are false positives
 - **Import statements cause massive noise** in TypeScript projects
 - **Path traversal detection is fundamentally broken**
@@ -226,4 +241,21 @@ The comprehensive test reveals a **critical accuracy crisis** in the scanner:
 ### The Path Forward
 The scanner has strong technical foundations but requires **immediate and aggressive false positive reduction** before it can be considered production-ready. The current accuracy level would cause developer teams to disable or ignore the tool entirely.
 
-**Next Steps**: Implement emergency fixes for import statements and test file detection, then re-test against the same repository set to measure improvement.
+**Next Steps**: Implement emergency fixes for import statements and test file detection, then re-test against the same 8 repository set to measure improvement.
+
+## Official MCP Servers Analysis
+
+The official MCP servers repository provides valuable insights:
+
+### Legitimate Findings ✅
+- **Docker Security**: 7 HIGH severity findings for missing USER directive in Dockerfiles
+- **Log Injection**: 4 LOW severity findings for unescaped user input in logs
+- **Path Operations**: Multiple MEDIUM findings for path.join/resolve usage
+
+### False Positives ❌
+- **Import Statements**: 15 path traversal alerts on legitimate imports
+- **Test Files**: All path traversal findings in `__tests__` directories
+- **Hardcoded Secret**: 1 false positive on test error message
+
+### Key Insight
+This repository demonstrates that the scanner **can** find legitimate security issues when not overwhelmed by false positives. The Docker and logging findings are actionable security improvements.
