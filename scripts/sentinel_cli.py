@@ -42,7 +42,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("--no-colors", action="store_true", help="Disable colored output")
     parser.add_argument("--parallel", type=int, default=4, help="Number of parallel workers")
-    parser.add_argument("--deep-scan", action="store_true", help="Enable advanced detection modules")
+    parser.add_argument(
+        "--deep-scan", action="store_true", help="Enable advanced detection modules"
+    )
     parser.add_argument("--unified", action="store_true", help="Use unified scanner with all tools")
     return parser.parse_args(argv)
 
@@ -80,7 +82,9 @@ def format_terminal(result, use_color: bool) -> str:
     ]
 
     table = []
-    for finding in sorted(result.findings, key=lambda f: (severity_order(f.severity), -f.confidence)):
+    for finding in sorted(
+        result.findings, key=lambda f: (severity_order(f.severity), -f.confidence)
+    ):
         color = color_map.get(finding.severity, "") if use_color else ""
         reset = Style.RESET_ALL if use_color else ""
         table.append(
@@ -94,7 +98,11 @@ def format_terminal(result, use_color: bool) -> str:
         )
 
     if table:
-        lines.append(tabulate(table, headers=["Severity", "Category", "Location", "Description", "Confidence"]))
+        lines.append(
+            tabulate(
+                table, headers=["Severity", "Category", "Location", "Description", "Confidence"]
+            )
+        )
     else:
         lines.append("No vulnerabilities detected.")
 
@@ -104,7 +112,9 @@ def format_terminal(result, use_color: bool) -> str:
             color = color_map.get(adv.severity, "") if use_color else ""
             reset = Style.RESET_ALL if use_color else ""
             location = f"{adv.file_path}:{adv.line_number}" if adv.line_number else adv.file_path
-            lines.append(f"- {color}{adv.severity}{reset} {adv.category} · {adv.description} ({location})")
+            lines.append(
+                f"- {color}{adv.severity}{reset} {adv.category} · {adv.description} ({location})"
+            )
     return "\n".join(lines)
 
 

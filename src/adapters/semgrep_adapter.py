@@ -9,47 +9,43 @@ from ..mcp_sentinel_scanner import VulnerabilityFinding
 
 class SemgrepAdapter:
     """Adapter for Semgrep pattern scanner."""
-    
+
     def __init__(self, config: Optional[dict] = None):
         self.config = config or {}
         self.enabled = self.config.get("enabled", True)
         self.rules = self.config.get("rules", ["auto"])
-    
+
     def run(self, target: Path) -> List[VulnerabilityFinding]:
         """Run Semgrep on target path."""
         if not self.enabled:
             return []
-        
+
         try:
             cmd = ["semgrep", "--json", "--config=auto", str(target)]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-            
+
             if result.returncode not in [0, 1]:  # 1 = findings found
                 return []
-            
+
             data = json.loads(result.stdout)
             findings = []
-            
+
             for result_item in data.get("results", []):
                 finding = self._convert_finding(result_item)
                 if finding:
                     findings.append(finding)
-            
+
             return findings
         except (subprocess.TimeoutExpired, FileNotFoundError, json.JSONDecodeError):
             return []
-    
+
     def _convert_finding(self, data: dict) -> Optional[VulnerabilityFinding]:
         """Convert Semgrep finding to VulnerabilityFinding."""
-        severity_map = {
-            "ERROR": "HIGH",
-            "WARNING": "MEDIUM", 
-            "INFO": "LOW"
-        }
-        
+        severity_map = {"ERROR": "HIGH", "WARNING": "MEDIUM", "INFO": "LOW"}
+
         check_id = data.get("check_id", "")
         severity = severity_map.get(data.get("extra", {}).get("severity", "INFO"), "LOW")
-        
+
         return VulnerabilityFinding(
             severity=severity,
             category=self._categorize_rule(check_id),
@@ -59,9 +55,9 @@ class SemgrepAdapter:
             code_snippet=data.get("extra", {}).get("lines", ""),
             recommendation="Review and fix the identified issue",
             cwe_id=self._extract_cwe(data),
-            confidence=0.8
+            confidence=0.8,
         )
-    
+
     def _categorize_rule(self, check_id: str) -> str:
         """Categorize Semgrep rule by check ID."""
         if "sql" in check_id.lower():
@@ -74,7 +70,7 @@ class SemgrepAdapter:
             return "weak_crypto"
         else:
             return "security_issue"
-    
+
     def _extract_cwe(self, data: dict) -> Optional[str]:
         """Extract CWE ID from Semgrep metadata."""
         metadata = data.get("extra", {}).get("metadata", {})

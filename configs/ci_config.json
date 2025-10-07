@@ -11,8 +11,9 @@
     ".venv",
     ".pytest_cache",
     "htmlcov",
-    "vulnerable_test",
-    "tests/"
+    "/tests/",
+    "tests/vulnerable_test.py",
+    "vulnerable_test.py"
   ],
   "severity_threshold": "LOW",
   "parallel_workers": 4,
