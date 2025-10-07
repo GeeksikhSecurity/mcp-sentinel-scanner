@@ -5,8 +5,8 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from .adapters import TruffleHogAdapter, SemgrepAdapter
-from .analyzers import ReactAnalyzer, NpmAnalyzer
+from .adapters import SemgrepAdapter, TruffleHogAdapter
+from .analyzers import NpmAnalyzer, ReactAnalyzer
 from .fp_reducer import ContextAnalyzer, MLClassifier
 from .mcp_sentinel_scanner import MCPSentinelScanner, ScanResult, ScanSummary, VulnerabilityFinding
 

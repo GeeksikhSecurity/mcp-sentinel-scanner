@@ -6,8 +6,8 @@ import pytest
 
 from src import MCPSentinelScanner, ScanResult, ScanSummary, VulnerabilityFinding
 from src.advanced_detection import AdvancedFinding
-from src.reporters.sarif_reporter import SARIFReporter
 from src.reporters.html_reporter import HTMLReporter
+from src.reporters.sarif_reporter import SARIFReporter
 
 
 @pytest.fixture

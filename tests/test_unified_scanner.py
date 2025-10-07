@@ -5,8 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.unified_scanner import UnifiedScanner
 from src.mcp_sentinel_scanner import VulnerabilityFinding
+from src.unified_scanner import UnifiedScanner
 
 
 class TestUnifiedScanner:

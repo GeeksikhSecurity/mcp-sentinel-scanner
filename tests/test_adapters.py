@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.adapters import TruffleHogAdapter, SemgrepAdapter
+from src.adapters import SemgrepAdapter, TruffleHogAdapter
 
 
 class TestTruffleHogAdapter:

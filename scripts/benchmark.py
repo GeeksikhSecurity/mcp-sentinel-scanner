@@ -5,8 +5,8 @@ import time
 from pathlib import Path
 from typing import Dict, List
 
-from src.unified_scanner import UnifiedScanner
 from src.mcp_sentinel_scanner import MCPSentinelScanner
+from src.unified_scanner import UnifiedScanner
 
 
 def benchmark_scanner(scanner, target: Path, name: str) -> Dict[str, float]:

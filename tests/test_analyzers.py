@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src.analyzers import ReactAnalyzer, NpmAnalyzer
+from src.analyzers import NpmAnalyzer, ReactAnalyzer
 
 
 class TestReactAnalyzer:

@@ -1,6 +1,6 @@
 """Report generation modules."""
 
-from .sarif_reporter import SARIFReporter
 from .html_reporter import HTMLReporter
+from .sarif_reporter import SARIFReporter
 
 __all__ = ["SARIFReporter", "HTMLReporter"]

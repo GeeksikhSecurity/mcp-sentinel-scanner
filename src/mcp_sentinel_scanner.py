@@ -17,7 +17,6 @@ from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
 from .advanced_detection import AdvancedDetectionEngine, AdvancedFinding
 
-
 SUPPORTED_EXTENSIONS: Set[str] = {
     ".py",
     ".js",
