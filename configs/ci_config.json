@@ -13,7 +13,9 @@
     "htmlcov",
     "/tests/",
     "tests/vulnerable_test.py",
-    "vulnerable_test.py"
+    "vulnerable_test.py",
+    "scripts/benchmark.py",
+    "benchmark.py"
   ],
   "severity_threshold": "LOW",
   "parallel_workers": 4,
@@ -27,6 +29,11 @@
       "file": "src/advanced_detection.py",
       "pattern": "DANGEROUS_FUNCTIONS|PATTERNS",
       "reason": "Detection rule definitions"
+    },
+    {
+      "file": "scripts/benchmark.py",
+      "pattern": "SELECT.*FROM.*WHERE|password.*=|eval\\(|os\\.system",
+      "reason": "Benchmark test pattern definitions"
     }
   ]
 }
