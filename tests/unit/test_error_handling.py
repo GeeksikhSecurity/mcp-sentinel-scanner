@@ -13,9 +13,7 @@ class TestErrorHandling:
     def test_scan_nonexistent_path(self):
         """Test scanning a path that doesn't exist."""
         scanner = MCPSentinelScanner()
-        with pytest.raises(
-            FileNotFoundError, match="No scannable files found"
-        ):
+        with pytest.raises(FileNotFoundError, match="No scannable files found"):
             scanner.scan("/nonexistent/path/12345")
 
     def test_scan_permission_denied(self, tmp_path, monkeypatch):
@@ -70,17 +68,14 @@ class TestErrorHandling:
 
         # Binary files should be skipped (not in SUPPORTED_EXTENSIONS)
         # Scanner should raise FileNotFoundError when no files exist
-        with pytest.raises(
-            FileNotFoundError, match="No scannable files found"
-        ):
+        with pytest.raises(FileNotFoundError, match="No scannable files found"):
             scanner.scan(tmp_path)
 
     def test_unicode_edge_cases(self, tmp_path):
         """Test scanning files with various unicode characters."""
         unicode_file = tmp_path / "unicode.py"
         unicode_file.write_text(
-            "# Comment with emoji 🔒\n"
-            "# Chinese: 中文\n# Arabic: العربية\nprint('test')",
+            "# Comment with emoji 🔒\n" "# Chinese: 中文\n# Arabic: العربية\nprint('test')",
             encoding="utf-8",
         )
 
@@ -110,9 +105,7 @@ class TestErrorHandling:
 
         # Should be skipped (not in SUPPORTED_EXTENSIONS)
         # Scanner should raise FileNotFoundError when no files exist
-        with pytest.raises(
-            FileNotFoundError, match="No scannable files found"
-        ):
+        with pytest.raises(FileNotFoundError, match="No scannable files found"):
             scanner.scan(tmp_path)
 
     def test_syntax_error_in_python_file(self, tmp_path):
