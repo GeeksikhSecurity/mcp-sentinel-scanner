@@ -1,7 +1,6 @@
 """Sample vulnerable file used for scanner demonstrations."""
 
 import hashlib
-import os
 import pickle
 import random
 import subprocess

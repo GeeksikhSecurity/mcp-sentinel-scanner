@@ -1,9 +1,5 @@
 """Unit tests for utility functions in MCP Sentinel Scanner."""
 
-import math
-
-import pytest
-
 from src import MCPSentinelScanner, VulnerabilityFinding
 
 
@@ -197,7 +193,7 @@ class TestUtilityFunctions:
 
         config = {"exclude": ["node_modules"]}
         scanner = MCPSentinelScanner(config=config)
-        files = scanner._collect_files(tmp_path)
+        scanner._collect_files(tmp_path)  # noqa: F841
 
         # Currently broken - this test will fail until P1.2 is fixed
         # assert len(files) == 1
