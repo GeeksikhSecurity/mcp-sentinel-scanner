@@ -35,6 +35,10 @@ class ContextAnalyzer:
         # Check for import statements (common false positive for path traversal)
         if self._is_import_statement(finding.code_snippet):
             return True
+        
+        # Skip path traversal in non-dangerous contexts
+        if finding.category == "path_traversal" and not self._is_dangerous_path_context(finding.code_snippet):
+            return True
 
         # Check surrounding context if available
         if file_content and self._is_test_context(finding, file_content):
@@ -49,22 +53,17 @@ class ContextAnalyzer:
     def _is_test_file(self, file_path: str) -> bool:
         """Check if file is a test file."""
         path = Path(file_path)
+        path_str = str(path).lower()
 
-        # Check file name patterns
+        # Aggressive test file detection
         test_indicators = [
-            ".test.",
-            ".spec.",
-            "_test.",
-            "_spec.",
-            "__tests__",
-            "__mocks__",
-            "test/",
-            "tests/",
-            ".stories.",
-            "storybook/",
+            ".test.", ".spec.", "_test.", "_spec.",
+            "__tests__", "__mocks__", "/test/", "/tests/",
+            ".stories.", "storybook/", "test_", "spec_",
+            "testing/", "fixtures/", "examples/", "demo/"
         ]
 
-        return any(indicator in str(path).lower() for indicator in test_indicators)
+        return any(indicator in path_str for indicator in test_indicators)
 
     def _has_test_prefix(self, code_snippet: str) -> bool:
         """Check if code has test-related prefixes."""
@@ -72,13 +71,21 @@ class ContextAnalyzer:
 
     def _is_import_statement(self, code_snippet: str) -> bool:
         """Check if code snippet is an import statement."""
+        # Aggressive import detection - any line starting with import/from/require
         import_patterns = [
-            re.compile(r"^\s*import\s+.*from\s+['\"].*\.\./"),
-            re.compile(r"^\s*import\s+['\"].*\.\./"),
-            re.compile(r"^\s*from\s+['\"].*\.\./.*['\"]\s+import"),
-            re.compile(r"^\s*require\s*\(['\"].*\.\./"),
+            re.compile(r"^\s*(import|from|require|#include)"),
+            re.compile(r"^\s*import\s+.*from\s+['\"].*['\"]")
         ]
-        return any(pattern.search(code_snippet.strip()) for pattern in import_patterns)
+        return any(pattern.match(code_snippet.strip()) for pattern in import_patterns)
+    
+    def _is_dangerous_path_context(self, code_snippet: str) -> bool:
+        """Check if path traversal is in a dangerous context."""
+        dangerous_contexts = [
+            "open(", "readFile", "writeFile", "file(", "File(",
+            "path.join(", "os.path.join", "filepath.Join",
+            "exec(", "system(", "popen(", "subprocess"
+        ]
+        return any(ctx in code_snippet for ctx in dangerous_contexts)
 
     def _is_test_context(self, finding: VulnerabilityFinding, file_content: str) -> bool:
         """Check if finding is in test context."""
