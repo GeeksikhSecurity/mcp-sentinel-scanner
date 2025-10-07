@@ -12,8 +12,10 @@ class ContextAnalyzer:
 
     TEST_PATTERNS = [
         re.compile(r"\b(test|spec|mock|fixture|example|sample)\b", re.IGNORECASE),
-        re.compile(r"describe\s*\(|it\s*\(|expect\s*\("),
+        re.compile(r"describe\s*\(|it\s*\(|test\s*\(|expect\s*\("),
         re.compile(r"jest\.|vitest\.|mocha\.|chai\."),
+        re.compile(r"toBe\(|toEqual\(|toMatch\(|toThrow\("),  # Jest matchers
+        re.compile(r"beforeEach\(|afterEach\(|beforeAll\(|afterAll\("),  # Test hooks
     ]
 
     TEST_PREFIXES = ["MOCK_", "TEST_", "EXAMPLE_", "SAMPLE_", "FIXTURE_", "DEMO_"]
@@ -28,6 +30,10 @@ class ContextAnalyzer:
 
         # Check variable naming patterns
         if self._has_test_prefix(finding.code_snippet):
+            return True
+
+        # Check for import statements (common false positive for path traversal)
+        if self._is_import_statement(finding.code_snippet):
             return True
 
         # Check surrounding context if available
@@ -63,6 +69,16 @@ class ContextAnalyzer:
     def _has_test_prefix(self, code_snippet: str) -> bool:
         """Check if code has test-related prefixes."""
         return any(prefix in code_snippet for prefix in self.TEST_PREFIXES)
+
+    def _is_import_statement(self, code_snippet: str) -> bool:
+        """Check if code snippet is an import statement."""
+        import_patterns = [
+            re.compile(r"^\s*import\s+.*from\s+['\"].*\.\./"),
+            re.compile(r"^\s*import\s+['\"].*\.\./"),
+            re.compile(r"^\s*from\s+['\"].*\.\./.*['\"]\s+import"),
+            re.compile(r"^\s*require\s*\(['\"].*\.\./"),
+        ]
+        return any(pattern.search(code_snippet.strip()) for pattern in import_patterns)
 
     def _is_test_context(self, finding: VulnerabilityFinding, file_content: str) -> bool:
         """Check if finding is in test context."""
