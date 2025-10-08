@@ -16,35 +16,35 @@ Tested the unified security scanner against **8 additional MCP repositories** ac
 
 ## Repository-by-Repository Analysis
 
-### 1. FastMCP (Python MCP Framework)
+### 1. Repository A (Python MCP Framework)
 - **Files**: 788 Python files
 - **Vulnerabilities**: 91 findings
 - **Speed**: 26.9 files/sec (excellent)
 - **Issue**: 100% false positives in test files
 - **ASR Score**: 0.662
 
-### 2. MCP-Use (Python Utilities)
+### 2. Repository B (Python Utilities)
 - **Files**: 268 Python files
 - **Vulnerabilities**: 7 findings
 - **Speed**: 11.1 files/sec
 - **Issue**: All 7 findings in test files
 - **ASR Score**: 0.714
 
-### 3. Zen-MCP (Python Server)
+### 3. Repository C (Python Server)
 - **Files**: 413 Python files
 - **Vulnerabilities**: 33 findings (3 CRITICAL)
 - **Speed**: 12.5 files/sec
 - **Issue**: 100% test file false positives
 - **ASR Score**: 0.674
 
-### 4. Playwright-MCP (TypeScript)
+### 4. Repository D (TypeScript)
 - **Files**: 111 TypeScript files
 - **Vulnerabilities**: 12 findings
 - **Speed**: 5.8 files/sec (slow)
 - **Issue**: 4 import statement false positives
 - **ASR Score**: 0.667
 
-### 5. ActivePieces (Large TypeScript Project) ⚠️
+### 5. Repository E (Large TypeScript Project) ⚠️
 - **Files**: 17,808 files (massive codebase)
 - **Vulnerabilities**: 9,286 findings
 - **Speed**: 94.9 files/sec (surprisingly fast)
@@ -52,21 +52,21 @@ Tested the unified security scanner against **8 additional MCP repositories** ac
 - **ASR Score**: 0.742
 - **Critical**: This single repository dominates all statistics
 
-### 6. MCP-Inspector (TypeScript Tools)
+### 6. Repository F (TypeScript Tools)
 - **Files**: 233 TypeScript files
 - **Vulnerabilities**: 110 findings
 - **Speed**: 10.8 files/sec
 - **Issue**: 49 import false positives (44.5%)
 - **ASR Score**: 0.673
 
-### 7. MCP-Quickstart (Documentation)
+### 7. Repository G (Documentation)
 - **Files**: 74 mixed files
 - **Vulnerabilities**: 2 findings (1 CRITICAL)
 - **Speed**: 4.1 files/sec
 - **Issue**: Both findings in test context
 - **ASR Score**: 0.875
 
-### 8. Official MCP Servers (Multi-Server Repository) ⭐
+### 8. Repository H (Multi-Server Repository) ⭐
 - **Files**: 147 TypeScript/Python files
 - **Vulnerabilities**: 49 findings (24 HIGH)
 - **Speed**: 7.4 files/sec
@@ -125,22 +125,22 @@ def test_path_validation():
 
 ## Technology Stack Insights
 
-### Python Projects (FastMCP, MCP-Use, Zen-MCP)
+### Python Projects (Repositories A, B, C)
 - **Strengths**: Better performance, fewer import issues
 - **Weaknesses**: Still 100% test file false positives
 - **Pattern**: Cleaner codebases with focused functionality
 
-### TypeScript Projects (Playwright, ActivePieces, Inspector)
+### TypeScript Projects (Repositories D, E, F)
 - **Strengths**: Fast scanning of large codebases
 - **Weaknesses**: Massive import statement false positives
 - **Pattern**: Complex module structures trigger path traversal alerts
 
-### Large Enterprise Codebases (ActivePieces)
+### Large Enterprise Codebases (Repository E)
 - **Observation**: 17,808 files scanned efficiently
 - **Problem**: 9,286 false positives overwhelm real issues
 - **Impact**: Scanner becomes unusable at enterprise scale
 
-### Official MCP Repositories (MCP Servers)
+### Mixed Language Repositories (Repository H)
 - **Observation**: Mixed TypeScript/Python with security-focused filesystem server
 - **Problem**: 15 import statement false positives in test files
 - **Positive**: Some legitimate Docker security findings (missing USER directive)
@@ -241,11 +241,11 @@ The comprehensive test reveals a **critical accuracy crisis** in the scanner:
 ### The Path Forward
 The scanner has strong technical foundations but requires **immediate and aggressive false positive reduction** before it can be considered production-ready. The current accuracy level would cause developer teams to disable or ignore the tool entirely.
 
-**Next Steps**: Implement emergency fixes for import statements and test file detection, then re-test against the same 8 repository set to measure improvement.
+**Next Steps**: Implement emergency fixes for import statements and test file detection, then re-test against the same 8 anonymized repository set to measure improvement.
 
-## Official MCP Servers Analysis
+## Repository H Analysis
 
-The official MCP servers repository provides valuable insights:
+The multi-server repository provides valuable insights:
 
 ### Legitimate Findings ✅
 - **Docker Security**: 7 HIGH severity findings for missing USER directive in Dockerfiles
