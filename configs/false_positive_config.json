@@ -1,0 +1,65 @@
+{
+  "false_positive_filters": {
+    "enabled": true,
+    "confidence_threshold": 0.7,
+    "entropy_threshold": 2.5,
+    
+    "test_indicators": [
+      "test", "demo", "example", "sample", "placeholder", "dummy",
+      "fake", "mock", "stub", "template", "tutorial", "docs"
+    ],
+    
+    "placeholder_patterns": [
+      "YOUR_\\w+", "REPLACE_\\w+", "INSERT_\\w+", "ADD_\\w+",
+      "PUT_\\w+", "ENTER_\\w+", "SET_\\w+", "CHANGE_\\w+"
+    ],
+    
+    "fake_patterns": [
+      "12345+", "67890+", "abcdef+", "qwerty+", "password+",
+      "secret+", "token+", "key+", "admin+", "user+"
+    ],
+    
+    "test_key_prefixes": [
+      "sk_test_", "pk_test_", "whsec_test_", "acct_test_",
+      "test_", "demo_", "sample_", "example_"
+    ],
+    
+    "localhost_patterns": [
+      "localhost", "127.0.0.1", "0.0.0.0", "example.com",
+      "test.com", "demo.com", "sample.com"
+    ],
+    
+    "test_file_patterns": [
+      "test/", "tests/", "spec/", "demo/", "example/", "sample/",
+      "mock/", "stub/", "tutorial/", "docs/"
+    ],
+    
+    "realistic_credential_requirements": {
+      "min_length": 8,
+      "max_length": 128,
+      "require_mixed_case": true,
+      "require_numbers": true,
+      "require_letters": true
+    },
+    
+    "severity_adjustments": {
+      "low_confidence_downgrade": true,
+      "test_context_severity_reduction": 2,
+      "placeholder_auto_reject": true
+    }
+  },
+  
+  "codeql_integration": {
+    "enabled": true,
+    "query_path": "codeql/false-positive-filters.ql",
+    "high_confidence_only": false,
+    "entropy_calculation": true
+  },
+  
+  "reporting": {
+    "include_false_positive_stats": true,
+    "show_filtered_count": true,
+    "confidence_score_in_output": true,
+    "false_positive_reasons": true
+  }
+}

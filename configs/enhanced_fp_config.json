@@ -1,0 +1,122 @@
+{
+  "false_positive_reduction": {
+    "entropy_thresholds": {
+      "minimum_secret_entropy": 3.5,
+      "minimum_token_entropy": 4.0,
+      "minimum_key_entropy": 4.2
+    },
+    "confidence_thresholds": {
+      "high_confidence": 0.8,
+      "medium_confidence": 0.6,
+      "low_confidence": 0.3,
+      "discard_threshold": 0.2
+    },
+    "context_weights": {
+      "file_type_test": 0.2,
+      "file_type_example": 0.3,
+      "file_type_documentation": 0.1,
+      "directory_type_test": 0.3,
+      "directory_type_example": 0.4,
+      "code_type_test": 0.4,
+      "has_test_comment": 0.5
+    },
+    "pattern_penalties": {
+      "test_indicator": 0.2,
+      "documentation_pattern": 0.3,
+      "sequential_pattern": 0.4,
+      "fake_value": 0.6,
+      "development_pattern": 0.3
+    }
+  },
+  "scanning_areas": {
+    "core_mcp": [
+      "mcp-server-*", "mcp-client-*", "mcp-tools-*", "mcp-protocol-*"
+    ],
+    "language_implementations": [
+      "python-mcp-*", "typescript-mcp-*", "javascript-mcp-*",
+      "go-mcp-*", "rust-mcp-*", "java-mcp-*", "csharp-mcp-*"
+    ],
+    "framework_integrations": [
+      "express-mcp-*", "fastapi-mcp-*", "django-mcp-*",
+      "react-mcp-*", "vue-mcp-*", "angular-mcp-*", "svelte-mcp-*"
+    ],
+    "cloud_providers": [
+      "aws-mcp-*", "gcp-mcp-*", "azure-mcp-*",
+      "cloudflare-mcp-*", "vercel-mcp-*", "netlify-mcp-*"
+    ],
+    "database_integrations": [
+      "postgres-mcp-*", "mysql-mcp-*", "mongodb-mcp-*",
+      "redis-mcp-*", "elasticsearch-mcp-*", "neo4j-mcp-*"
+    ],
+    "ai_ml_integrations": [
+      "openai-mcp-*", "anthropic-mcp-*", "huggingface-mcp-*",
+      "tensorflow-mcp-*", "pytorch-mcp-*", "langchain-mcp-*"
+    ],
+    "development_tools": [
+      "vscode-mcp-*", "jetbrains-mcp-*", "vim-mcp-*",
+      "docker-mcp-*", "kubernetes-mcp-*", "terraform-mcp-*"
+    ],
+    "testing_frameworks": [
+      "jest-mcp-*", "pytest-mcp-*", "mocha-mcp-*",
+      "cypress-mcp-*", "selenium-mcp-*", "playwright-mcp-*"
+    ],
+    "security_tools": [
+      "auth-mcp-*", "oauth-mcp-*", "jwt-mcp-*",
+      "encryption-mcp-*", "ssl-mcp-*", "tls-mcp-*"
+    ],
+    "monitoring_logging": [
+      "prometheus-mcp-*", "grafana-mcp-*", "elk-mcp-*",
+      "datadog-mcp-*", "newrelic-mcp-*", "sentry-mcp-*"
+    ]
+  },
+  "vulnerability_patterns": {
+    "hardcoded_secrets": {
+      "patterns": [
+        "api[_-]?key\\s*[=:]\\s*['\"][^'\"]{20,}['\"]",
+        "secret[_-]?key\\s*[=:]\\s*['\"][^'\"]{20,}['\"]",
+        "password\\s*[=:]\\s*['\"][^'\"]{8,}['\"]",
+        "token\\s*[=:]\\s*['\"][^'\"]{20,}['\"]",
+        "access[_-]?token\\s*[=:]\\s*['\"][^'\"]{20,}['\"]"
+      ],
+      "minimum_entropy": 3.5,
+      "exclude_patterns": [
+        "your[_-]?key[_-]?here", "insert[_-]?token", "example[_-]?key"
+      ]
+    },
+    "sql_injection": {
+      "patterns": [
+        "execute\\s*\\(\\s*['\"].*\\+.*['\"]",
+        "query\\s*\\(\\s*['\"].*%s.*['\"]",
+        "SELECT.*\\+.*FROM",
+        "INSERT.*\\+.*VALUES",
+        "UPDATE.*\\+.*SET"
+      ],
+      "exclude_contexts": ["test", "example", "mock"]
+    },
+    "command_injection": {
+      "patterns": [
+        "os\\.system\\s*\\(\\s*.*\\+",
+        "subprocess\\.\\w+\\s*\\(\\s*.*\\+",
+        "exec\\s*\\(\\s*.*\\+",
+        "eval\\s*\\(\\s*.*\\+"
+      ],
+      "exclude_contexts": ["test", "example", "demo"]
+    },
+    "path_traversal": {
+      "patterns": [
+        "\\.\\./",
+        "\\.\\.\\\\",
+        "path.*\\+.*\\.\\.",
+        "file.*\\+.*\\.\\."
+      ],
+      "exclude_contexts": ["test", "example"]
+    }
+  },
+  "reporting": {
+    "include_low_confidence": false,
+    "max_findings_per_repo": 50,
+    "group_by_severity": true,
+    "include_context_analysis": true,
+    "include_fp_indicators": true
+  }
+}

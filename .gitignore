@@ -53,5 +53,15 @@ dist/
 .idea/
 .vscode/
 
+# Manual review files
+manualreview/
+
+# Security research (sensitive data - DO NOT COMMIT)
+security_research/
+bug_bounty_data/
+conference_submissions/
+vulnerability_database/
+research_findings/
+
 # OS
 .DS_Store

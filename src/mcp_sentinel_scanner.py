@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Sequence, Set, Tuple
 
 from .advanced_detection import AdvancedDetectionEngine, AdvancedFinding
+from .filters.false_positive_filter import apply_false_positive_filter
 
 SUPPORTED_EXTENSIONS: Set[str] = {
     ".py",
@@ -281,7 +282,36 @@ class MCPSentinelScanner:
         findings.extend(self._secret_scan(file_path, lines))
         if file_path.suffix.lower() == ".py":
             findings.extend(self._ast_scan(file_path, text))
-        return findings, len(lines)
+        
+        # Apply false positive filtering
+        findings_dict = [{
+            'code_snippet': f.code_snippet,
+            'vulnerability_type': f.category,
+            'file_path': f.file_path,
+            'context': f.description,
+            'severity': f.severity,
+            'line_number': f.line_number,
+            'recommendation': f.recommendation,
+            'cwe_id': f.cwe_id,
+            'confidence': f.confidence
+        } for f in findings]
+        
+        filtered_findings_dict = apply_false_positive_filter(findings_dict)
+        
+        # Convert back to VulnerabilityFinding objects
+        filtered_findings = [VulnerabilityFinding(
+            severity=f['severity'],
+            category=f['vulnerability_type'],
+            description=f['context'],
+            file_path=f['file_path'],
+            line_number=f['line_number'],
+            code_snippet=f['code_snippet'],
+            recommendation=f['recommendation'],
+            cwe_id=f['cwe_id'],
+            confidence=f.get('confidence_score', f['confidence'])
+        ) for f in filtered_findings_dict]
+        
+        return filtered_findings, len(lines)
 
     def _pattern_scan(self, file_path: Path, lines: Sequence[str]) -> List[VulnerabilityFinding]:
         local_findings: List[VulnerabilityFinding] = []
