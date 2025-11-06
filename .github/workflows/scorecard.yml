@@ -1,0 +1,67 @@
+name: OpenSSF Scorecard
+
+on:
+  # Run on pushes to main branch
+  push:
+    branches: [main]
+  # Run weekly on Saturdays at 1:30 AM UTC
+  schedule:
+    - cron: '30 1 * * 6'
+  # Allow manual trigger
+  workflow_dispatch:
+
+# Declare default permissions as read only
+permissions: read-all
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    permissions:
+      # Needed to upload the results to code-scanning dashboard
+      security-events: write
+      # Needed to publish results and get a badge
+      id-token: write
+      # Uncomment the permissions below if installing in a private repository
+      # contents: read
+      # actions: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@62b2cac7ed8198b15735ed49ab1e5cf35480ba46 # v2.4.0
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Public repository to release to main branch. See:
+          # https://github.com/ossf/scorecard-action#publishing-results
+          publish_results: true
+
+      - name: Upload SARIF results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: ossf-scorecard
+
+      - name: Upload SARIF results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SARIF file
+          path: results.sarif
+          retention-days: 5
+
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "### 🛡️ OpenSSF Scorecard Analysis Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The security scorecard has been generated and uploaded to:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Security** tab → **Code scanning** → **OpenSSF Scorecard**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 View detailed results: https://api.securityscorecards.dev/projects/github.com/${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 Scorecard documentation: https://scorecard.dev/" >> $GITHUB_STEP_SUMMARY

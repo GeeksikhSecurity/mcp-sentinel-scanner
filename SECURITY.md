@@ -4,11 +4,12 @@
 
 We actively support the following versions of MCP Sentinel Scanner with security updates:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.5.x   | :white_check_mark: |
-| 1.0.x   | :x:                |
-| < 1.0   | :x:                |
+| Version | Supported          | Status |
+| ------- | ------------------ | ------ |
+| 2.1.x   | :white_check_mark: | Active development |
+| 2.0.x   | :white_check_mark: | Security fixes only |
+| 1.5.x   | :warning:          | Critical fixes only |
+| < 1.5   | :x:                | End of life |
 
 ## Reporting a Vulnerability
 
@@ -133,9 +134,12 @@ We practice what we preach! This project is continuously scanned with:
 - **Self-Scanning**: MCP Sentinel Scanner scans its own codebase
 - **GitHub CodeQL**: Advanced semantic analysis
 - **Dependency Scanning**: Dependabot alerts for vulnerable dependencies
+- **OpenSSF Scorecard**: Supply chain security posture assessment
 - **SARIF Integration**: Results visible in GitHub Security tab
 
-Current Security Status: [![Security Scan](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/workflows/Security%20Scan/badge.svg)](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/actions)
+Current Security Status:
+- [![Security Scan](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/workflows/Security%20Scan/badge.svg)](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/actions)
+- [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/GeeksikhSecurity/mcp-sentinel-scanner/badge)](https://securityscorecards.dev/viewer/?uri=github.com/GeeksikhSecurity/mcp-sentinel-scanner)
 
 ## Contact
 
@@ -149,5 +153,5 @@ This security policy is licensed under [CC BY 4.0](https://creativecommons.org/l
 
 ---
 
-**Last Updated**: October 4, 2025
-**Policy Version**: 1.0
+**Last Updated**: November 6, 2025
+**Policy Version**: 1.1

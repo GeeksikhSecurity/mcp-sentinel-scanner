@@ -5,6 +5,7 @@
 [![Version](https://img.shields.io/badge/version-2.1-blue)](https://github.com/mcp-security/mcp-sentinel-scanner/releases)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Security](https://img.shields.io/badge/security-enterprise--ready-red)](https://github.com/mcp-security/mcp-sentinel-scanner)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/GeeksikhSecurity/mcp-sentinel-scanner/badge)](https://securityscorecards.dev/viewer/?uri=github.com/GeeksikhSecurity/mcp-sentinel-scanner)
 
 ```
 🚀 Enterprise-Grade MCP Security Scanner v2.1
