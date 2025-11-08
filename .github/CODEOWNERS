@@ -1,0 +1,24 @@
+# CODEOWNERS - Define who should review specific files
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Security-sensitive files require security team review
+/SECURITY.md                          @GeeksikhSecurity/security-team
+/.github/workflows/*                  @GeeksikhSecurity/security-team
+/.github/dependabot.yml               @GeeksikhSecurity/security-team
+/.github/dependency-review-config.yml @GeeksikhSecurity/security-team
+/docs/security/*                      @GeeksikhSecurity/security-team
+/docs/SCORECARD_SETUP.md              @GeeksikhSecurity/security-team
+/docs/GITHUB_TEAMS_SECURITY_SETUP.md  @GeeksikhSecurity/security-team
+
+# Dependency files require security review
+/package.json                         @GeeksikhSecurity/security-team
+/package-lock.json                    @GeeksikhSecurity/security-team
+/requirements.txt                     @GeeksikhSecurity/security-team
+/go.mod                               @GeeksikhSecurity/security-team
+/go.sum                               @GeeksikhSecurity/security-team
+/Gemfile                              @GeeksikhSecurity/security-team
+/Gemfile.lock                         @GeeksikhSecurity/security-team
+
+# Default: all files
+# Note: Replace with your actual team/username
+*                                     @GeeksikhSecurity

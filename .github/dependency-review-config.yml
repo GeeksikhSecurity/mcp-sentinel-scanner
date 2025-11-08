@@ -1,0 +1,37 @@
+# Dependency Review Configuration
+# Automatically reviews dependencies in pull requests for security vulnerabilities and license compliance
+# Requires GitHub Teams or higher
+
+# Fail the check if dependencies with these severity levels are detected
+fail-on-severity: moderate
+
+# Block dependencies with these licenses
+fail-on-licenses:
+  - GPL-3.0
+  - AGPL-3.0
+  - GPL-2.0
+  - LGPL-3.0
+
+# Allow dependencies with these licenses
+allow-dependencies-licenses:
+  - MIT
+  - Apache-2.0
+  - BSD-3-Clause
+  - BSD-2-Clause
+  - ISC
+  - 0BSD
+  - Python-2.0
+  - PSF-2.0
+
+# Scopes to check for vulnerabilities
+fail-on-scopes:
+  - runtime
+  - development
+
+# Enable comprehensive checking
+check-licenses: true
+check-vulnerabilities: true
+
+# Comment configuration
+# The workflow will comment on PRs with findings
+comment-summary-in-pr: always
