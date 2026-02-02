@@ -1,0 +1,57 @@
+name: Repo Corpus (Nightly)
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Tier to run (smoke/full/all)"
+        required: false
+        default: "full"
+
+jobs:
+  corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('pyproject.toml') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      - name: Cache repo corpus clones
+        uses: actions/cache@v4
+        with:
+          path: .cache/repo_corpus
+          key: corpus-${{ runner.os }}-${{ hashFiles('configs/repo_corpus.json') }}
+          restore-keys: |
+            corpus-${{ runner.os }}-
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Run repo corpus
+        env:
+          TIER: ${{ inputs.tier || 'full' }}
+        run: |
+          python scripts/run_repo_corpus.py --tier "$TIER" --manifest configs/repo_corpus.json --cache-dir .cache/repo_corpus --output-dir reports/repo_corpus
+
+      - name: Upload corpus artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repo-corpus-${{ inputs.tier || 'full' }}
+          path: reports/repo_corpus
+
+

@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "description": "Repo corpus manifest for regression testing. Prefer pinned commit SHAs for deterministic CI; 'ref' may be a branch name during initial bring-up.",
+  "repos": [
+    {
+      "id": "fixture-mcp-servers",
+      "tier": "smoke",
+      "local_path": "tests/fixtures/repo_corpus/mcp-servers",
+      "unified": true,
+      "timeout_sec": 300,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "fixture-mcp-typescript",
+      "tier": "smoke",
+      "local_path": "tests/fixtures/repo_corpus/mcp-typescript",
+      "unified": true,
+      "timeout_sec": 300,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "modelcontextprotocol-servers",
+      "tier": "full",
+      "url": "https://github.com/modelcontextprotocol/servers.git",
+      "ref": "main",
+      "unified": true,
+      "timeout_sec": 900,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "modelcontextprotocol-python-sdk",
+      "tier": "full",
+      "url": "https://github.com/modelcontextprotocol/python-sdk.git",
+      "ref": "main",
+      "unified": true,
+      "timeout_sec": 900,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "modelcontextprotocol-typescript-sdk",
+      "tier": "full",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk.git",
+      "ref": "main",
+      "unified": true,
+      "timeout_sec": 900,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    }
+  ]
+}
+
+

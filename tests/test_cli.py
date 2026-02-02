@@ -36,3 +36,19 @@ def test_cli_respects_output_file(tmp_path, capsys):
     assert f"Report written to {output}" in captured.out
     data = json.loads(output.read_text())
     assert data["scan_summary"]["vulnerabilities_found"] >= 1
+
+
+def test_cli_exclude_patterns(tmp_path, capsys):
+    ignored = tmp_path / "ignored.py"
+    ignored.write_text("eval('oops')")  # nosec - test code
+
+    kept = tmp_path / "kept.py"
+    kept.write_text("print('ok')\n")
+
+    exit_code = cli_main([str(tmp_path), "--format", "json", "--exclude", "ignored.py", "--no-colors"])
+    captured = capsys.readouterr()
+
+    assert exit_code == 0
+    data = json.loads(captured.out)
+    categories = {f["category"] for f in data.get("findings", [])}
+    assert "dangerous_function" not in categories

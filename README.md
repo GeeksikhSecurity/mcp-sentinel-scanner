@@ -2,13 +2,13 @@
 
 [![CI](https://github.com/mcp-security/mcp-sentinel-scanner/workflows/CI/badge.svg)](https://github.com/mcp-security/mcp-sentinel-scanner/actions)
 [![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)](https://github.com/mcp-security/mcp-sentinel-scanner)
-[![Version](https://img.shields.io/badge/version-2.1-blue)](https://github.com/mcp-security/mcp-sentinel-scanner/releases)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue)](https://github.com/mcp-security/mcp-sentinel-scanner/releases)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Security](https://img.shields.io/badge/security-enterprise--ready-red)](https://github.com/mcp-security/mcp-sentinel-scanner)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/GeeksikhSecurity/mcp-sentinel-scanner/badge)](https://securityscorecards.dev/viewer/?uri=github.com/GeeksikhSecurity/mcp-sentinel-scanner)
 
 ```
-🚀 Enterprise-Grade MCP Security Scanner v2.1
+🚀 Enterprise-Grade MCP Security Scanner v1.5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔍 Multi-Tool Orchestration  │  🎯 100% False Positive Elimination
 📊 1,400+ Files/Second       │  🛡️ 7-Layer Security Analysis
@@ -53,7 +53,7 @@ The **MCP Sentinel Scanner** is a research-inspired security analysis tool desig
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  🛡️ MCP Sentinel Scanner v2.1 - Enterprise Architecture       │
+│  🛡️ MCP Sentinel Scanner v1.5 - Enterprise Architecture       │
 │                                                                 │
 │  ┌─────────────┐   ┌─────────────┐   ┌─────────────┐          │
 │  │ 🔍 Multi-Tool│ → │ 🎯 Context  │ → │ 📊 Result   │          │
@@ -243,7 +243,7 @@ mcp-scan /path --config config.json
 ## 🎯 Features & Detection Capabilities
 
 ```
-🛡️ Vulnerability Detection Matrix (ASR Scores) - v2.1 Enhanced
+🛡️ Vulnerability Detection Matrix (ASR Scores) - v1.5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Vulnerability Type           ASR Score  Detection  Status   Tools
 ──────────────────────────────────────────────────────────────────────
@@ -303,9 +303,9 @@ Vulnerability Type           ASR Score  Detection  Status   Tools
 ## 📈 Performance Metrics
 
 ```
-🚀 Performance Comparison: v1.5 → v2.1
+🚀 Performance Comparison: v1.0 → v1.5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Metric                v1.5 Baseline    v2.1 Enhanced    Improvement
+Metric                v1.0 Baseline    v1.5 Enhanced    Improvement
 ──────────────────────────────────────────────────────────────────────
 🔍 Scan Speed         57 files/sec     1,400 files/sec   🚀 24.5x
 🎯 False Positives    88.4% FP rate    0% FP rate        ✅ 100% reduction
@@ -318,7 +318,7 @@ Metric                v1.5 Baseline    v2.1 Enhanced    Improvement
 
 ### 📊 **Detailed Performance Matrix**
 
-| 📊 Metric | 📍 v1.5 | 🎯 v2.1 | 📈 Improvement |
+| 📊 Metric | 📍 v1.0 | 🎯 v1.5 | 📈 Improvement |
 |-----------|---------|---------|----------------|
 | **🔍 Scan Speed** | 57 files/sec | 1,400 files/sec | 🚀 24.5x |
 | **🎯 Accuracy** | 11.6% (88.4% FP) | 100% (0% FP) | ✅ Perfect |
@@ -377,7 +377,7 @@ See [docs/RESEARCH_FOUNDATION.md](docs/RESEARCH_FOUNDATION.md) for details.
 
 ### 📈 **Current Achievement Dashboard**
 ```
-🎯 v2.1 Milestone Achievements
+🎯 v1.5 Milestone Achievements
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ Multi-Tool Integration:    [████████████████████████████████████████] 100%
 ✅ False Positive Elimination:[████████████████████████████████████████] 100%
@@ -390,7 +390,7 @@ See [docs/RESEARCH_FOUNDATION.md](docs/RESEARCH_FOUNDATION.md) for details.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**🏆 Current Stats (v2.1):**
+**🏆 Current Stats (v1.5):**
 - ✅ **78 Test Cases** | 100% Core Coverage | 0% False Positives
 - ✅ **1,400+ Files/Second** | 20x Performance Improvement
 - ✅ **7 Detection Layers** | Multi-Tool Orchestration
