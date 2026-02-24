@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict
+from importlib.metadata import PackageNotFoundError, version as pkg_version
+from pathlib import Path
+from typing import Any, Dict, Tuple
 
 from ..mcp_sentinel_scanner import ScanResult
 
@@ -13,11 +15,15 @@ class SARIFReporter:
 
     SARIF_VERSION = "2.1.0"
     TOOL_NAME = "MCP Sentinel Scanner"
-    TOOL_VERSION = "1.0.0"
+    try:
+        TOOL_VERSION = pkg_version("mcp-sentinel-scanner")
+    except PackageNotFoundError:  # pragma: no cover
+        TOOL_VERSION = "dev"
 
     @staticmethod
     def generate(result: ScanResult, source_root: str = ".") -> str:
         """Generate SARIF format report."""
+        base_uri = SARIFReporter._normalize_base_uri(source_root)
         sarif_report: Dict[str, Any] = {
             "version": SARIFReporter.SARIF_VERSION,
             "$schema": f"https://json.schemastore.org/sarif-{SARIFReporter.SARIF_VERSION}.json",
@@ -30,6 +36,9 @@ class SARIFReporter:
                             "informationUri": "https://github.com/mcp-security/mcp-sentinel-scanner",  # noqa: E501
                             "rules": SARIFReporter._generate_rules(result),
                         }
+                    },
+                    "originalUriBaseIds": {
+                        "%SRCROOT%": {"uri": base_uri},
                     },
                     "results": SARIFReporter._generate_results(result, source_root),
                     "columnKind": "utf16CodeUnits",
@@ -47,6 +56,45 @@ class SARIFReporter:
         }
 
         return json.dumps(sarif_report, indent=2)
+
+    @staticmethod
+    def _normalize_base_uri(source_root: str) -> str:
+        """
+        Create a stable base URI for %SRCROOT%.
+
+        Use a file:// URI when possible (absolute paths). Otherwise fall back to the string as-is.
+        """
+        try:
+            p = Path(source_root).expanduser().resolve()
+            # Ensure trailing slash for base URIs
+            return p.as_uri().rstrip("/") + "/"
+        except Exception:
+            normalized = str(source_root).replace("\\", "/").rstrip("/") + "/"
+            return normalized
+
+    @staticmethod
+    def _to_sarif_uri(file_path: str, source_root: str) -> Tuple[str, str | None]:
+        """
+        Convert a finding file path to a SARIF artifactLocation uri.
+
+        Prefer paths relative to source_root with uriBaseId=%SRCROOT%.
+        """
+        try:
+            root = Path(source_root).expanduser().resolve()
+            p = Path(file_path).expanduser()
+            if p.is_absolute():
+                p = p.resolve()
+            else:
+                # keep relative paths as-is
+                return p.as_posix(), "%SRCROOT%"
+
+            try:
+                rel = p.relative_to(root)
+                return rel.as_posix(), "%SRCROOT%"
+            except ValueError:
+                return p.as_posix(), None
+        except Exception:
+            return str(file_path).replace("\\", "/"), None
 
     @staticmethod
     def _generate_rules(result: ScanResult) -> list:
@@ -89,6 +137,11 @@ class SARIFReporter:
         }
 
         for finding in result.findings:
+            uri, uri_base_id = SARIFReporter._to_sarif_uri(finding.file_path, source_root)
+            artifact_location: Dict[str, Any] = {"uri": uri}
+            if uri_base_id:
+                artifact_location["uriBaseId"] = uri_base_id
+
             sarif_result = {
                 "ruleId": finding.category,
                 "level": severity_map.get(finding.severity, "warning"),
@@ -97,8 +150,7 @@ class SARIFReporter:
                     {
                         "physicalLocation": {
                             "artifactLocation": {
-                                "uri": finding.file_path,
-                                "uriBaseId": "%SRCROOT%",
+                                **artifact_location,
                             },
                             "region": {
                                 "startLine": finding.line_number,

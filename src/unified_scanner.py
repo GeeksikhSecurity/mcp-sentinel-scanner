@@ -99,8 +99,8 @@ class UnifiedScanner:
         self, findings: List[VulnerabilityFinding]
     ) -> List[VulnerabilityFinding]:
         """Apply false positive reduction."""
-        # Only apply FP reduction if explicitly enabled
-        if not self.config.get("falsePositives", {}).get("enabled", False):
+        # Apply context-based FP reduction by default (can be disabled explicitly).
+        if not self.config.get("falsePositives", {}).get("enabled", True):
             return findings
 
         # First pass: context-based filtering

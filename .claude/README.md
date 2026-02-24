@@ -1,267 +1,405 @@
-# Claude Code Configuration for MCP Sentinel Scanner
+# Claude Configuration for Security Scanner Project
 
-This directory contains custom rules, prompts, and workflows for Claude Code to effectively work with the MCP Sentinel Scanner security analysis tool.
+This directory contains custom rules, prompts, and settings for Claude Code to ensure consistent, high-quality documentation following the **Ogawa Coffee-Inspired Documentation Framework**.
 
-## Files
+---
 
-### `.claude_code_rules`
-Main configuration file defining:
-- Project context and permissions
-- False positive elimination strategies
-- Debugging and refactoring workflows
-- Security analysis procedures
-- Testing requirements
-- Git workflow conventions
+## Files in This Directory
 
-### `prompts/security_analysis.md`
-Pre-written prompts for common security analysis tasks:
-- False positive investigation
-- Custom security rule creation
-- Systematic false positive reduction
-- Workflow debugging
-- Performance optimization
-- MCP-specific pattern addition
-- Pre-commit security checks
+### [claude.md](claude.md)
+**Purpose:** Custom rules defining documentation standards for this project
+
+**What it contains:**
+- The "Complete Gift" philosophy
+- Four Facets Framework (Data, Structure, Meaning, Context)
+- Knowledge → Skills → Wisdom progression methodology
+- Documentation templates and patterns
+- Quality checklists and metrics
+
+**When Claude uses it:** Automatically loaded for all sessions in this project
+
+### [prompts/enhance-documentation.md](prompts/enhance-documentation.md)
+**Purpose:** Step-by-step prompt for documentation enhancement tasks
+
+**What it contains:**
+- Analysis phase (assess current state)
+- Enhancement plan template
+- Execution steps with examples
+- Validation checklist
+- Summary report format
+
+**How to use it:**
+```
+/enhance-documentation <filename>
+```
+
+### [settings.local.json](settings.local.json)
+**Purpose:** Project-specific permissions and configurations
+
+**What it contains:**
+- Pre-approved git commands for documentation commits
+- Custom commit message templates
+- Tool permissions
+
+---
 
 ## Quick Start
 
-### Run Security Analysis
-```bash
-# Use the security analysis prompt
-claude code --prompt "$(cat .claude/prompts/security_analysis.md | sed -n '/^## False Positive Investigation/,/^##/p')"
+### For Documentation Enhancement
+
+1. **Analyze existing documentation:**
+   ```
+   Claude, analyze docs/EXAMPLE.md using the documentation framework
+   ```
+
+2. **Enhance a document:**
+   ```
+   Claude, enhance docs/EXAMPLE.md following the Ogawa Coffee methodology
+   ```
+
+3. **Create new documentation:**
+   ```
+   Claude, create a new guide for [topic] using our documentation standards
+   ```
+
+### For Commit Messages
+
+The pre-approved commit message template follows this format:
+
+```
+docs: [Enhancement type] using Ogawa Coffee methodology
+
+[Brief description]
+
+## Enhancements
+
+- **Four Facets**: [improvements]
+- **Learning Progression**: [additions]
+- **Anticipatory Design**: [FAQ, matrices added]
+
+## Impact
+
+- Documentation Health Score: [before] → [after]
+- User coverage: [journeys supported]
+
+## Framework Applied
+
+Based on Ogawa Coffee FAQ excellence:
+https://www.oc-ogawa.co.jp/contact/faq/
+
+🤖 Generated with Claude Code (https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-### Eliminate False Positives
-```bash
-# Run systematic reduction
-python -m scripts.sentinel_cli . --config configs/ci_config.json --format json -o scan.json
+---
 
-# Analyze findings
-claude code --prompt "Analyze scan.json for false positives following .claude_code_rules"
+## Documentation Standards Summary
+
+### Every Guide Must Have
+
+✅ **Metadata header** (time, difficulty, last updated)
+✅ **Learning outcomes** (Knowledge → Skills → Wisdom)
+✅ **Prerequisites with context** (why needed, how to verify)
+✅ **"Why this matters"** for each major section
+✅ **Expected results** and success criteria
+✅ **Common issues** with solutions
+✅ **Troubleshooting FAQ** (anticipatory)
+✅ **Role-based next steps** (where to go from here)
+
+### Four Facets Coverage Required
+
+| Facet | What to Include | Target |
+|-------|-----------------|--------|
+| **Data** | Commands, specs, benchmarks | >80% |
+| **Structure** | Steps, checklists, matrices | >80% |
+| **Meaning** | Definitions, examples, comparisons | >80% |
+| **Context** | Why, when, who, where | >80% |
+
+### Target Metrics
+
+- **Documentation Health Score:** >90/100
+- **Time to first success:** <10 minutes for Quick Starts
+- **Support ticket reduction:** -40% target
+- **Task completion rate:** >85% target
+
+---
+
+## Framework Principles
+
+### The "Complete Gift" Philosophy
+
+Every piece of documentation should be a **complete gift** - nothing missing:
+
+1. **Anticipatory Completeness** - Answer questions users haven't asked yet
+2. **Multi-Modal Learning** - Text + diagrams + examples + tables
+3. **Safety Without Patronizing** - Context-aware warnings
+4. **Nothing Missing** - Every section has: answer + rationale + next steps
+
+### Knowledge → Skills → Wisdom
+
+Structure content in three levels:
+
+- **Level 1 (Knowledge):** Commands, syntax → User can repeat facts
+- **Level 2 (Skills):** Examples, troubleshooting → User can execute tasks
+- **Level 3 (Wisdom):** Decision matrices, role paths → User can choose wisely
+
+### Four Facets Framework
+
+All documentation covers:
+
+- **Data:** What (commands, specs, numbers)
+- **Structure:** How (steps, hierarchy, organization)
+- **Meaning:** Which (definitions, examples, clarifications)
+- **Context:** Why/When/Who/Where (rationale, timing, audience, location)
+
+---
+
+## Examples
+
+### Bad Documentation (Before)
+
+```markdown
+## Installation
+
+\```bash
+npm install security-scanner
+\```
 ```
 
-### Add Custom Security Rule
-```bash
-claude code --prompt "Create a custom security rule for {{vulnerability_type}} following .claude/prompts/security_analysis.md"
+**Issues:**
+- ❌ No context (why)
+- ❌ No verification (success criteria)
+- ❌ No troubleshooting (common issues)
+- ❌ No next steps (where to go)
+
+### Good Documentation (After)
+
+```markdown
+## 🚀 Installation
+
+### Step 1: Install the Package
+
+**Why this step matters:** Installing the package gives you access to all security scanning tools and their latest security rules.
+
+\```bash
+# Install via npm (takes ~30 seconds)
+npm install -g security-scanner
+
+# Verify installation
+security-scanner --version
+\```
+
+**Expected result:** You should see version 1.0.0 or higher.
+
+**Common issues:**
+
+- **"Permission denied"** → Use `sudo npm install -g` or fix npm permissions
+- **"Command not found"** → Add npm global bin to PATH
+
+**Why this works:** The `-g` flag installs globally, making the command available system-wide.
+
+**Next steps:** Continue to [Your First Scan](#your-first-scan) to verify the installation.
 ```
 
-## Key Principles
+**Improvements:**
+- ✅ Context provided (why this matters)
+- ✅ Success criteria clear (expected result)
+- ✅ Troubleshooting included (common issues)
+- ✅ Next steps explicit (where to go)
 
-### 1. False Positive Awareness
-The scanner can detect its own pattern definitions. Use these strategies:
+---
 
-**String Concatenation:**
-```python
-# Instead of:
-SINKS = {"pickle.loads", "yaml.load"}
+## Usage Patterns
 
-# Use:
-SINKS = {"pickle." + "loads", "yaml." + "load"}
+### Pattern 1: Quick Enhancement
+
+**User request:**
+> "Add troubleshooting section to README.md"
+
+**Claude response:**
+1. Reads README.md
+2. Applies FAQ methodology from claude.md
+3. Creates 5-8 anticipatory Q&A entries
+4. Each follows: Question → Answer → Why → Solution → Why it works → Still stuck?
+
+### Pattern 2: Complete Transformation
+
+**User request:**
+> "Transform this basic guide into an Ogawa Coffee-level experience"
+
+**Claude response:**
+1. Analyzes current state (Four Facets assessment)
+2. Calculates Documentation Health Score
+3. Creates enhancement plan
+4. Applies all principles systematically
+5. Validates with checklist
+6. Provides before/after metrics
+
+### Pattern 3: New Documentation
+
+**User request:**
+> "Create a deployment guide"
+
+**Claude response:**
+1. Uses templates from claude.md
+2. Structures with Knowledge → Skills → Wisdom
+3. Includes all required sections
+4. Adds role-based paths (DevOps, SRE, Developer)
+5. Creates decision matrices (deployment options)
+6. Adds visual diagrams (architecture)
+
+---
+
+## Customization
+
+### For Other Projects
+
+To use this framework in other projects:
+
+1. **Copy the framework files:**
+   ```bash
+   cp -r .claude/ /path/to/other/project/
+   ```
+
+2. **Customize claude.md:**
+   - Update project-specific context
+   - Adjust documentation priorities
+   - Add domain-specific patterns
+
+3. **Update settings.local.json:**
+   - Modify commit message template
+   - Add project-specific permissions
+
+### For Different Documentation Types
+
+- **API docs:** Emphasize examples for every endpoint
+- **Architecture docs:** Emphasize visual diagrams
+- **Tutorials:** Emphasize hands-on practice
+- **Reference:** Emphasize completeness and searchability
+
+---
+
+## Quality Assurance
+
+### Before Committing Documentation
+
+Run this checklist:
+
+```markdown
+## Documentation Enhancement Checklist
+
+### Four Facets Coverage
+- [ ] Data: Commands, specs, benchmarks documented
+- [ ] Structure: Clear hierarchy, steps, checklists
+- [ ] Meaning: Terms defined, examples provided
+- [ ] Context: Why/when/who/where answered
+
+### Learning Progression
+- [ ] Knowledge: Basic facts included
+- [ ] Skills: Practical examples provided
+- [ ] Wisdom: Decision guidance added
+
+### Ogawa Coffee Principles
+- [ ] Anticipatory: FAQ with unasked questions
+- [ ] Multi-Modal: Text + diagrams + examples
+- [ ] Safe: Contextual warnings included
+- [ ] Complete: No dead ends
+
+### Quality Metrics
+- [ ] Time estimate provided
+- [ ] Difficulty level marked
+- [ ] Success criteria clear
+- [ ] Common issues addressed (5+)
+- [ ] Next steps explicit
+
+### Documentation Health Score: __/100
+Target: >90/100
 ```
 
-**Exclusions:**
-```json
-// In configs/ci_config.json
-{
-  "exclude": ["tests/", "vulnerable_test"]
-}
-```
+---
 
-**Comments:**
-```python
-# nosec: B403 - This is a pattern definition, not actual code
-DANGEROUS_FUNCTIONS = {"eval", "exec"}
-```
+## References
 
-### 2. Test Code vs Production Code
-- Test files (`tests/`) intentionally contain vulnerable code
-- Exclude from CRITICAL blocking in CI/CD
-- Production code (`src/`) must have 0 CRITICAL findings
+### Primary Inspirations
 
-### 3. Security-First Development
-- All production code changes must pass security scan
-- 96%+ test coverage for core modules
-- SARIF upload to GitHub Security for visibility
-- Custom rules for MCP-specific threats
+1. **Ogawa Coffee FAQ**
+   - URL: https://www.oc-ogawa.co.jp/contact/faq/
+   - Excellence: Anticipatory design, complete answers
 
-## Workflows
+2. **Skiller Whale Training**
+   - Framework: Knowledge → Skills → Wisdom
+   - Excellence: Granular assessment, context-aware teaching
 
-### Debugging Workflow
-1. Analyze: Read files and understand state
-2. Reproduce: Create minimal test case
-3. Diagnose: Identify root cause
-4. Propose: Suggest 2-3 solutions
-5. Implement: Apply least invasive fix
-6. Verify: Run full test suite
-7. Document: Update comments/docs
+3. **Technical Documentation Standards**
+   - Framework: Four Facets (Data, Structure, Meaning, Context)
+   - Excellence: Complete coverage methodology
 
-### Security Analysis Workflow
-1. Scan: Run with CI config
-2. Review: Check CRITICAL findings
-3. Categorize: Real vs false positive
-4. Fix: Refactor real vulnerabilities
-5. Suppress: Handle false positives
-6. Validate: Re-scan for 0 CRITICAL
-7. Document: Add to patterns
+### Example Documentation
 
-### Refactoring Workflow
-1. Scope: Define what and why
-2. Branch: Create feature branch
-3. Backup: Ensure clean working tree
-4. Incremental: Small changes with tests
-5. Coverage: Maintain 96%+ coverage
-6. Performance: Verify 57+ files/sec
-7. Document: Update public API docs
+See these files for framework application examples:
 
-## Common Commands
+- [QUICK_START.md](../QUICK_START.md) - Complete learning experience (964 lines)
+- [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) - Visual system documentation (1,533 lines)
+- [docs/QUICK_START_ENHANCEMENT_SUMMARY.md](../docs/QUICK_START_ENHANCEMENT_SUMMARY.md) - Methodology explanation
 
-### Security Scanning
-```bash
-# Full scan
-python -m scripts.sentinel_cli . --config configs/ci_config.json
+---
 
-# CRITICAL only
-python -m scripts.sentinel_cli . --config configs/ci_config.json --severity CRITICAL
+## Getting Help
 
-# SARIF output
-python -m scripts.sentinel_cli . --config configs/ci_config.json --format sarif -o results.sarif
+### Documentation Issues
 
-# HTML report
-python -m scripts.sentinel_cli . --config configs/ci_config.json --format html -o report.html
-```
+If documentation doesn't meet standards:
 
-### Testing
-```bash
-# All tests
-pytest tests/ -v
+1. **Assess the gap:** Which facet is missing? (Data/Structure/Meaning/Context)
+2. **Check claude.md:** Find the relevant template or pattern
+3. **Apply systematically:** Use the enhancement checklist
+4. **Validate:** Run through quality metrics
 
-# With coverage
-pytest tests/ -v --cov=src --cov-report=term-missing
+### Claude Behavior Issues
 
-# Specific test
-pytest tests/test_scanner.py::test_name -v
+If Claude isn't following the framework:
 
-# Watch mode
-pytest tests/ -v --looponfail
-```
+1. **Reference claude.md explicitly:**
+   ```
+   Claude, apply the principles from .claude/claude.md to enhance this doc
+   ```
 
-### Analysis
-```bash
-# Check for secrets
-grep -r "api_key\|secret\|password" src/ tests/
+2. **Use the enhancement prompt:**
+   ```
+   Follow the process in .claude/prompts/enhance-documentation.md
+   ```
 
-# Count false positive suppressions
-grep -r "# nosec" src/ | wc -l
+3. **Provide examples:**
+   ```
+   Enhance this section like you did in QUICK_START.md lines 73-140
+   ```
 
-# Validate JSON configs
-jq '.' configs/ci_config.json
-jq '.' configs/security_rules.json
-```
+---
 
-## Custom Rules Integration
+## Continuous Improvement
 
-### Adding a New Rule
-1. Define in `configs/security_rules.json`:
-```json
-{
-  "id": "mcp-new-rule",
-  "name": "Description",
-  "severity": "HIGH",
-  "category": "category_type",
-  "pattern": "regex_pattern",
-  "description": "What it detects",
-  "cwe": "CWE-XXX",
-  "recommendation": "How to fix"
-}
-```
+### Updating the Framework
 
-2. Test the pattern:
-```python
-import re
-pattern = re.compile(r"regex_pattern")
-# Test against positive cases (should match)
-# Test against negative cases (should NOT match)
-```
+When you discover new patterns or improvements:
 
-3. Add test case:
-```python
-# tests/unit/test_custom_rules.py
-def test_new_rule_detection():
-    scanner = MCPSentinelScanner()
-    # Add test code
-```
+1. **Document in claude.md:** Add to relevant section
+2. **Create example:** Show before/after
+3. **Update checklist:** Add validation item
+4. **Share learning:** Update this README
 
-4. Scan and validate:
-```bash
-python -m scripts.sentinel_cli . --config configs/production_config.json
-```
+### Measuring Impact
 
-## False Positive Patterns
+Track these metrics over time:
 
-### Pattern Definitions
-**Problem:** Scanner detects its own detection patterns
-**Solution:** String concatenation
-```python
-SINKS = {"pickle." + "loads"}  # Not detected as vulnerability
-```
+- **Documentation Health Scores** (target: all >90/100)
+- **Support ticket trends** (target: -40% reduction)
+- **User feedback** (target: 8+/10 satisfaction)
+- **Time to first success** (target: <10 min for guides)
 
-### Test Code
-**Problem:** Intentional vulnerable code in tests
-**Solution:** Exclusion
-```json
-{"exclude": ["tests/", "vulnerable_test"]}
-```
+---
 
-### Safe Usage
-**Problem:** Pattern used safely in specific context
-**Solution:** Comment
-```python
-result = eval(expr)  # nosec: B307 - Controlled environment with validated input
-```
-
-## Performance Targets
-
-- **Scan Speed:** 57+ files/second
-- **Test Coverage:** 96%+ for core modules
-- **Test Count:** 52+ tests
-- **False Positive Rate:** 0% in production code
-- **ASR Score:** Accurate severity assessment
-
-## CI/CD Integration
-
-### GitHub Actions Workflows
-- **CI:** Test across Python 3.9-3.12
-- **Security Scan:** Self-scan with SARIF upload
-
-### Success Criteria
-- All tests pass (52/52)
-- 0 CRITICAL in production code
-- Coverage >= 96%
-- SARIF validation passes
-- Workflows complete successfully
-
-## Best Practices
-
-1. **Always follow .claude_code_rules** for permissions and workflows
-2. **Test incrementally** after each change
-3. **Maintain coverage** at 96%+ for core modules
-4. **Document false positives** in config with explanations
-5. **Use prompts/** templates for consistency
-6. **Verify SARIF** generation before committing
-7. **Check self-scan** passes before pushing
-8. **Review # nosec** usage - should be minimal and justified
-
-## Resources
-
-- [SECURITY.md](../SECURITY.md) - Vulnerability disclosure policy
-- [VISUAL_GUIDE.md](../VISUAL_GUIDE.md) - ASCII architecture diagrams
-- [configs/security_rules.json](../configs/security_rules.json) - Custom detection rules
-- [configs/ci_config.json](../configs/ci_config.json) - CI/CD scan configuration
-
-## Support
-
-For issues with Claude Code configuration:
-1. Check `.claude_code_rules` for current settings
-2. Review `prompts/security_analysis.md` for examples
-3. Consult [Claude Code documentation](https://docs.claude.com/claude-code)
-4. Open GitHub issue with `claude-config` label
+**Maintained by:** Security Scanner Documentation Team
+**Questions?** See [DOCUMENTATION_COMMIT_SUMMARY.md](../docs/DOCUMENTATION_COMMIT_SUMMARY.md)
+**Framework Version:** 1.0
+**Last Updated:** November 11, 2025

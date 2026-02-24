@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 
 @dataclass
-class TestResult:
+class ScanTestResult:
     id: str
     name: str
     status: str  # 'pass', 'fail', 'flaky'
@@ -41,10 +41,10 @@ class FlakyTestManager:
     
     def __init__(self, config: FlakyTestConfig):
         self.config = config
-        self.test_history: Dict[str, List[TestResult]] = {}
+        self.test_history: Dict[str, List[ScanTestResult]] = {}
         self.quarantined_tests: Set[str] = set()
     
-    def detect_flaky_tests(self, test_results: List[TestResult]) -> List[str]:
+    def detect_flaky_tests(self, test_results: List[ScanTestResult]) -> List[str]:
         """Detect flaky tests using statistical analysis"""
         flaky_tests = []
         
@@ -57,7 +57,7 @@ class FlakyTestManager:
         
         return flaky_tests
     
-    async def execute_with_retry(self, test_fn, test_name: str) -> TestResult:
+    async def execute_with_retry(self, test_fn, test_name: str) -> ScanTestResult:
         """Execute test with retry strategy for reliability"""
         last_result = None
         
@@ -89,7 +89,7 @@ class FlakyTestManager:
         """Check if test should be executed (not quarantined)"""
         return test_name not in self.quarantined_tests
     
-    def add_test_result(self, result: TestResult) -> None:
+    def add_test_result(self, result: ScanTestResult) -> None:
         """Add test result to history for flakiness analysis"""
         if result.name not in self.test_history:
             self.test_history[result.name] = []
@@ -115,7 +115,7 @@ class FlakyTestManager:
             return True
         return False
     
-    def _is_test_flaky(self, history: List[TestResult]) -> bool:
+    def _is_test_flaky(self, history: List[ScanTestResult]) -> bool:
         """Analyze test history to determine if it's flaky"""
         if len(history) < 5:
             return False
@@ -146,7 +146,7 @@ class ReliableSecurityScanner:
         
         async def security_test():
             result = self.scanner.scan(target)
-            return TestResult(
+            return ScanTestResult(
                 id=f"scan_{int(time.time())}",
                 name="security_scan",
                 status='pass' if result.summary.vulnerabilities_found == 0 else 'fail',

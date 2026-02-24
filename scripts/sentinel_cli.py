@@ -28,6 +28,13 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("target", help="Target directory or file to scan")
     parser.add_argument("-c", "--config", help="Configuration file path")
+    parser.add_argument(
+        "--exclude",
+        action="append",
+        nargs="+",
+        default=[],
+        help="Exclude paths/patterns (repeatable). Examples: --exclude node_modules dist \"*.d.ts\"",
+    )
     parser.add_argument("-o", "--output", help="Output file for scan report")
     parser.add_argument(
         "-f",
@@ -126,6 +133,17 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # pragma: no cover - defensive
         print(f"Failed to load configuration: {exc}", file=sys.stderr)
         return 2
+
+    # Merge CLI excludes into config (config values first, then CLI additions).
+    cli_excludes = [item for group in (args.exclude or []) for item in group]
+    if cli_excludes:
+        config_excludes = list(config.get("exclude", []) or [])
+        # Preserve order, avoid duplicates.
+        merged = []
+        for value in config_excludes + cli_excludes:
+            if value not in merged:
+                merged.append(value)
+        config["exclude"] = merged
 
     if args.unified:
         scanner = UnifiedScanner(config=config)

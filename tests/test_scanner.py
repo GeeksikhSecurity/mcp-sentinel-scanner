@@ -5,9 +5,12 @@ import pytest
 
 from src import MCPSentinelScanner
 
+# Config with FP reduction disabled so tests that assert on findings get them
+_TEST_CONFIG = json.loads(Path("configs/test_config.json").read_text())
+
 
 def test_scan_detects_expected_categories():
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner(config=_TEST_CONFIG)
     result = scanner.scan(Path("tests"))
 
     categories = {finding.category for finding in result.findings}
@@ -45,7 +48,7 @@ def runner(cmd):
 """
     )
 
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner(config=_TEST_CONFIG)
     result = scanner.scan(sample)
 
     categories = {finding.category for finding in result.findings}
@@ -57,7 +60,7 @@ def runner(cmd):
 
 
 def test_advanced_detection_identifies_semantic_issues():
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner(config=_TEST_CONFIG)
     result = scanner.scan(Path("tests") / "vulnerable_test.py")
 
     advanced_categories = {finding.category for finding in result.advanced_findings}
@@ -70,9 +73,36 @@ def test_advanced_detection_identifies_semantic_issues():
         assert finding.file_path.endswith("vulnerable_test.py")
 
 
+def test_scanner_regression_fixtures():
+    """Regression: fixtures under tests/fixtures/scanner_regression lock in expected findings."""
+    fixtures_dir = Path("tests/fixtures/scanner_regression")
+    if not fixtures_dir.exists():
+        pytest.skip("scanner_regression fixtures not present")
+
+    scanner = MCPSentinelScanner(config=_TEST_CONFIG)
+    result = scanner.scan(fixtures_dir)
+
+    categories = {f.category for f in result.findings}
+    by_file = {}
+    for f in result.findings:
+        by_file.setdefault(Path(f.file_path).name, []).append(f.category)
+
+    # command_injection_fixture.py -> command_injection
+    if "command_injection_fixture.py" in by_file:
+        assert "command_injection" in by_file["command_injection_fixture.py"]
+
+    # hardcoded_secret_fixture.py -> hardcoded_secret (quoted value)
+    if "hardcoded_secret_fixture.py" in by_file:
+        assert "hardcoded_secret" in by_file["hardcoded_secret_fixture.py"]
+
+    # fp_negative_fixture.py -> no hardcoded_secret (variable names only)
+    if "fp_negative_fixture.py" in by_file:
+        assert "hardcoded_secret" not in by_file["fp_negative_fixture.py"]
+
+
 @pytest.mark.parametrize("output_format", ["json", "markdown"])
 def test_report_serialisers(output_format: str):
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner(config=_TEST_CONFIG)
     result = scanner.scan(Path("tests"))
 
     if output_format == "json":

@@ -1,0 +1,99 @@
+{
+  "version": 2,
+  "description": "Repo corpus manifest for regression testing. smoke=local fixtures, full=local+optional, nightly=remote GitHub (clone on demand). Prefer pinned commit SHAs for CI.",
+  "repos": [
+    {
+      "id": "fixture-mcp-servers",
+      "tier": "smoke",
+      "local_path": "tests/fixtures/repo_corpus/mcp-servers",
+      "unified": true,
+      "timeout_sec": 300,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "fixture-mcp-typescript",
+      "tier": "smoke",
+      "local_path": "tests/fixtures/repo_corpus/mcp-typescript",
+      "unified": true,
+      "timeout_sec": 300,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "local-fastmcp",
+      "tier": "full",
+      "local_path": "test_repos/fastmcp",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc", ".venv", "venv"]
+    },
+    {
+      "id": "local-mcp-python",
+      "tier": "full",
+      "local_path": "test_repos/mcp-python",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc", ".venv", "venv"]
+    },
+    {
+      "id": "local-mcp-typescript",
+      "tier": "full",
+      "local_path": "test_repos/mcp-typescript",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "local-mcp-servers",
+      "tier": "full",
+      "local_path": "test_repos/mcp-servers",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "local-mcp-use",
+      "tier": "full",
+      "local_path": "test_repos/mcp-use",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc", ".venv", "venv"]
+    },
+    {
+      "id": "local-mcp-quickstart",
+      "tier": "full",
+      "local_path": "test_repos/mcp-quickstart",
+      "unified": true,
+      "timeout_sec": 300,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc"]
+    },
+    {
+      "id": "modelcontextprotocol-servers",
+      "tier": "nightly",
+      "url": "https://github.com/modelcontextprotocol/servers.git",
+      "ref": "main",
+      "unified": true,
+      "timeout_sec": 900,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "modelcontextprotocol-python-sdk",
+      "tier": "nightly",
+      "url": "https://github.com/modelcontextprotocol/python-sdk.git",
+      "ref": "main",
+      "unified": true,
+      "timeout_sec": 900,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "modelcontextprotocol-typescript-sdk",
+      "tier": "nightly",
+      "url": "https://github.com/modelcontextprotocol/typescript-sdk.git",
+      "ref": "main",
+      "unified": true,
+      "timeout_sec": 900,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    }
+  ]
+}
+
+

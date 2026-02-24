@@ -2,7 +2,7 @@
 
 import pytest
 from datetime import datetime
-from src.test_reliability import FlakyTestManager, FlakyTestConfig, TestResult
+from src.test_reliability import FlakyTestManager, FlakyTestConfig, ScanTestResult
 
 
 class TestFlakyTestManager:
@@ -32,7 +32,7 @@ class TestFlakyTestManager:
         # Add mixed pass/fail results
         for i in range(10):
             status = 'pass' if i % 2 == 0 else 'fail'
-            result = TestResult(
+            result = ScanTestResult(
                 id=f"test_{i}",
                 name="mixed_test",
                 status=status,
@@ -50,7 +50,7 @@ class TestFlakyTestManager:
     def test_stable_test_not_detected_as_flaky(self):
         # Add only passing results
         for i in range(10):
-            result = TestResult(
+            result = ScanTestResult(
                 id=f"test_{i}",
                 name="stable_test",
                 status='pass',

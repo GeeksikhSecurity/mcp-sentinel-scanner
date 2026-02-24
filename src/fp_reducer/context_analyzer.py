@@ -20,6 +20,11 @@ class ContextAnalyzer:
 
     TEST_PREFIXES = ["MOCK_", "TEST_", "EXAMPLE_", "SAMPLE_", "FIXTURE_", "DEMO_"]
 
+    _IMPORT_PATTERNS = [
+        re.compile(r"^\s*(import|from|require|#include)"),
+        re.compile(r"^\s*import\s+.*from\s+['\"].*['\"]"),
+    ]
+
     def is_likely_false_positive(
         self, finding: VulnerabilityFinding, file_content: Optional[str] = None
     ) -> bool:
@@ -40,8 +45,16 @@ class ContextAnalyzer:
         if finding.category == "path_traversal" and not self._is_dangerous_path_context(finding.code_snippet):
             return True
 
-        # Check surrounding context if available
-        if file_content and self._is_test_context(finding, file_content):
+        # Check surrounding context if available.
+        #
+        # Important: this heuristic is most reliable for secrets/credentials where tests frequently embed
+        # dummy values. Applying it broadly can suppress legitimate findings (e.g., package.json often
+        # contains the word "test").
+        if (
+            file_content
+            and finding.category == "hardcoded_secret"
+            and self._is_test_context(finding, file_content)
+        ):
             return True
 
         # Check for nosec comments
@@ -57,17 +70,46 @@ class ContextAnalyzer:
     def _is_test_file(self, file_path: str) -> bool:
         """Check if file is a test file."""
         path = Path(file_path)
-        path_str = str(path).lower()
+        name_lower = path.name.lower()
+        parts_lower = [part.lower() for part in path.parts]
 
-        # Aggressive test file detection
-        test_indicators = [
-            ".test.", ".spec.", "_test.", "_spec.",
-            "__tests__", "__mocks__", "/test/", "/tests/",
-            ".stories.", "storybook/", "test_", "spec_",
-            "testing/", "fixtures/", "examples/", "demo/"
-        ]
+        # Directory-based signals (match exact path components, not substrings).
+        # This avoids treating pytest temp directories like "test_react_project_scan0" as tests.
+        test_dirs = {
+            "test",
+            "tests",
+            "__tests__",
+            "__mocks__",
+            "spec",
+            "specs",
+            "fixtures",
+            "examples",
+            "demo",
+            "storybook",
+            "stories",
+            "testing",
+        }
+        if any(part in test_dirs for part in parts_lower):
+            return True
 
-        return any(indicator in path_str for indicator in test_indicators)
+        # Filename-based signals.
+        file_markers = (
+            ".test.",
+            ".spec.",
+            ".stories.",
+            "_test.",
+            "_spec.",
+        )
+        if any(marker in name_lower for marker in file_markers):
+            return True
+
+        # Common Python test naming conventions.
+        if name_lower.startswith("test_") and name_lower.endswith(".py"):
+            return True
+        if name_lower.endswith("_test.py"):
+            return True
+
+        return False
 
     def _has_test_prefix(self, code_snippet: str) -> bool:
         """Check if code has test-related prefixes."""
@@ -75,12 +117,7 @@ class ContextAnalyzer:
 
     def _is_import_statement(self, code_snippet: str) -> bool:
         """Check if code snippet is an import statement."""
-        # Aggressive import detection - any line starting with import/from/require
-        import_patterns = [
-            re.compile(r"^\s*(import|from|require|#include)"),
-            re.compile(r"^\s*import\s+.*from\s+['\"].*['\"]")
-        ]
-        return any(pattern.match(code_snippet.strip()) for pattern in import_patterns)
+        return any(pattern.match(code_snippet.strip()) for pattern in self._IMPORT_PATTERNS)
     
     def _is_dangerous_path_context(self, code_snippet: str) -> bool:
         """Check if path traversal is in a dangerous context."""

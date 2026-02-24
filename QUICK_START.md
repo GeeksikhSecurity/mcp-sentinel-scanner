@@ -128,6 +128,40 @@ mcp-scan /path --config config.json
 
 ---
 
+## 🔌 Optional Tools and Deep Scan
+
+MCP Sentinel Scanner works without external dependencies. Optional tools strengthen coverage when installed and enabled.
+
+### Optional External Tools
+
+Enable external tool adapters in `config.json` after installing them locally:
+
+```json
+{
+  "tools": {
+    "semgrep": { "enabled": true, "rules": ["auto"] },
+    "truffleHog": { "enabled": true }
+  }
+}
+```
+
+Run the unified scanner:
+```bash
+mcp-scan /path --unified --config config.json
+```
+
+If a tool is enabled but not installed, the scanner will continue and skip that tool.
+
+### Advanced Detection (Opt-In)
+
+Enable deeper semantic checks only when you need them:
+
+```bash
+mcp-scan /path --deep-scan
+```
+
+---
+
 ## 🎯 Example Config
 
 Create `config.json`:

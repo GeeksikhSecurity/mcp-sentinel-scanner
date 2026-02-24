@@ -95,6 +95,19 @@ build: clean
 release: build
 	twine upload dist/*
 
+# Repo corpus (regression / nightly)
+corpus-smoke:
+	PYTHONPATH=. python3 scripts/run_repo_corpus.py --tier smoke --output-dir reports/repo_corpus
+	@echo "Corpus smoke complete: reports/repo_corpus/"
+
+corpus-full:
+	PYTHONPATH=. python3 scripts/run_repo_corpus.py --tier full --output-dir reports/repo_corpus_full
+	@echo "Corpus full complete: reports/repo_corpus_full/"
+
+corpus-nightly:
+	PYTHONPATH=. python3 scripts/run_repo_corpus.py --tier nightly --output-dir reports/repo_corpus_nightly --cache-dir .cache/repo_corpus
+	@echo "Corpus nightly complete: reports/repo_corpus_nightly/ (requires network)"
+
 # Utilities
 scan-self:
 	python -m scripts.sentinel_cli . --format html -o self-scan-report.html

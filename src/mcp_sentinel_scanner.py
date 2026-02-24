@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import fnmatch
 import json
 import math
 import os
@@ -10,12 +11,15 @@ import queue
 import re
 import threading
 import time
-from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Sequence, Set, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple
 
 from .advanced_detection import AdvancedDetectionEngine, AdvancedFinding
 from .filters.false_positive_filter import apply_false_positive_filter
+from .types import ScanResult, ScanSummary, VulnerabilityFinding
+
+if TYPE_CHECKING:
+    from .fp_reducer.context_analyzer import ContextAnalyzer
 
 SUPPORTED_EXTENSIONS: Set[str] = {
     ".py",
@@ -45,38 +49,38 @@ SEVERITY_WEIGHTS: Dict[str, float] = {
 }
 
 
-@dataclass
-class VulnerabilityFinding:
-    severity: str
-    category: str
-    description: str
-    file_path: str
-    line_number: int
-    code_snippet: str
-    recommendation: str
-    cwe_id: Optional[str] = None
-    confidence: float = 0.5
-
-
-@dataclass
-class ScanSummary:
-    files_scanned: int
-    total_lines: int
-    scan_time: float
-    vulnerabilities_found: int
-    asr_score: float
-    severity_distribution: Dict[str, int] = field(default_factory=dict)
-
-
-@dataclass
-class ScanResult:
-    summary: ScanSummary
-    findings: List[VulnerabilityFinding]
-    advanced_findings: List[AdvancedFinding]
-
-
 class MCPSentinelScanner:
     """Main scanner orchestrating pattern, AST, and advanced analyses."""
+
+    # Class-level constants -- compiled once, shared across all instances.
+    _FP_INDICATORS: frozenset = frozenset([
+        # Variable/type patterns
+        "accesstoken", "refreshtoken", "apikey", "secretkey", "authkey",
+        "tokenvalue", "keyvalue", "secretvalue", "passwordvalue",
+        # Common SDK patterns
+        "sdkaccesstoken", "sdktoken", "_sdk", "gettoken", "getkey",
+        # Function/method patterns
+        "def ", "async def ", "class ", "import ", "from ",
+        # Type annotation patterns
+        ": str", ": string", ": optional", "| none", "-> ",
+        # Assignment to variable/function
+        "= get", "= fetch", "= load", "= read", "= retrieve",
+        "= none", "= null", "= undefined",
+    ])
+
+    _PLACEHOLDER_RE = re.compile(
+        r"(your[_-]|example[_-]|test[_-]|demo[_-]|sample[_-]|"
+        r"replace[_-]|insert[_-]|put[_-]|enter[_-]|change[_-]|"
+        r"xxx+|placeholder|dummy|fake|mock)",
+        re.IGNORECASE,
+    )
+
+    _SECRET_RE = re.compile(
+        r"(api[_-]?key|secret|token|password|auth[_-]?key|client[_-]?secret|"
+        r"private[_-]?key|access[_-]?token|refresh[_-]?token|bearer)"
+        r"[\s]*[:=][\s]*['\"]([A-Za-z0-9/+=_\-]{12,})['\"]",
+        re.IGNORECASE,
+    )
 
     def __init__(
         self,
@@ -87,9 +91,6 @@ class MCPSentinelScanner:
         self.parallel_workers = max(1, parallel_workers)
         self.advanced_engine = AdvancedDetectionEngine(self.config)
         self.patterns = self._load_default_patterns()
-        self.secret_regex = re.compile(
-            r"(api|secret|token|password|key)[\s:=]+['\"]?([A-Za-z0-9/+=_-]{12,})", re.IGNORECASE
-        )
 
     # region public API
     def scan(self, target: str | Path) -> ScanResult:
@@ -267,8 +268,52 @@ class MCPSentinelScanner:
         return paths
 
     def _is_excluded(self, path: str) -> bool:
-        exclusions = self.config.get("exclude", [])
-        return any(excl in path for excl in exclusions)
+        """
+        Check whether a path should be excluded.
+
+        Supports:
+        - Directory names (e.g., "node_modules") -> excludes if any path component matches
+        - Globs on basenames (e.g., "*.d.ts")
+        - Globs on paths (e.g., "dist/**", "**/*.min.js")
+        """
+        exclusions = self.config.get("exclude", []) or []
+        if not exclusions:
+            return False
+
+        p = Path(path)
+        parts_lower = [part.lower() for part in p.parts]
+        path_posix_lower = p.as_posix().lower()
+        basename_lower = p.name.lower()
+
+        for raw in exclusions:
+            if not raw:
+                continue
+            pattern = str(raw).strip()
+            if not pattern:
+                continue
+
+            pattern_lower = pattern.lower()
+
+            # Simple directory/file token (no glob chars, no separators): match any component
+            if not any(ch in pattern for ch in ["*", "?", "["]) and ("/" not in pattern) and (
+                os.sep not in pattern
+            ):
+                if pattern_lower in parts_lower:
+                    return True
+                continue
+
+            # Path globs: match against full posix path
+            if "/" in pattern or os.sep in pattern:
+                normalized = pattern.replace(os.sep, "/")
+                if fnmatch.fnmatch(path_posix_lower, normalized.lower()):
+                    return True
+                continue
+
+            # Basename globs: match file name only
+            if fnmatch.fnmatch(basename_lower, pattern_lower):
+                return True
+
+        return False
 
     def _scan_file(self, file_path: Path) -> Tuple[List[VulnerabilityFinding], int]:
         try:
@@ -282,36 +327,55 @@ class MCPSentinelScanner:
         findings.extend(self._secret_scan(file_path, lines))
         if file_path.suffix.lower() == ".py":
             findings.extend(self._ast_scan(file_path, text))
-        
-        # Apply false positive filtering
-        findings_dict = [{
-            'code_snippet': f.code_snippet,
-            'vulnerability_type': f.category,
-            'file_path': f.file_path,
-            'context': f.description,
-            'severity': f.severity,
-            'line_number': f.line_number,
-            'recommendation': f.recommendation,
-            'cwe_id': f.cwe_id,
-            'confidence': f.confidence
-        } for f in findings]
-        
-        filtered_findings_dict = apply_false_positive_filter(findings_dict)
-        
-        # Convert back to VulnerabilityFinding objects
-        filtered_findings = [VulnerabilityFinding(
-            severity=f['severity'],
-            category=f['vulnerability_type'],
-            description=f['context'],
-            file_path=f['file_path'],
-            line_number=f['line_number'],
-            code_snippet=f['code_snippet'],
-            recommendation=f['recommendation'],
-            cwe_id=f['cwe_id'],
-            confidence=f.get('confidence_score', f['confidence'])
-        ) for f in filtered_findings_dict]
-        
-        return filtered_findings, len(lines)
+
+        # Apply false positive reduction by default.  Disable explicitly via config
+        # {"falsePositives": {"enabled": false}}.
+        if self.config.get("falsePositives", {}).get("enabled", True):
+            # 1) Context-based filtering (safe for all categories)
+            # Lazy import to avoid circular dependency
+            from .fp_reducer.context_analyzer import ContextAnalyzer
+
+            context_analyzer = ContextAnalyzer()
+            findings = context_analyzer.filter_findings(findings)
+
+            # 2) Credential-focused filter: apply ONLY to hardcoded secrets
+            secret_findings = [f for f in findings if f.category == "hardcoded_secret"]
+            other_findings = [f for f in findings if f.category != "hardcoded_secret"]
+
+            if secret_findings:
+                secret_dicts = [
+                    {
+                        "code_snippet": f.code_snippet,
+                        "vulnerability_type": f.category,
+                        "file_path": f.file_path,
+                        "context": f.description,
+                        "severity": f.severity,
+                        "line_number": f.line_number,
+                        "recommendation": f.recommendation,
+                        "cwe_id": f.cwe_id,
+                        "confidence": f.confidence,
+                    }
+                    for f in secret_findings
+                ]
+                filtered_secret_dicts = apply_false_positive_filter(secret_dicts)
+
+                filtered_secrets = [
+                    VulnerabilityFinding(
+                        severity=item.get("severity", "LOW"),
+                        category=item.get("vulnerability_type", "hardcoded_secret"),
+                        description=item.get("context", ""),
+                        file_path=item.get("file_path", str(file_path)),
+                        line_number=int(item.get("line_number", 1)),
+                        code_snippet=item.get("code_snippet", ""),
+                        recommendation=item.get("recommendation", ""),
+                        cwe_id=item.get("cwe_id"),
+                        confidence=float(item.get("confidence_score", item.get("confidence", 0.5))),
+                    )
+                    for item in filtered_secret_dicts
+                ]
+                findings = other_findings + filtered_secrets
+
+        return findings, len(lines)
 
     def _pattern_scan(self, file_path: Path, lines: Sequence[str]) -> List[VulnerabilityFinding]:
         local_findings: List[VulnerabilityFinding] = []
@@ -336,26 +400,68 @@ class MCPSentinelScanner:
     def _secret_scan(self, file_path: Path, lines: Sequence[str]) -> List[VulnerabilityFinding]:
         findings: List[VulnerabilityFinding] = []
         for idx, line in enumerate(lines, start=1):
-            match = self.secret_regex.search(line)
-            if not match:
+            line_lower = line.lower()
+
+            # Skip lines with false positive indicators
+            if any(fp in line_lower for fp in self._FP_INDICATORS):
                 continue
-            entropy = self._shannon_entropy(match.group(2))
-            if entropy < 3.5:
-                continue
-            findings.append(
-                VulnerabilityFinding(
-                    severity="HIGH",
-                    category="hardcoded_secret",
-                    description=f"Potential secret detected (entropy={entropy:.2f})",
-                    file_path=str(file_path),
-                    line_number=idx,
-                    code_snippet=line.strip(),
-                    recommendation="Move secrets to environment variables or a secret manager.",
-                    cwe_id="CWE-798",
-                    confidence=min(0.9, entropy / 6),
+
+            # Primary regex: explicit key=value patterns in quotes
+            match = self._SECRET_RE.search(line)
+            if match:
+                secret_value = match.group(2)
+                entropy = self._shannon_entropy(secret_value)
+
+                # Skip low entropy (repetitive/simple patterns)
+                if entropy < 3.5:
+                    continue
+
+                # Skip if it looks like a placeholder
+                if self._PLACEHOLDER_RE.search(secret_value):
+                    continue
+
+                # Skip if it looks like a variable/function name (has underscores and lowercase)
+                if self._looks_like_identifier(secret_value):
+                    continue
+
+                findings.append(
+                    VulnerabilityFinding(
+                        severity="HIGH",
+                        category="hardcoded_secret",
+                        description=f"Potential secret detected (entropy={entropy:.2f})",
+                        file_path=str(file_path),
+                        line_number=idx,
+                        code_snippet=line.strip(),
+                        recommendation="Move secrets to environment variables or a secret manager.",
+                        cwe_id="CWE-798",
+                        confidence=min(0.9, entropy / 6),
+                    )
                 )
-            )
         return findings
+
+    def _looks_like_identifier(self, value: str) -> bool:
+        """Check if value looks like a variable/function name rather than a secret."""
+        # Identifiers typically: start with letter/underscore, have underscores, mostly lowercase
+        if not value:
+            return False
+
+        # If it starts with underscore or lowercase letter and has underscores, likely identifier
+        if value[0] in ("_",) or (value[0].islower() and "_" in value):
+            # Count pattern: lowercase_with_underscores
+            parts = value.split("_")
+            lowercase_parts = sum(1 for p in parts if p.islower() or p == "")
+            if lowercase_parts > len(parts) * 0.6:
+                return True
+
+        # If it looks like a function call pattern (ends with parenthesis content)
+        if "(" in value or ")" in value:
+            return True
+
+        # If it's a type annotation pattern
+        if value.startswith(("Optional", "List", "Dict", "Set", "Tuple", "str", "int", "bool")):
+            return True
+
+        return False
 
     def _ast_scan(self, file_path: Path, text: str) -> List[VulnerabilityFinding]:
         findings: List[VulnerabilityFinding] = []
@@ -462,6 +568,16 @@ class MCPSentinelScanner:
                 "recommendation": "Use safe loaders or avoid loading untrusted data.",
                 "cwe": "CWE-502",
                 "confidence": 0.7,
+            },
+            {
+                # Detect accidental committing of system prompt text / guardrails into source code.
+                # This is a common operational risk for AI/MCP systems (prompt leakage / prompt injection surface).
+                "category": "prompt_leakage",
+                "regex": re.compile(r"NEVER\s+REVEAL\s+THIS\s+PROMPT", re.IGNORECASE),
+                "severity": "MEDIUM",
+                "description": "System prompt / guardrail text detected in source code (potential prompt leakage risk)",
+                "recommendation": "Avoid committing system prompts/guardrails to source; store securely, minimize exposure, and treat prompts as sensitive configuration.",
+                "confidence": 0.6,
             },
         ]
         return patterns

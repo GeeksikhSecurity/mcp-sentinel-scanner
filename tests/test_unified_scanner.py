@@ -96,9 +96,10 @@ class TestUnifiedScanner:
         scanner = UnifiedScanner()
         result = scanner.scan(Path("."))
 
-        # Should filter out test file finding
-        assert len(result.findings) < len(findings)
-        assert all("test.js" not in f.file_path for f in result.findings)
+        # Should filter out test file finding from the MCP scanner output
+        assert all("component.test.js" not in f.file_path for f in result.findings)
+        # Should retain the production finding
+        assert any("src/config.js" in f.file_path for f in result.findings)
 
     def test_summary_calculation(self):
         """Test scan summary calculation."""

@@ -1,0 +1,202 @@
+rules:
+  # ============================================================
+  # MCP & AI Security Patterns
+  # These are not covered by semgrep --config=auto
+  # ============================================================
+
+  - id: mcp-prompt-leakage
+    patterns:
+      - pattern-regex: "NEVER\\s+REVEAL\\s+THIS\\s+PROMPT"
+    message: >
+      System prompt / guardrail text detected in source code. This is a prompt
+      leakage risk — if this file is served or committed publicly, the system
+      prompt is exposed. Store prompts as secure configuration, not source code.
+    languages: [generic]
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-200"]
+      category: security
+      subcategory: [ai-security]
+      confidence: MEDIUM
+      owasp: ["LLM06: Sensitive Information Disclosure"]
+
+  - id: mcp-tool-description-injection
+    patterns:
+      - pattern-regex: "(tool_description|toolDescription)\\s*[:=].*\\{\\{.*\\}\\}"
+    message: >
+      MCP tool description contains template interpolation. Tool descriptions
+      are rendered by LLM clients — injectable content here is a tool poisoning
+      vector (OWASP LLM07: Insecure Plugin/Tool Design).
+    languages: [generic]
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-94"]
+      category: security
+      subcategory: [ai-security, mcp]
+      confidence: MEDIUM
+
+  - id: mcp-unsanitized-tool-output
+    patterns:
+      - pattern: |
+          $OUTPUT = $TOOL.call_tool(...)
+          ...
+          $LLM.create(..., messages=[..., {"content": $OUTPUT}, ...], ...)
+    message: >
+      Raw MCP tool output passed directly to LLM without sanitization. Tool
+      outputs may contain prompt injection payloads. Validate and sanitize
+      before including in LLM context (OWASP LLM02).
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-74"]
+      category: security
+      subcategory: [ai-security, mcp]
+
+  - id: ai-unsafe-prompt-concat-python
+    patterns:
+      - pattern: |
+          $PROMPT = ... + $USER_INPUT + ...
+      - metavariable-regex:
+          metavariable: $PROMPT
+          regex: "(?i).*(prompt|instruction|system_message|messages).*"
+    message: >
+      User input concatenated directly into an AI prompt variable. Use
+      parameterized prompt templates to prevent prompt injection.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-74"]
+      category: security
+      subcategory: [ai-security]
+      owasp: ["LLM01: Prompt Injection"]
+
+  - id: ai-unsafe-prompt-concat-js
+    patterns:
+      - pattern: |
+          $PROMPT = ... + $USER_INPUT + ...
+      - metavariable-regex:
+          metavariable: $PROMPT
+          regex: "(?i).*(prompt|instruction|systemMessage|messages).*"
+    message: >
+      User input concatenated directly into an AI prompt variable. Use
+      parameterized prompt templates to prevent prompt injection.
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-74"]
+      category: security
+      subcategory: [ai-security]
+      owasp: ["LLM01: Prompt Injection"]
+
+  - id: ai-eval-llm-output
+    patterns:
+      - pattern-either:
+          - pattern: eval($LLM_RESPONSE)
+          - pattern: exec($LLM_RESPONSE)
+          - pattern: compile($LLM_RESPONSE, ...)
+    message: >
+      LLM output passed to eval/exec/compile. This allows arbitrary code
+      execution if the model is compromised or manipulated via prompt injection
+      (OWASP LLM02: Insecure Output Handling).
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-95"]
+      category: security
+      subcategory: [ai-security]
+
+  # ============================================================
+  # Hardcoded Secrets (supplement TruffleHog verified-only mode)
+  # Catches patterns TruffleHog may not verify
+  # ============================================================
+
+  - id: hardcoded-react-env-secret
+    pattern-regex: "REACT_APP_[A-Z_]*(?:KEY|SECRET|TOKEN)\\s*=\\s*['\"]?[^'\"\\s]{10,}"
+    message: >
+      Hardcoded API key in React environment variable. REACT_APP_ variables
+      are embedded in the client bundle at build time and visible to users.
+      Use build-time injection from CI/CD secrets, not .env files in source.
+    languages: [generic]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-798"]
+      category: security
+      confidence: HIGH
+
+  - id: hardcoded-next-public-secret
+    pattern-regex: "NEXT_PUBLIC_[A-Z_]*(?:KEY|SECRET|TOKEN)\\s*=\\s*['\"]?[^'\"\\s]{10,}"
+    message: >
+      Hardcoded secret in Next.js public environment variable. NEXT_PUBLIC_
+      variables are inlined into the client bundle. Use server-only env vars
+      or runtime secrets injection.
+    languages: [generic]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-798"]
+      category: security
+      confidence: HIGH
+
+  # ============================================================
+  # npm Script Injection (supplement npm audit)
+  # ============================================================
+
+  - id: npm-suspicious-lifecycle-script
+    patterns:
+      - pattern-regex: '"(preinstall|postinstall|preuninstall)"\\s*:\\s*"[^"]*(curl|wget|rm\\s+-rf|eval|exec|base64|\\|\\s*sh|\\|\\s*bash)[^"]*"'
+    message: >
+      Suspicious command in npm lifecycle script. Lifecycle hooks
+      (preinstall/postinstall) execute automatically and are a common supply
+      chain attack vector. Review the command for malicious intent.
+    languages: [json]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-78"]
+      category: security
+      subcategory: [supply-chain]
+      confidence: HIGH
+
+  # ============================================================
+  # localStorage Sensitive Data (React/JS specific)
+  # ============================================================
+
+  - id: localstorage-sensitive-data
+    patterns:
+      - pattern-either:
+          - pattern: localStorage.setItem("token", ...)
+          - pattern: localStorage.setItem("jwt", ...)
+          - pattern: localStorage.setItem("auth", ...)
+          - pattern: localStorage.setItem("session", ...)
+          - pattern: localStorage.setItem("apiKey", ...)
+          - pattern: localStorage.setItem("api_key", ...)
+    message: >
+      Sensitive authentication data stored in localStorage. localStorage is
+      accessible to any JavaScript on the page (XSS risk). Use httpOnly
+      cookies or secure session storage instead.
+    languages: [javascript, typescript]
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-922"]
+      category: security
+      confidence: HIGH
+
+  # ============================================================
+  # Insecure Deserialization (Python-specific supplements)
+  # ============================================================
+
+  - id: python-yaml-unsafe-load
+    patterns:
+      - pattern-either:
+          - pattern: yaml.load(..., Loader=None)
+          - pattern: yaml.load($X)
+      - pattern-not: yaml.load(..., Loader=yaml.SafeLoader)
+      - pattern-not: yaml.load(..., Loader=yaml.CSafeLoader)
+      - pattern-not: yaml.safe_load(...)
+    message: >
+      yaml.load() without SafeLoader allows arbitrary Python object
+      deserialization. Use yaml.safe_load() or yaml.load(data, Loader=yaml.SafeLoader).
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-502"]
+      category: security
+      confidence: HIGH

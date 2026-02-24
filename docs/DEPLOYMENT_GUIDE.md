@@ -34,6 +34,7 @@ This guide covers deploying MCP Sentinel Scanner in various environments:
 - Python 3.9+ (for local/manual deployment)
 - Docker (for containerized deployment)
 - Git
+- Optional external tools: Semgrep and TruffleHog (for enhanced coverage)
 
 ### Fastest Way to Scan
 
@@ -52,6 +53,10 @@ cd mcp-sentinel-scanner
 pip install -r requirements.txt
 python -m scripts.sentinel_cli /path/to/code
 ```
+
+Notes:
+- Unified scans use optional external tools when installed and enabled.
+- Advanced detection is intended to be opt-in for deeper analysis runs.
 
 ---
 

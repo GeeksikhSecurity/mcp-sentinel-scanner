@@ -1,0 +1,83 @@
+name: "Comprehensive Node.js & Angular Security Scan"
+disable-default-queries: false
+queries:
+  - name: security-queries
+    uses: ./queries/security/
+  - name: performance-queries
+    uses: ./queries/performance/
+  - name: pci-compliance-queries
+    uses: ./queries/pci-compliance/
+  - name: ai-security-queries
+    uses: ./queries/ai-security/
+  - name: container-security-queries
+    uses: ./queries/container-security/
+  - name: architecture-queries
+    uses: ./queries/architecture/
+  - name: quality-queries
+    uses: ./queries/quality/
+
+query-filters:
+  - exclude:
+      id: js/unused-local-variable
+  - exclude:
+      tags: experimental
+
+paths:
+  - "src/**"
+  - "lib/**"
+  - "app/**"
+  - "server/**"
+  - "api/**"
+
+paths-ignore:
+  - "node_modules/**"
+  - "dist/**"
+  - "build/**"
+  - "coverage/**"
+  - "*.test.js"
+  - "*.spec.ts"
+  - "test/**"
+  - "tests/**"
+  - "__tests__/**"
+
+packs:
+  - codeql/javascript-queries
+  - codeql/javascript-all
+
+languages:
+  - javascript
+  - typescript
+
+database:
+  finalize-dataset: true
+  ram: 4096
+  threads: 4
+
+analysis:
+  timeout: 3600
+  max-paths: 1000000
+  max-paths-per-slice: 10000
+
+reporting:
+  format: sarif-latest
+  output-dir: ./reports/
+  include-source-archive: true
+  
+security:
+  enable-experimental-queries: true
+  include-cwe-mappings: true
+  severity-levels:
+    - error
+    - warning
+    - note
+
+performance:
+  enable-performance-queries: true
+  memory-limit: 8192
+  optimization-level: 2
+
+compliance:
+  pci-dss: true
+  gdpr: true
+  sox: true
+  hipaa: false

@@ -5,14 +5,15 @@ The scanner implements the four-layer stack discussed in Zhao et al. (2025):
 
 1. **Static Pattern Layer**: Regex-driven heuristics flag known vulnerability idioms.
 2. **AST Layer**: Python AST inspection surfaces dangerous function usage and always-true conditions.
-3. **Semantic Layer**: The advanced engine calculates metrics (complexity, crypto misuse) and detects protocol edge cases.
-4. **Orchestration Layer**: Results are consolidated with ASR weighting, reporting utilities, and CLI interaction.
+3. **Semantic Layer**: The advanced engine calculates metrics (complexity, crypto misuse) and detects protocol edge cases. This layer is intended to be opt-in for deep scans.
+4. **Orchestration Layer**: Results are consolidated with ASR weighting, reporting utilities, and CLI interaction. Optional external tools are used when installed and enabled.
 
 ## 2. Components
 - `src/mcp_sentinel_scanner.py`: Core engine performing file collection, rule execution, entropy checks, and reporting.
-- `src/advanced_detection.py`: Additional analyses providing depth on authentication, crypto, and complexity.
+- `src/advanced_detection.py`: Additional analyses providing depth on authentication, crypto, and complexity (opt-in).
+- `src/unified_scanner.py`: Orchestrates optional external tools and analyzers in parallel.
+- `src/adapters/`: Optional tool adapters (Semgrep, TruffleHog).
 - `scripts/sentinel_cli.py`: CLI for pipeline integration with JSON and Markdown output.
-- `configs/default_config.json`: Tunable settings for exclusions and report preferences.
 
 ## 3. Detection Catalogue
 | Category | Description | CWE |
@@ -47,6 +48,10 @@ Add new patterns by editing `_load_default_patterns()` inside `MCPSentinelScanne
 python scripts/sentinel_cli.py <target> --format json --output report.json
 python scripts/sentinel_cli.py <target> --deep-scan --severity HIGH
 ```
+
+Notes:
+- `--deep-scan` enables advanced semantic checks.
+- `--unified` aggregates optional tools and analyzers when installed and enabled.
 
 ## 7. Limitations
 - The AST layer is currently Python-only.
