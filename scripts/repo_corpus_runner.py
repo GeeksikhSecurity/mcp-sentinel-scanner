@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import concurrent.futures
 import json
 import os
 import subprocess
@@ -139,7 +140,24 @@ def run_corpus(
         config = dict(base_config)
         config["exclude"] = list(dict.fromkeys(list(config.get("exclude", []) or []) + entry.exclude))
 
-        scan_payload = run_scan(repo_path, unified=entry.unified, config=config)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(run_scan, repo_path, unified=entry.unified, config=config)
+            try:
+                scan_payload = future.result(timeout=entry.timeout_sec)
+            except concurrent.futures.TimeoutError:
+                scan_payload = {
+                    "summary": {
+                        "files_scanned": 0,
+                        "total_lines": 0,
+                        "scan_time": float(entry.timeout_sec),
+                        "vulnerabilities_found": 0,
+                        "asr_score": 0.0,
+                        "severity_distribution": {},
+                        "error": f"Scan timed out after {entry.timeout_sec}s",
+                    },
+                    "json": "{}",
+                    "sarif": "{}",
+                }
         duration = time.perf_counter() - repo_start
 
         repo_out = output_dir / entry.id

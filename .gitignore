@@ -18,6 +18,11 @@ __pycache__/
 !test_package.json
 *.md.tmp
 
+# Results (store artifacts under results/ and keep the structure tracked)
+results/**
+!results/README.md
+!results/**/.gitkeep
+
 # Test coverage and results
 .coverage
 htmlcov/
@@ -37,6 +42,12 @@ reports/
 # Test artifacts
 benchmark_test_files/
 vulnerable_react.jsx
+
+# Large vendored/cached data
+scans/
+test_repos/
+.cache/
+revive.log
 
 # Performance and benchmark results
 *.benchmark

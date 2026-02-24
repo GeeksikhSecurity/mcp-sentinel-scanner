@@ -3,26 +3,28 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mcp-sentinel-scanner"
-version = "1.5.0"
-description = "Advanced security scanner for Model Context Protocol services with multi-tool orchestration"
+name = "sentinel-scanner"
+version = "2.0.0a1"
+description = "Universal code security scanner with multi-tool orchestration, compliance mapping, and developer-friendly CLI"
 readme = "README.md"
 license = "MIT"
 authors = [
-    {name = "MCP Security Team", email = "security@mcp-project.org"},
+    {name = "Gurvinder Singh", email = "gurvinder@sayvainc.com"},
 ]
 maintainers = [
-    {name = "MCP Security Team", email = "security@mcp-project.org"},
+    {name = "Gurvinder Singh", email = "gurvinder@sayvainc.com"},
 ]
 keywords = [
     "security",
     "scanner",
-    "mcp",
+    "sast",
     "vulnerability",
     "static-analysis",
-    "react",
-    "npm",
-    "taint-analysis"
+    "compliance",
+    "devsecops",
+    "semgrep",
+    "trivy",
+    "codeql"
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -43,8 +45,8 @@ classifiers = [
 ]
 requires-python = ">=3.9"
 dependencies = [
-    "colorama>=0.4.6",
-    "tabulate>=0.9.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
 ]
 
 [project.optional-dependencies]
@@ -77,19 +79,17 @@ external-tools = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mcp-security/mcp-sentinel-scanner"
-Documentation = "https://mcp-sentinel-scanner.readthedocs.io"
-Repository = "https://github.com/mcp-security/mcp-sentinel-scanner.git"
-Issues = "https://github.com/mcp-security/mcp-sentinel-scanner/issues"
-Changelog = "https://github.com/mcp-security/mcp-sentinel-scanner/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/GeeksikhSecurity/mcp-sentinel-scanner"
+Repository = "https://github.com/GeeksikhSecurity/mcp-sentinel-scanner.git"
+Issues = "https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/issues"
 
 [project.scripts]
+sentinel = "sentinel.cli.main:cli"
+# Backward compat aliases (will show deprecation warning)
 mcp-scan = "scripts.sentinel_cli:main"
-mcp-sentinel = "scripts.sentinel_cli:main"
-unified-scanner = "scripts.sentinel_cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src", "scripts", "configs"]
+packages = ["src/sentinel"]
 
 [tool.hatch.build.targets.sdist]
 include = [

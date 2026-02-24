@@ -17,7 +17,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument(
         "--tier",
-        choices=["smoke", "full", "all"],
+        choices=["smoke", "full", "nightly", "all"],
         default="smoke",
         help="Which tier to run from the manifest",
     )

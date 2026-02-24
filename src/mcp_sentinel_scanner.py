@@ -52,6 +52,36 @@ SEVERITY_WEIGHTS: Dict[str, float] = {
 class MCPSentinelScanner:
     """Main scanner orchestrating pattern, AST, and advanced analyses."""
 
+    # Class-level constants -- compiled once, shared across all instances.
+    _FP_INDICATORS: frozenset = frozenset([
+        # Variable/type patterns
+        "accesstoken", "refreshtoken", "apikey", "secretkey", "authkey",
+        "tokenvalue", "keyvalue", "secretvalue", "passwordvalue",
+        # Common SDK patterns
+        "sdkaccesstoken", "sdktoken", "_sdk", "gettoken", "getkey",
+        # Function/method patterns
+        "def ", "async def ", "class ", "import ", "from ",
+        # Type annotation patterns
+        ": str", ": string", ": optional", "| none", "-> ",
+        # Assignment to variable/function
+        "= get", "= fetch", "= load", "= read", "= retrieve",
+        "= none", "= null", "= undefined",
+    ])
+
+    _PLACEHOLDER_RE = re.compile(
+        r"(your[_-]|example[_-]|test[_-]|demo[_-]|sample[_-]|"
+        r"replace[_-]|insert[_-]|put[_-]|enter[_-]|change[_-]|"
+        r"xxx+|placeholder|dummy|fake|mock)",
+        re.IGNORECASE,
+    )
+
+    _SECRET_RE = re.compile(
+        r"(api[_-]?key|secret|token|password|auth[_-]?key|client[_-]?secret|"
+        r"private[_-]?key|access[_-]?token|refresh[_-]?token|bearer)"
+        r"[\s]*[:=][\s]*['\"]([A-Za-z0-9/+=_\-]{12,})['\"]",
+        re.IGNORECASE,
+    )
+
     def __init__(
         self,
         config: Optional[Dict[str, object]] = None,
@@ -61,40 +91,6 @@ class MCPSentinelScanner:
         self.parallel_workers = max(1, parallel_workers)
         self.advanced_engine = AdvancedDetectionEngine(self.config)
         self.patterns = self._load_default_patterns()
-        # Primary: Match secrets in quoted strings after key/token/secret/password/api keywords
-        self.secret_regex = re.compile(
-            r"(api[_-]?key|secret|token|password|auth[_-]?key|client[_-]?secret|"
-            r"private[_-]?key|access[_-]?token|refresh[_-]?token|bearer)"
-            r"[\s]*[:=][\s]*['\"]([A-Za-z0-9/+=_\-]{12,})['\"]",
-            re.IGNORECASE,
-        )
-        # Secondary: Match secrets that look like actual credential values (not variable names)
-        self.secret_value_regex = re.compile(
-            r"['\"]([A-Za-z0-9/+=_\-]{20,})['\"]",
-            re.IGNORECASE,
-        )
-        # Patterns that indicate false positives (variable names, type annotations, function calls)
-        self._fp_indicators = frozenset([
-            # Variable/type patterns
-            "accesstoken", "refreshtoken", "apikey", "secretkey", "authkey",
-            "tokenvalue", "keyvalue", "secretvalue", "passwordvalue",
-            # Common SDK patterns
-            "sdkaccesstoken", "sdktoken", "_sdk", "gettoken", "getkey",
-            # Function/method patterns
-            "def ", "async def ", "class ", "import ", "from ",
-            # Type annotation patterns
-            ": str", ": string", ": optional", "| none", "-> ",
-            # Assignment to variable/function
-            "= get", "= fetch", "= load", "= read", "= retrieve",
-            "= none", "= null", "= undefined",
-        ])
-        # Placeholder patterns that indicate examples/templates
-        self._placeholder_patterns = re.compile(
-            r"(your[_-]|example[_-]|test[_-]|demo[_-]|sample[_-]|"
-            r"replace[_-]|insert[_-]|put[_-]|enter[_-]|change[_-]|"
-            r"xxx+|placeholder|dummy|fake|mock)",
-            re.IGNORECASE,
-        )
 
     # region public API
     def scan(self, target: str | Path) -> ScanResult:
@@ -332,9 +328,9 @@ class MCPSentinelScanner:
         if file_path.suffix.lower() == ".py":
             findings.extend(self._ast_scan(file_path, text))
 
-        # Optional false positive reduction (disabled by default in the base scanner).
-        # Important: Never suppress non-secret findings using a credential-focused filter.
-        if self.config.get("falsePositives", {}).get("enabled", False):
+        # Apply false positive reduction by default.  Disable explicitly via config
+        # {"falsePositives": {"enabled": false}}.
+        if self.config.get("falsePositives", {}).get("enabled", True):
             # 1) Context-based filtering (safe for all categories)
             # Lazy import to avoid circular dependency
             from .fp_reducer.context_analyzer import ContextAnalyzer
@@ -407,11 +403,11 @@ class MCPSentinelScanner:
             line_lower = line.lower()
 
             # Skip lines with false positive indicators
-            if any(fp in line_lower for fp in self._fp_indicators):
+            if any(fp in line_lower for fp in self._FP_INDICATORS):
                 continue
 
             # Primary regex: explicit key=value patterns in quotes
-            match = self.secret_regex.search(line)
+            match = self._SECRET_RE.search(line)
             if match:
                 secret_value = match.group(2)
                 entropy = self._shannon_entropy(secret_value)
@@ -421,7 +417,7 @@ class MCPSentinelScanner:
                     continue
 
                 # Skip if it looks like a placeholder
-                if self._placeholder_patterns.search(secret_value):
+                if self._PLACEHOLDER_RE.search(secret_value):
                     continue
 
                 # Skip if it looks like a variable/function name (has underscores and lowercase)

@@ -20,6 +20,11 @@ class ContextAnalyzer:
 
     TEST_PREFIXES = ["MOCK_", "TEST_", "EXAMPLE_", "SAMPLE_", "FIXTURE_", "DEMO_"]
 
+    _IMPORT_PATTERNS = [
+        re.compile(r"^\s*(import|from|require|#include)"),
+        re.compile(r"^\s*import\s+.*from\s+['\"].*['\"]"),
+    ]
+
     def is_likely_false_positive(
         self, finding: VulnerabilityFinding, file_content: Optional[str] = None
     ) -> bool:
@@ -112,12 +117,7 @@ class ContextAnalyzer:
 
     def _is_import_statement(self, code_snippet: str) -> bool:
         """Check if code snippet is an import statement."""
-        # Aggressive import detection - any line starting with import/from/require
-        import_patterns = [
-            re.compile(r"^\s*(import|from|require|#include)"),
-            re.compile(r"^\s*import\s+.*from\s+['\"].*['\"]")
-        ]
-        return any(pattern.match(code_snippet.strip()) for pattern in import_patterns)
+        return any(pattern.match(code_snippet.strip()) for pattern in self._IMPORT_PATTERNS)
     
     def _is_dangerous_path_context(self, code_snippet: str) -> bool:
         """Check if path traversal is in a dangerous context."""

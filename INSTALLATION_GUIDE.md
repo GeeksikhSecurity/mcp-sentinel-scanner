@@ -16,23 +16,30 @@ cd mcp-sentinel-scanner && pip install -e ".[dev]"
 python -m scripts.sentinel_cli /path/to/code --unified
 ```
 
+Notes:
+- Unified scan uses optional external tools when installed and enabled.
+- Advanced detection is intended to be opt-in for deeper analysis runs.
+
 ## Installation Methods
 
 ### 1. pip Install (Recommended)
 
 #### System Requirements
-- **Python**: 3.8+ (3.11+ recommended)
+- **Python**: 3.9+ (3.11+ recommended)
 - **OS**: macOS, Linux, Windows
 - **Memory**: 2GB+ available RAM
 - **Disk**: 500MB free space
+- **Optional tools**: Semgrep and TruffleHog (for enhanced coverage)
 
 #### Installation
 ```bash
 # Install latest stable version
 pip install mcp-sentinel-scanner
 
-# Install with all optional dependencies
-pip install mcp-sentinel-scanner[all]
+# Optional extras
+pip install mcp-sentinel-scanner[dev]
+pip install mcp-sentinel-scanner[docs]
+pip install mcp-sentinel-scanner[external-tools]
 
 # Install specific version
 pip install mcp-sentinel-scanner==1.5.0
@@ -43,9 +50,6 @@ pip install --upgrade mcp-sentinel-scanner
 
 #### Verify Installation
 ```bash
-mcp-scan --version
-# Expected: MCP Sentinel Scanner v1.5.0
-
 mcp-scan --help
 # Shows all available commands and options
 ```
@@ -128,14 +132,11 @@ pip install -e .
 # Development dependencies
 pip install -e ".[dev]"
 
-# Testing dependencies
-pip install -e ".[test]"
-
 # Documentation dependencies
 pip install -e ".[docs]"
 
-# All dependencies
-pip install -e ".[all]"
+# Combined extras
+pip install -e ".[dev,docs,external-tools]"
 ```
 
 ### 4. Package Manager Installation
@@ -241,7 +242,7 @@ export MCP_SCAN_TIMEOUT=1800
 ```json
 {
   "tools": {
-    "trufflehog": {
+    "truffleHog": {
       "enabled": true,
       "timeout": 300,
       "args": ["--no-verification", "--json"]
@@ -250,15 +251,12 @@ export MCP_SCAN_TIMEOUT=1800
       "enabled": true,
       "timeout": 600,
       "rules": ["p/security-audit", "p/owasp-top-ten"]
-    },
-    "custom_analyzer": {
-      "enabled": true,
-      "taint_analysis": true,
-      "complexity_threshold": 10
     }
   }
 }
 ```
+
+If a tool is enabled but not installed, the scanner will continue and skip that tool.
 
 ### 3. CI/CD Configuration
 
@@ -471,11 +469,8 @@ export MCP_SCAN_MEMORY_LIMIT=4096
 
 **Issue**: External tools not found
 ```bash
-# Solution: Install missing tools
-pip install trufflehog semgrep
-
-# Or disable external tools
-mcp-scan . --no-external-tools
+# Solution: Install missing tools from their official documentation
+# or disable external tools in your config.
 ```
 
 ### 2. Performance Issues

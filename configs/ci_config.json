@@ -19,6 +19,9 @@
   ],
   "severity_threshold": "LOW",
   "parallel_workers": 4,
+  "falsePositives": {
+    "enabled": true
+  },
   "false_positive_patterns": [
     {
       "file": "src/taint_analysis.py",

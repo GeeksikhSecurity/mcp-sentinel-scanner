@@ -29,12 +29,16 @@ def test_cli_outputs(args, capsys):
 
 def test_cli_respects_output_file(tmp_path, capsys):
     output = tmp_path / "report.json"
-    exit_code = cli_main(["tests", "--format", "json", "--output", str(output)])
+    # Use test config with FP reduction disabled so scanning tests/ yields findings
+    exit_code = cli_main(
+        ["tests", "--format", "json", "--output", str(output), "-c", "configs/test_config.json"]
+    )
 
     assert exit_code == 0
     captured = capsys.readouterr()
     assert f"Report written to {output}" in captured.out
     data = json.loads(output.read_text())
+    assert data["scan_summary"]["files_scanned"] >= 1
     assert data["scan_summary"]["vulnerabilities_found"] >= 1
 
 

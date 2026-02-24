@@ -1,0 +1,114 @@
+# Reusable workflow: run MCP Sentinel Scanner on any repository.
+#
+# Usage in YOUR repo's .github/workflows/security.yml:
+#
+#   jobs:
+#     mcp-scan:
+#       uses: GeeksikhSecurity/mcp-sentinel-scanner/.github/workflows/mcp-scan.yml@main
+#       with:
+#         scan-path: "."
+#         format: "sarif"
+#         severity: "HIGH"
+#
+# Or use the simpler "pip install" approach shown in the README.
+
+name: MCP Sentinel Scan
+
+on:
+  workflow_call:
+    inputs:
+      scan-path:
+        description: "Path to scan (relative to repo root)"
+        required: false
+        default: "."
+        type: string
+      format:
+        description: "Output format: terminal, json, markdown, sarif, html"
+        required: false
+        default: "sarif"
+        type: string
+      severity:
+        description: "Minimum severity to report: CRITICAL, HIGH, MEDIUM, LOW"
+        required: false
+        default: "MEDIUM"
+        type: string
+      exclude:
+        description: "Space-separated exclude patterns (e.g. 'node_modules dist vendor')"
+        required: false
+        default: "node_modules .git dist build vendor"
+        type: string
+      unified:
+        description: "Enable unified multi-tool scanning"
+        required: false
+        default: false
+        type: boolean
+      upload-sarif:
+        description: "Upload SARIF results to GitHub Code Scanning (requires format=sarif)"
+        required: false
+        default: true
+        type: boolean
+      python-version:
+        description: "Python version to use"
+        required: false
+        default: "3.12"
+        type: string
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ inputs.python-version }}
+
+      - name: Install MCP Sentinel Scanner
+        run: pip install mcp-sentinel-scanner
+
+      - name: Run scan
+        run: |
+          ARGS="${{ inputs.scan-path }}"
+          ARGS="$ARGS --format ${{ inputs.format }}"
+          ARGS="$ARGS --severity ${{ inputs.severity }}"
+
+          if [ -n "${{ inputs.exclude }}" ]; then
+            ARGS="$ARGS --exclude ${{ inputs.exclude }}"
+          fi
+
+          if [ "${{ inputs.unified }}" = "true" ]; then
+            ARGS="$ARGS --unified"
+          fi
+
+          if [ "${{ inputs.format }}" = "sarif" ]; then
+            ARGS="$ARGS -o mcp-scan-results.sarif"
+          elif [ "${{ inputs.format }}" = "json" ]; then
+            ARGS="$ARGS -o mcp-scan-results.json"
+          elif [ "${{ inputs.format }}" = "html" ]; then
+            ARGS="$ARGS -o mcp-scan-results.html"
+          elif [ "${{ inputs.format }}" = "markdown" ]; then
+            ARGS="$ARGS -o mcp-scan-results.md"
+          fi
+
+          mcp-scan $ARGS || true
+
+      - name: Upload SARIF to GitHub Code Scanning
+        if: inputs.format == 'sarif' && inputs.upload-sarif
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: mcp-scan-results.sarif
+        continue-on-error: true
+
+      - name: Upload scan artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-scan-results
+          path: mcp-scan-results.*
+          retention-days: 30

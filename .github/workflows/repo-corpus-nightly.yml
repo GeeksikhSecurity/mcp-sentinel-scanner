@@ -3,12 +3,12 @@ name: Repo Corpus (Nightly)
 on:
   schedule:
     - cron: "0 3 * * *"
-  workflow_dispatch:
+    workflow_dispatch:
     inputs:
       tier:
-        description: "Tier to run (smoke/full/all)"
+        description: "Tier to run (smoke/full/nightly/all)"
         required: false
-        default: "full"
+        default: "nightly"
 
 jobs:
   corpus:
@@ -43,7 +43,7 @@ jobs:
 
       - name: Run repo corpus
         env:
-          TIER: ${{ inputs.tier || 'full' }}
+          TIER: ${{ inputs.tier || 'nightly' }}
         run: |
           python scripts/run_repo_corpus.py --tier "$TIER" --manifest configs/repo_corpus.json --cache-dir .cache/repo_corpus --output-dir reports/repo_corpus
 
@@ -51,7 +51,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: repo-corpus-${{ inputs.tier || 'full' }}
+          name: repo-corpus-${{ inputs.tier || 'nightly' }}
           path: reports/repo_corpus
 
 

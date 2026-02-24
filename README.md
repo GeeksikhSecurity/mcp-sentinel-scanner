@@ -1,7 +1,7 @@
 # 🛡️ MCP Sentinel Scanner
 
 [![CI](https://github.com/mcp-security/mcp-sentinel-scanner/workflows/CI/badge.svg)](https://github.com/mcp-security/mcp-sentinel-scanner/actions)
-[![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen)](https://github.com/mcp-security/mcp-sentinel-scanner)
+[![Coverage](https://img.shields.io/badge/coverage-49%25-yellow)](https://github.com/mcp-security/mcp-sentinel-scanner)
 [![Version](https://img.shields.io/badge/version-1.5.0-blue)](https://github.com/mcp-security/mcp-sentinel-scanner/releases)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![Security](https://img.shields.io/badge/security-enterprise--ready-red)](https://github.com/mcp-security/mcp-sentinel-scanner)
@@ -90,7 +90,7 @@ The **MCP Sentinel Scanner** is a research-inspired security analysis tool desig
 - 🏗️ **Architecture Diagrams** - Multi-tool orchestration pipeline visualization
 - 📊 **Detection Capabilities** - Interactive Chart.js graph showing ASR scores for 9 vulnerability types
 - 🔄 **Deployment Workflows** - Step-by-step visual guides for local and CI/CD scanning
-- 📈 **Project Statistics** - 52 tests, 100% accuracy, 1,400+ files/sec dashboard
+- 📈 **Project Statistics** - 153 tests, 100% accuracy, 1,400+ files/sec dashboard
 - ✅ **Security Checklist** - 12 best practices for MCP server hardening
 - 🚀 **Quick Deploy** - Docker, pip, and CI/CD code examples with syntax highlighting
 - 🗺️ **Development Roadmap** - 4-phase timeline with progress indicators
@@ -142,6 +142,65 @@ python -m scripts.sentinel_cli /path/to/code --unified
 
 **👉 See [QUICK_START.md](QUICK_START.md) for more options**
 
+### Example Output
+
+```
+$ mcp-scan ./my-mcp-server/
+
+Scanned files: 1
+Total lines: 29
+Vulnerabilities: 5
+ASR Score: 80.00%
+
+Severity    Category                  Location                   Description                               Confidence
+----------  ------------------------  -------------------------  ----------------------------------------  ----------
+CRITICAL    sql_injection             demo_vulnerable.py:12      Potential SQL string concatenation        75%
+CRITICAL    insecure_deserialization  demo_vulnerable.py:21      Potential insecure deserialization        70%
+HIGH        dangerous_function        demo_vulnerable.py:17      Use of dangerous function: os.system      95%
+HIGH        hardcoded_secret          demo_vulnerable.py:7       Potential secret detected (entropy=4.82)  80%
+MEDIUM      weak_crypto               demo_vulnerable.py:25      Weak cryptographic hash function          70%
+
+Advanced detection findings:
+- MEDIUM crypto_misuse · Legacy hash function detected. (demo_vulnerable.py:25)
+- LOW    complexity    · Cyclomatic complexity assessment. (demo_vulnerable.py)
+```
+
+## 🔌 Optional Tools and Deep Scan
+
+MCP Sentinel Scanner works standalone. External tools and deep analysis are optional enhancements you can enable when you want stronger coverage.
+
+### Optional External Tools
+
+The unified scanner can orchestrate additional tools if they are installed locally:
+- Semgrep (rule-based code scanning)
+- TruffleHog (verified secret detection)
+
+Install these tools via their official documentation, then enable them in your config:
+
+```json
+{
+  "tools": {
+    "semgrep": { "enabled": true, "rules": ["auto"] },
+    "truffleHog": { "enabled": true }
+  }
+}
+```
+
+Run a unified scan:
+```bash
+mcp-scan /path/to/code --unified --config config.json
+```
+
+If a tool is enabled but not installed, the scanner will continue and skip that tool.
+
+### Advanced Detection (Opt-In)
+
+Advanced semantic checks are intended for deeper runs. Enable them only when you need extra signal:
+
+```bash
+mcp-scan /path/to/code --deep-scan
+```
+
 ## 📊 Output Formats
 
 | Format | Use Case | Command |
@@ -174,16 +233,35 @@ docker-compose up scanner
 
 ## 🔄 CI/CD Integration
 
-### GitHub Actions
+### GitHub Actions (Reusable Workflow)
+
+Add MCP scanning to your repo with a single workflow file:
 
 ```yaml
-- name: Security Scan
-  run: |
-    docker run --rm -v ${{ github.workspace }}:/scan \
-      ghcr.io/mcp-security/mcp-sentinel-scanner:latest \
-      /scan --format sarif -o results.sarif
+# .github/workflows/security.yml
+name: MCP Security Scan
+on: [push, pull_request]
 
-- uses: github/codeql-action/upload-sarif@v2
+jobs:
+  mcp-scan:
+    uses: GeeksikhSecurity/mcp-sentinel-scanner/.github/workflows/mcp-scan.yml@main
+    with:
+      scan-path: "."
+      format: "sarif"
+      severity: "HIGH"
+      upload-sarif: true
+```
+
+### GitHub Actions (Inline)
+
+```yaml
+- name: Install scanner
+  run: pip install mcp-sentinel-scanner
+
+- name: Security Scan
+  run: mcp-scan . --format sarif -o results.sarif --severity HIGH
+
+- uses: github/codeql-action/upload-sarif@v3
   with:
     sarif_file: results.sarif
 ```
@@ -193,7 +271,7 @@ docker-compose up scanner
 ```groovy
 stage('Security Scan') {
     steps {
-        sh 'docker run --rm -v ${WORKSPACE}:/scan ghcr.io/mcp-security/mcp-sentinel-scanner:latest /scan'
+        sh 'pip install mcp-sentinel-scanner && mcp-scan ${WORKSPACE} --format json -o scan-results.json'
     }
 }
 ```
@@ -228,17 +306,16 @@ mcp-scan /path --config config.json
 - 🏗️ [Architecture Diagrams](docs/ARCHITECTURE_DIAGRAMS.md) - System design
 - 🔬 [Technical Documentation](docs/TECHNICAL_DOCUMENTATION.md) - Deep dive
 - 🗺️ [Roadmap](ROADMAP.md) - Future features and timeline
-- 📊 [Implementation Summary](IMPLEMENTATION_SUMMARY.md) - What's implemented
+- 📊 [Implementation Results](docs/IMPLEMENTATION_RESULTS_AND_NEXT_STEPS.md) - What's implemented
 
 ### Reports & Analysis
-- 🔒 [Security Scan Report](SECURITY_SCAN_REPORT.md) - Real-world scan results
-- 📈 [Scan Comparison](SCAN_COMPARISON_REPORT.md) - v1.0 vs v1.5 analysis
 - 📊 [Project Status](STATUS.md) - Current state and metrics
+- 📁 [Archive](docs/archive/) - Historical analysis reports and scan comparisons
 
 ### Research & Foundation
 - 📄 [Research Foundation](docs/RESEARCH_FOUNDATION.md) - Academic basis
-- 📝 [PRD](PRD%20open%20source%20mcp%20scanner-%20MCP%20Sentinel.md) - Product requirements
-- 📋 [Project Overview](PROJECT_OVERVIEW.md) - Executive summary
+- 📝 [Blog Posts](docs/blog/) - SecurityLeader.ai research articles
+- 📋 [Enhancement Plan](docs/repo-enhancement-plan.md) - Future roadmap
 
 ## 🎯 Features & Detection Capabilities
 
@@ -326,8 +403,8 @@ Metric                v1.0 Baseline    v1.5 Enhanced    Improvement
 | **🌐 Language Support** | 1 (Python) | 5 (Multi-lang) | 🚀 5x |
 | **💾 Memory Efficiency** | Baseline | Optimized | 📉 -60% |
 | **🔄 Parallel Processing** | 4-8 workers | 16-32 workers | 🚀 4x |
-| **📋 Test Coverage** | 96% | 100% | ✅ Complete |
-| **🧪 Test Cases** | 52 tests | 78 tests | 📈 +50% |
+| **📋 Test Coverage** | 11% | 49% | 📈 4.5x |
+| **🧪 Test Cases** | 52 tests | 153 tests | 📈 +194% |
 
 ## 🤝 Contributing
 
@@ -382,7 +459,7 @@ See [docs/RESEARCH_FOUNDATION.md](docs/RESEARCH_FOUNDATION.md) for details.
 ✅ Multi-Tool Integration:    [████████████████████████████████████████] 100%
 ✅ False Positive Elimination:[████████████████████████████████████████] 100%
 ✅ Performance Optimization:  [████████████████████████████████████████] 2,450%
-✅ Test Coverage:             [████████████████████████████████████████] 100%
+🚧 Test Coverage:             [████████████████████░░░░░░░░░░░░░░░░░░░░] 49%
 ✅ Enterprise Architecture:   [████████████████████████████████████████] 100%
 🚧 Multi-Language Support:    [████████████████████████████████████░░░░] 85%
 📋 Enterprise Dashboard:      [████████████████████████░░░░░░░░░░░░░░░░] 60%
@@ -391,7 +468,7 @@ See [docs/RESEARCH_FOUNDATION.md](docs/RESEARCH_FOUNDATION.md) for details.
 ```
 
 **🏆 Current Stats (v1.5):**
-- ✅ **78 Test Cases** | 100% Core Coverage | 0% False Positives
+- ✅ **153 Test Cases** | 49% Line Coverage | 0% False Positives
 - ✅ **1,400+ Files/Second** | 20x Performance Improvement
 - ✅ **7 Detection Layers** | Multi-Tool Orchestration
 - ✅ **5 Output Formats** | Enterprise Dashboard Ready
@@ -402,7 +479,7 @@ See [docs/RESEARCH_FOUNDATION.md](docs/RESEARCH_FOUNDATION.md) for details.
 - 📋 **Enterprise Dashboard** - Real-time metrics, compliance reporting
 - 🔮 **AI-Powered Detection** - ML anomaly detection, behavioral analysis
 
-See [ENTERPRISE_SCALING_ROADMAP.md](ENTERPRISE_SCALING_ROADMAP.md) for detailed enterprise timeline and [STATUS.md](STATUS.md) for current progress.
+See [STATUS.md](STATUS.md) for current progress and [Enhancement Plan](docs/repo-enhancement-plan.md) for detailed roadmap.
 
 ## 📝 License
 
@@ -418,4 +495,4 @@ This project is distributed under the MIT License. See [LICENSE](LICENSE) for de
 
 **🌟 Star us on GitHub!** | **🐛 Report Issues** | **💬 Join Discussions**
 
-[GitHub](https://github.com/mcp-security/mcp-sentinel-scanner) • [Documentation](docs/) • [Roadmap](ROADMAP.md)
+[GitHub](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner) • [Documentation](docs/) • [Roadmap](docs/repo-enhancement-plan.md)

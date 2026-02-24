@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "description": "Repo corpus manifest for regression testing. Prefer pinned commit SHAs for deterministic CI; 'ref' may be a branch name during initial bring-up.",
+  "version": 2,
+  "description": "Repo corpus manifest for regression testing. smoke=local fixtures, full=local+optional, nightly=remote GitHub (clone on demand). Prefer pinned commit SHAs for CI.",
   "repos": [
     {
       "id": "fixture-mcp-servers",
@@ -19,8 +19,56 @@
       "exclude": ["node_modules", "dist", "build", ".git"]
     },
     {
-      "id": "modelcontextprotocol-servers",
+      "id": "local-fastmcp",
       "tier": "full",
+      "local_path": "test_repos/fastmcp",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc", ".venv", "venv"]
+    },
+    {
+      "id": "local-mcp-python",
+      "tier": "full",
+      "local_path": "test_repos/mcp-python",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc", ".venv", "venv"]
+    },
+    {
+      "id": "local-mcp-typescript",
+      "tier": "full",
+      "local_path": "test_repos/mcp-typescript",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "local-mcp-servers",
+      "tier": "full",
+      "local_path": "test_repos/mcp-servers",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git"]
+    },
+    {
+      "id": "local-mcp-use",
+      "tier": "full",
+      "local_path": "test_repos/mcp-use",
+      "unified": true,
+      "timeout_sec": 600,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc", ".venv", "venv"]
+    },
+    {
+      "id": "local-mcp-quickstart",
+      "tier": "full",
+      "local_path": "test_repos/mcp-quickstart",
+      "unified": true,
+      "timeout_sec": 300,
+      "exclude": ["node_modules", "dist", "build", ".git", "__pycache__", "*.pyc"]
+    },
+    {
+      "id": "modelcontextprotocol-servers",
+      "tier": "nightly",
       "url": "https://github.com/modelcontextprotocol/servers.git",
       "ref": "main",
       "unified": true,
@@ -29,7 +77,7 @@
     },
     {
       "id": "modelcontextprotocol-python-sdk",
-      "tier": "full",
+      "tier": "nightly",
       "url": "https://github.com/modelcontextprotocol/python-sdk.git",
       "ref": "main",
       "unified": true,
@@ -38,7 +86,7 @@
     },
     {
       "id": "modelcontextprotocol-typescript-sdk",
-      "tier": "full",
+      "tier": "nightly",
       "url": "https://github.com/modelcontextprotocol/typescript-sdk.git",
       "ref": "main",
       "unified": true,
