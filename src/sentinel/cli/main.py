@@ -7,6 +7,8 @@ Usage:
     sentinel report <target>     Generate client report
 """
 
+import json
+import shutil
 import sys
 from pathlib import Path
 from typing import Optional
@@ -121,7 +123,6 @@ def scan(
     if output_format == "terminal":
         _render_terminal(result, quiet)
     elif output_format == "json":
-        import json
         data = {
             "target": result.target,
             "summary": {
@@ -172,7 +173,6 @@ def doctor() -> None:
     table.add_column("Enabled", justify="center")
 
     # Check external tools directly
-    import shutil
     external_tools = {
         "semgrep": "semgrep",
         "trufflehog": "trufflehog",
@@ -261,7 +261,6 @@ def init(target: str) -> None:
         console.print(f"[yellow]{config_path} already exists[/yellow]")
         return
 
-    import json
     project_types = detect_project_type(target_path)
     config = {
         "version": "2.0",

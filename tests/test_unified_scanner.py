@@ -3,7 +3,7 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from src.mcp_sentinel_scanner import VulnerabilityFinding
+from src.mcp_sentinel_scanner import ScanResult, VulnerabilityFinding
 from src.unified_scanner import UnifiedScanner
 
 
@@ -126,8 +126,6 @@ class TestUnifiedScanner:
 
         findings = [self._create_test_finding("test")]
         summary = scanner._create_summary(Path("."), findings, 1.0)
-
-        from src.mcp_sentinel_scanner import ScanResult
 
         result = ScanResult(summary=summary, findings=findings, advanced_findings=[])
 

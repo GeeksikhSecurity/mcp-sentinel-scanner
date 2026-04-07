@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Performance benchmark script for MCP Sentinel Scanner."""
 
+import shutil
 import time
 from pathlib import Path
 from typing import Dict
+
+try:
+    import psutil
+except ImportError:
+    psutil = None  # type: ignore[assignment]
 
 from src.mcp_sentinel_scanner import MCPSentinelScanner
 from src.unified_scanner import UnifiedScanner
@@ -48,13 +54,10 @@ def benchmark_scanner(scanner, target: Path, name: str) -> Dict[str, float]:
 
 def get_memory_usage() -> float:
     """Get current memory usage in MB."""
-    try:
-        import psutil
-
-        process = psutil.Process()
-        return process.memory_info().rss / 1024 / 1024
-    except ImportError:
+    if psutil is None:
         return 0.0
+    process = psutil.Process()
+    return process.memory_info().rss / 1024 / 1024
 
 
 def create_test_files(base_path: Path, num_files: int = 50) -> Path:
@@ -176,8 +179,6 @@ def run_benchmarks():
     print("Target: >50 files/sec scan speed")
 
     # Cleanup
-    import shutil
-
     shutil.rmtree(test_dir)
     print(f"\n🧹 Cleaned up test files")
 

@@ -1,12 +1,14 @@
 """CodeQL database optimization for large codebases."""
 
 import os
+import shutil
 import subprocess
 import tempfile
-import shutil
 from pathlib import Path
 from typing import Optional, List, Dict, Any
+
 import psutil
+import yaml
 
 
 class CodeQLOptimizer:
@@ -225,8 +227,7 @@ class CodeQLConfig:
         
         config_path = Path(repo_path) / '.github' / 'codeql-config.yml'
         config_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        import yaml
+
         with open(config_path, 'w') as f:
             yaml.dump(config, f, default_flow_style=False)
             

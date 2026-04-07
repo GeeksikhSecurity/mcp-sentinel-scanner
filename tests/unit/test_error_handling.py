@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from scripts.sentinel_cli import load_config
 from src import MCPSentinelScanner
 
 
@@ -33,8 +34,6 @@ class TestErrorHandling:
 
     def test_malformed_config_file(self, tmp_path):
         """Test loading a malformed configuration file."""
-        from scripts.sentinel_cli import load_config
-
         config_file = tmp_path / "bad_config.json"
         config_file.write_text("{ invalid json }")
 
@@ -43,8 +42,6 @@ class TestErrorHandling:
 
     def test_missing_config_file(self):
         """Test loading a non-existent configuration file."""
-        from scripts.sentinel_cli import load_config
-
         with pytest.raises(FileNotFoundError, match="Config file not found"):
             load_config("/nonexistent/config.json")
 
