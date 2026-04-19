@@ -327,6 +327,7 @@ tests/unit/test_utilities.py
   - Differential scanning (PR-based)
   - Rate limiting
 - **Estimate:** 60 hours
+- **PoC (2026-04-19):** `scripts/factory-droid-validate.sh` + Factory Droid Template 6 (see `docs/factory-droid-linear-templates.md`) front-runs the batch-scan piece with a supervised-Droid workflow — no OAuth, no dashboard, just URL → JSON verdict.
 
 **F4.2: Dynamic Sandbox Execution**
 - **Description:** Execute code in isolated environment to detect runtime issues
