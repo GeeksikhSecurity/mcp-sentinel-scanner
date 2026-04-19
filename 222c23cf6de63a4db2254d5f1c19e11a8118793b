@@ -1,0 +1,29 @@
+docs/factory-droid-workflow.md
+  cb4a792285b23530 1-161
+docs/factory-droid-linear-templates.md
+  cb4a792285b23530 1-381
+scripts/factory-droid-validate.sh
+  cb4a792285b23530 1-123
+ROADMAP.md
+  cb4a792285b23530 330
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "222c23cf6de63a4db2254d5f1c19e11a8118793b",
+  "prompts": {
+    "cb4a792285b23530": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "639bb6c0-82ee-44b9-9c1b-3fc084a58425",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "GeeksikhSecurity",
+      "messages": [],
+      "total_additions": 666,
+      "total_deletions": 0,
+      "accepted_lines": 666,
+      "overriden_lines": 0
+    }
+  }
+}
