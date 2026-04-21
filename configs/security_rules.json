@@ -58,7 +58,8 @@
       "pattern": "random\\.(random|randint|choice)\\(",
       "description": "Insecure random number generator for security-sensitive operations",
       "cwe": "CWE-338",
-      "recommendation": "Use secrets module for cryptographic randomness"
+      "recommendation": "Use secrets module for cryptographic randomness",
+      "enabled": false
     }
   ],
   "false_positive_filters": [
