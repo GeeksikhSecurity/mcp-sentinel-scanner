@@ -88,9 +88,11 @@ class MCPSentinelScanner:
         parallel_workers: int = 4,
     ) -> None:
         self.config = config or {}
-        self.parallel_workers = max(1, parallel_workers)
+        self._secret_entropy_min = 3.5
         self.advanced_engine = AdvancedDetectionEngine(self.config)
         self.patterns = self._load_default_patterns()
+        self._extend_patterns_from_custom_rules_file()
+        self.parallel_workers = max(1, int(self.config.get("parallel_workers", parallel_workers)))
 
     # region public API
     def scan(self, target: str | Path) -> ScanResult:
@@ -412,8 +414,9 @@ class MCPSentinelScanner:
                 secret_value = match.group(2)
                 entropy = self._shannon_entropy(secret_value)
 
-                # Skip low entropy (repetitive/simple patterns)
-                if entropy < 3.5:
+                # Skip low entropy (repetitive/simple patterns); floor from ``scanner_tuning`` in
+                # ``configs/security_rules.json`` (default 3.5).
+                if entropy < self._secret_entropy_min:
                     continue
 
                 # Skip if it looks like a placeholder
@@ -581,6 +584,46 @@ class MCPSentinelScanner:
             },
         ]
         return patterns
+
+    def _extend_patterns_from_custom_rules_file(self) -> None:
+        """Append regex patterns from ``configs/security_rules.json`` (or ``custom_rules_file``)."""
+        raw_path = self.config.get("custom_rules_file")
+        if not raw_path:
+            return
+        path = Path(str(raw_path)).expanduser()
+        if not path.is_absolute():
+            path = (Path.cwd() / path).resolve()
+        if not path.is_file():
+            return
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return
+        tuning = payload.get("scanner_tuning") or {}
+        self._secret_entropy_min = float(tuning.get("secret_shannon_entropy_min", self._secret_entropy_min))
+        if "parallel_workers" in tuning:
+            self.config["parallel_workers"] = int(tuning["parallel_workers"])
+        for rule in payload.get("custom_rules", []):
+            if rule.get("enabled") is False:
+                continue
+            pattern_str = str(rule.get("pattern", "")).strip()
+            if not pattern_str:
+                continue
+            try:
+                compiled = re.compile(pattern_str)
+            except re.error:
+                continue
+            self.patterns.append(
+                {
+                    "category": str(rule.get("category") or rule.get("id") or "custom"),
+                    "regex": compiled,
+                    "severity": str(rule.get("severity", "MEDIUM")),
+                    "description": str(rule.get("description", "Custom rule match")),
+                    "recommendation": str(rule.get("recommendation", "Review and fix.")),
+                    "cwe": rule.get("cwe"),
+                    "confidence": float(rule.get("confidence", 0.75)),
+                }
+            )
 
     def _extract_line(self, text: str, lineno: int, context: int = 1) -> str:
         lines = text.splitlines()

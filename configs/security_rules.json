@@ -92,5 +92,9 @@
     "sql_injection",
     "code_injection",
     "insecure_deserialization"
-  ]
+  ],
+  "scanner_tuning": {
+    "secret_shannon_entropy_min": 4.8,
+    "parallel_workers": 4
+  }
 }
