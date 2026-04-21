@@ -1,0 +1,42 @@
+scripts/benchmark.py
+  e3acafa012db6f54 4-7,10,12,20,23-168,338-363,365-368
+scripts/run_optimization_experiments.py
+  e3acafa012db6f54 1-298
+configs/security_rules.json
+  e3acafa012db6f54 95-99
+src/mcp_sentinel_scanner.py
+  e3acafa012db6f54 91,94-95,417-419,588-627
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "61275e9a9eda5909de070f274264cf408bde8c0a",
+  "prompts": {
+    "9283483a4f82db21": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbd7c011-2cd4-42e3-8f5b-70bd5a3c1583",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "GeeksikhSecurity",
+      "messages": [],
+      "total_additions": 1156,
+      "total_deletions": 0,
+      "accepted_lines": 1156,
+      "overriden_lines": 0
+    },
+    "e3acafa012db6f54": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "c33a2bb8-8eca-44e9-8acf-5d6119316006",
+        "model": "default"
+      },
+      "human_author": "GeeksikhSecurity",
+      "messages": [],
+      "total_additions": 564,
+      "total_deletions": 38,
+      "accepted_lines": 532,
+      "overriden_lines": 0
+    }
+  }
+}
