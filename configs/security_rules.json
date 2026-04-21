@@ -94,7 +94,7 @@
     "insecure_deserialization"
   ],
   "scanner_tuning": {
-    "secret_shannon_entropy_min": 5.5,
+    "secret_shannon_entropy_min": 6.0,
     "parallel_workers": 4
   }
 }
