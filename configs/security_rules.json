@@ -96,6 +96,6 @@
   ],
   "scanner_tuning": {
     "secret_shannon_entropy_min": 6.0,
-    "parallel_workers": 4
+    "parallel_workers": 8
   }
 }
