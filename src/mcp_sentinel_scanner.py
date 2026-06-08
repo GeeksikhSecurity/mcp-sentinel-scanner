@@ -92,7 +92,7 @@ class MCPSentinelScanner:
         self.advanced_engine = AdvancedDetectionEngine(self.config)
         self.patterns = self._load_default_patterns()
         self._extend_patterns_from_custom_rules_file()
-        self.parallel_workers = max(1, int(self.config.get("parallel_workers", parallel_workers)))
+        self._apply_scanner_tuning_overrides(parallel_workers)
 
     # region public API
     def scan(self, target: str | Path) -> ScanResult:
@@ -603,8 +603,11 @@ class MCPSentinelScanner:
         self._secret_entropy_min = float(tuning.get("secret_shannon_entropy_min", self._secret_entropy_min))
         if "parallel_workers" in tuning:
             self.config["parallel_workers"] = int(tuning["parallel_workers"])
+        disabled_ids = set(str(x) for x in (self.config.get("disabled_custom_rule_ids") or []))
         for rule in payload.get("custom_rules", []):
             if rule.get("enabled") is False:
+                continue
+            if str(rule.get("id", "")) in disabled_ids:
                 continue
             pattern_str = str(rule.get("pattern", "")).strip()
             if not pattern_str:
@@ -624,6 +627,15 @@ class MCPSentinelScanner:
                     "confidence": float(rule.get("confidence", 0.75)),
                 }
             )
+
+    def _apply_scanner_tuning_overrides(self, parallel_workers: int) -> None:
+        """Apply ``config['scanner_tuning']`` after file load (CLI / parent config wins over file)."""
+        ov = self.config.get("scanner_tuning") or {}
+        if "secret_shannon_entropy_min" in ov:
+            self._secret_entropy_min = float(ov["secret_shannon_entropy_min"])
+        if "parallel_workers" in ov:
+            self.config["parallel_workers"] = int(ov["parallel_workers"])
+        self.parallel_workers = max(1, int(self.config.get("parallel_workers", parallel_workers)))
 
     def _extract_line(self, text: str, lineno: int, context: int = 1) -> str:
         lines = text.splitlines()

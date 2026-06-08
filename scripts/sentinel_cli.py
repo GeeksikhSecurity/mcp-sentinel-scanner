@@ -21,13 +21,21 @@ from src.unified_scanner import UnifiedScanner
 colorama_init()
 
 
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="sentinel_cli.py",
         description="MCP Sentinel Scanner - Advanced Security Analysis Tool",
     )
     parser.add_argument("target", help="Target directory or file to scan")
-    parser.add_argument("-c", "--config", help="Configuration file path")
+    parser.add_argument(
+        "-c",
+        "--config",
+        help="Configuration file path (defaults to configs/security_rules.json next to this repo)",
+    )
     parser.add_argument(
         "--exclude",
         action="append",
@@ -39,6 +47,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument(
         "-f",
         "--format",
+        "--output-format",
         choices=["json", "markdown", "terminal", "sarif", "html"],
         default="terminal",
         help="Output format",
@@ -49,7 +58,47 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Minimum severity level to report",
     )
     parser.add_argument("--no-colors", action="store_true", help="Disable colored output")
-    parser.add_argument("--parallel", type=int, default=4, help="Number of parallel workers")
+    parser.add_argument(
+        "--parallel",
+        type=int,
+        default=4,
+        help=(
+            "Number of parallel workers (default 4). The default value is treated "
+            "as 'no explicit intent' and yields to config scanner_tuning.parallel_workers; "
+            "use --parallel-workers to force a value (including 4)."
+        ),
+    )
+    parser.add_argument(
+        "--parallel-workers",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Override parallel workers (same as --parallel; takes precedence if set)",
+    )
+    parser.add_argument(
+        "--secret-shannon-entropy-min",
+        type=float,
+        default=None,
+        metavar="BITS",
+        help="Minimum Shannon entropy for hardcoded_secret matches (overrides config file)",
+    )
+    parser.add_argument(
+        "--mcp-insecure-random",
+        choices=("true", "false"),
+        default=None,
+        help=(
+            "Toggle the CLI-level disable of the mcp-insecure-random custom rule "
+            "(false = force off). NOTE: the rule ships 'enabled: false' in "
+            "configs/security_rules.json, so 'true' only clears a CLI disable and "
+            "does NOT by itself re-enable the rule."
+        ),
+    )
+    parser.add_argument(
+        "--quiet",
+        "-q",
+        action="store_true",
+        help="Suppress the 'Report written to ...' stderr notice when using -o",
+    )
     parser.add_argument(
         "--deep-scan", action="store_true", help="Enable advanced detection modules"
     )
@@ -128,11 +177,48 @@ def format_terminal(result, use_color: bool) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv or sys.argv[1:])
+    config_path = args.config
+    if not config_path:
+        default_rules = _repo_root() / "configs" / "security_rules.json"
+        if default_rules.is_file():
+            config_path = str(default_rules)
+
     try:
-        config = load_config(args.config)
+        config = load_config(config_path) if config_path else {}
     except Exception as exc:  # pragma: no cover - defensive
         print(f"Failed to load configuration: {exc}", file=sys.stderr)
         return 2
+
+    if config_path and "custom_rules_file" not in config:
+        config["custom_rules_file"] = str(Path(config_path).resolve())
+
+    tuning = config.setdefault("scanner_tuning", {})
+    if args.secret_shannon_entropy_min is not None:
+        tuning["secret_shannon_entropy_min"] = args.secret_shannon_entropy_min
+    # Do not overwrite file defaults with --parallel 4; only apply explicit CLI intent.
+    if args.parallel_workers is not None:
+        tuning["parallel_workers"] = args.parallel_workers
+    elif args.parallel != 4:
+        tuning["parallel_workers"] = args.parallel
+
+    effective_parallel = (
+        args.parallel_workers if args.parallel_workers is not None else args.parallel
+    )
+
+    if args.mcp_insecure_random == "false":
+        dis = list(config.get("disabled_custom_rule_ids") or [])
+        if "mcp-insecure-random" not in dis:
+            dis.append("mcp-insecure-random")
+        config["disabled_custom_rule_ids"] = dis
+    elif args.mcp_insecure_random == "true":
+        # Symmetric with the "false" branch: clear a CLI-level disable. This does
+        # NOT activate the rule on its own — it ships `enabled: false` in
+        # security_rules.json and _extend_patterns_from_custom_rules_file skips
+        # enabled:false rules. Documented in the flag's help text.
+        config["disabled_custom_rule_ids"] = [
+            r for r in (config.get("disabled_custom_rule_ids") or [])
+            if r != "mcp-insecure-random"
+        ]
 
     # Merge CLI excludes into config (config values first, then CLI additions).
     cli_excludes = [item for group in (args.exclude or []) for item in group]
@@ -148,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.unified:
         scanner = UnifiedScanner(config=config)
     else:
-        scanner = MCPSentinelScanner(config=config, parallel_workers=args.parallel)
+        scanner = MCPSentinelScanner(config=config, parallel_workers=effective_parallel)
 
     try:
         result = scanner.scan(args.target)
@@ -174,7 +260,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.output:
         Path(args.output).write_text(output_text, encoding="utf-8")
-        print(f"Report written to {args.output}")
+        if not args.quiet:
+            print(f"Report written to {args.output}", file=sys.stderr)
     else:
         print(output_text)
     return 0

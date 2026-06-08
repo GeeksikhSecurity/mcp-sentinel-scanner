@@ -39,6 +39,16 @@ def _build_registry(tools: Optional[str] = None) -> ScannerRegistry:
     registry.register_analyzer(NpmAnalyzer())
     registry.register_analyzer(ReactAnalyzer())
 
+    # NOTE (SAY-281, cubic P2 — prose detectors not yet wired):
+    # ProseAttackSurfaceAnalyzer and ProseCompositionAnalyzer are intentionally
+    # NOT registered here yet. The single-file ProseAttackSurfaceAnalyzer could
+    # register like the analyzers above, but ProseCompositionAnalyzer is
+    # corpus-level (`analyze_corpus` over many files) and needs a multi-file pass
+    # plus the ProseSarifEmitter wired into the output path — that integration is
+    # Phase 3b. Until then the prose detectors run ONLY via their unit tests and
+    # the `sentinel.sarif.prose_sarif` helpers; they do not execute in a normal
+    # scan. Do not assume prose findings appear in CLI output until wired.
+
     # External tool adapters (optional — skip if tool not installed)
     try:
         from ..adapters.semgrep import SemgrepAdapter

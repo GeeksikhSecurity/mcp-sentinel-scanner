@@ -87,6 +87,7 @@ Issues = "https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/issues"
 sentinel = "sentinel.cli.main:cli"
 # Backward compat aliases (will show deprecation warning)
 mcp-scan = "scripts.sentinel_cli:main"
+mcp-sentinel-scanner = "scripts.sentinel_cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sentinel"]
@@ -161,6 +162,7 @@ addopts = [
     "--cov-report=html",
     "--cov-report=xml",
 ]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
