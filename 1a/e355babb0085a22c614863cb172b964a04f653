@@ -1,0 +1,102 @@
+tests/fixtures/composition/soft_agent_no_invariants.prose.md
+  s_71800c0f98d228::t_1372ab8f5bda0e 1-25
+tests/test_composition_analyzer.py
+  s_71800c0f98d228::t_1372ab8f5bda0e 1-287
+pyproject.toml
+  e3acafa012db6f54 90
+  s_71800c0f98d228::t_6104be10318758 165
+src/sentinel/cli/main.py
+  s_f46ef473a8be7f::t_7055130d2ce3bd 42-51
+src/sentinel/sarif/prose_sarif.py
+  s_71800c0f98d228::t_402c442bd1197b 1-229,231-384
+  s_71800c0f98d228::t_a764fb3248131d 230
+scripts/sentinel_cli.py
+  s_f46ef473a8be7f::t_5ed610ccf4577c 89-94,97-100
+  s_f46ef473a8be7f::t_e8c6ae5046afaf 61-70
+  s_f46ef473a8be7f::t_4c26c0eb3b3c3a 213-221
+  e3acafa012db6f54 24-27,34-38,50,72-88,95-96,101,180-185,187,192-212,237,263-264
+tests/fixtures/composition/soft_no_key_overlap.prose.md
+  s_71800c0f98d228::t_1372ab8f5bda0e 1-26
+tests/fixtures/prose_attack_surface/comparison_diffs.prose.md
+  s_1505ca8af60bbe::t_29f42fb27e0377 1-34
+src/sentinel/analyzers/prose_attack_surface.py
+  s_1505ca8af60bbe::t_51b977f33bab83 18-30,107-118,249,251-254,475-479,497-504
+  s_f46ef473a8be7f::t_96499ed6d87558 303-311,314,321,328-332,334-340,358,376-406,410,416,418-419,421-422,426-430,432-437
+  s_f46ef473a8be7f::t_0def6fee028c45 198-202
+  s_71800c0f98d228::t_b0fec60ee9515b 415,417,420,423-425,431,438-439
+  s_1505ca8af60bbe::t_2216c1dc7b80a5 1-17,37-44,46,48-67,71,95-106,122,137,139-185,189,193-197,203-243,256-257,259-260,268-302,312-313,315-320,322-327,333,341-342,345-346,351,354,357,359,361-363,365-368,370-372,374-375,407-409,411-414,442,447-453
+  s_1505ca8af60bbe::t_13356fea6e9bcb 32-36,120,138,186,192,244-245,255,258,261-267,343-344,347-350,352-353,355-356,360,364,369,373
+  s_1505ca8af60bbe::t_a21e1427654670 47,191,250,461-474,480-496
+  s_71800c0f98d228::t_5ee3cd4499b2f8 45,68-70,72-94
+  s_f46ef473a8be7f::t_6e11d9a65f02ef 123-135
+  s_1505ca8af60bbe::t_2ce236e877d8e4 31,119,121,136,187-188,190,246-248,440-441,443-446,454-460
+tests/fixtures/composition/hard_agent_with_invariants.prose.md
+  s_71800c0f98d228::t_1372ab8f5bda0e 1-39
+tests/fixtures/prose_attack_surface/system_improver_full.prose.md
+  s_1505ca8af60bbe::t_c9a2f373c061e9 1-7,9-10,13,17-30,35-106
+  s_1505ca8af60bbe::t_c296f224cd1ca6 8,11-12,14-16,31-34
+src/sentinel/analyzers/composition_analyzer.py
+  s_71800c0f98d228::t_dc972464b2a5f4 1-27,29-67,71-215
+  s_f46ef473a8be7f::t_4bbfb2aad4af12 28
+  s_f46ef473a8be7f::t_98e5a64466c280 68-70
+tests/fixtures/composition/both_hard_no_finding.prose.md
+  s_71800c0f98d228::t_1372ab8f5bda0e 1-30
+tests/test_prose_attack_surface.py
+  s_1505ca8af60bbe::t_a5c3b8bc24d8df 108-113,246
+  s_1505ca8af60bbe::t_55a47473833b88 27-32,103,225-235,242
+  s_1505ca8af60bbe::t_fd6cea82681233 1-26,33-48,61-102,104-107,114-224,236-241,243-245,247-255
+  s_f46ef473a8be7f::t_54cc0d3af38791 49-60
+tests/test_prose_sarif.py
+  s_71800c0f98d228::t_1372ab8f5bda0e 1-458
+src/sentinel/sarif/__init__.py
+  s_71800c0f98d228::t_a7cce894e5b643 1-13
+src/mcp_sentinel_scanner.py
+  e3acafa012db6f54 95,606,610-611,631-639
+tests/fixtures/prose_attack_surface/singular_invariant_section.prose.md
+  s_f46ef473a8be7f::t_1420940c71c5bf 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "1ae355babb0085a22c614863cb172b964a04f653",
+  "prompts": {
+    "e3acafa012db6f54": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "c33a2bb8-8eca-44e9-8acf-5d6119316006",
+        "model": "default"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>",
+      "total_additions": 182,
+      "total_deletions": 7,
+      "accepted_lines": 178,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_1505ca8af60bbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6d671c59-21aa-4a38-95a1-1202701b7aad",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    },
+    "s_71800c0f98d228": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f24c4fee-bf7c-4845-913b-0edc3bd81c5d",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    },
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
