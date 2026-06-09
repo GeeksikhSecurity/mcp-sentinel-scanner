@@ -36,7 +36,10 @@ def test_cli_respects_output_file(tmp_path, capsys):
 
     assert exit_code == 0
     captured = capsys.readouterr()
-    assert f"Report written to {output}" in captured.out
+    # The "Report written to" notice goes to stderr (stdout stays clean for
+    # piped output; --quiet suppresses this stderr line). cubic P1: this
+    # assertion was left on stdout when the notice moved to stderr.
+    assert f"Report written to {output}" in captured.err
     data = json.loads(output.read_text())
     assert data["scan_summary"]["files_scanned"] >= 1
     assert data["scan_summary"]["vulnerabilities_found"] >= 1
