@@ -32,8 +32,11 @@ jobs:
           python -m pytest -q
 
       - name: Repo corpus smoke (offline/local fixtures)
+        # PYTHONPATH=. so `from scripts.repo_corpus_runner import ...` resolves —
+        # running `python scripts/X.py` puts scripts/ (not repo root) on sys.path,
+        # and the `scripts` package is not part of the installed wheel.
         run: |
-          python scripts/run_repo_corpus.py --tier smoke --manifest configs/repo_corpus.json --output-dir reports/repo_corpus
+          PYTHONPATH=. python scripts/run_repo_corpus.py --tier smoke --manifest configs/repo_corpus.json --output-dir reports/repo_corpus
 
       - name: Upload corpus artifacts
         if: always()
