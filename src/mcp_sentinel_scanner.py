@@ -11,6 +11,7 @@ import queue
 import re
 import threading
 import time
+import warnings
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Set, Tuple
 
@@ -47,6 +48,13 @@ SEVERITY_WEIGHTS: Dict[str, float] = {
     "MEDIUM": 0.5,
     "LOW": 0.25,
 }
+
+# Per-character Shannon entropy is bounded by log2(distinct chars). Real secrets
+# top out near ~4.75 bits (a Stripe key) and effectively never exceed ~5.0; a
+# 64-char all-distinct hex string only reaches 4.0. A floor above this ceiling
+# silently disables hardcoded_secret (CWE-798) detection — the regression that
+# the automated triage loop drove the config to 6.0. Used as a fail-loud guard.
+_SECRET_ENTROPY_REACHABLE_MAX = 5.0
 
 
 class MCPSentinelScanner:
@@ -636,6 +644,17 @@ class MCPSentinelScanner:
         if "parallel_workers" in ov:
             self.config["parallel_workers"] = int(ov["parallel_workers"])
         self.parallel_workers = max(1, int(self.config.get("parallel_workers", parallel_workers)))
+
+        # Fail loud on an entropy floor that cannot be reached by real secrets —
+        # otherwise hardcoded-secret detection is silently dead (see constant).
+        if self._secret_entropy_min > _SECRET_ENTROPY_REACHABLE_MAX:
+            warnings.warn(
+                f"secret_shannon_entropy_min={self._secret_entropy_min} exceeds the "
+                f"reachable range for real secrets (~{_SECRET_ENTROPY_REACHABLE_MAX} bits); "
+                f"hardcoded-secret (CWE-798) detection is effectively disabled. "
+                f"Lower it (code default 3.5) to restore coverage.",
+                stacklevel=2,
+            )
 
     def _extract_line(self, text: str, lineno: int, context: int = 1) -> str:
         lines = text.splitlines()

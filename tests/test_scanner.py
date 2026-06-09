@@ -1,3 +1,4 @@
+import copy
 import json
 from pathlib import Path
 
@@ -33,6 +34,41 @@ def test_entropy_threshold_filters_low_entropy(tmp_path: Path):
 
     secret_findings = [f for f in result.findings if f.category == "hardcoded_secret"]
     assert secret_findings == []
+
+
+# A realistic, high-entropy token (~4.6 bits): detectable at the default floor,
+# unreachable at the floor the automated triage loop drove the config to (6.0).
+_REAL_SECRET_LINE = 'aws_secret = "wJalrXUtnFEMIK7MDENGbPxRfiCYz9Qd2KbN1pLm"\n'
+
+
+def _secret_findings_at_floor(tmp_path: Path, floor: float):
+    sample = tmp_path / "creds.py"
+    sample.write_text(_REAL_SECRET_LINE)
+    cfg = copy.deepcopy(_TEST_CONFIG)
+    cfg.setdefault("scanner_tuning", {})["secret_shannon_entropy_min"] = floor
+    scanner = MCPSentinelScanner(config=cfg)
+    result = scanner.scan(sample)
+    return [f for f in result.findings if f.category == "hardcoded_secret"]
+
+
+def test_realistic_secret_detected_at_default_floor(tmp_path: Path):
+    """Regression (cubic P1): a real-entropy secret MUST be detected at the
+    default floor (3.5). The automated triage loop had ratcheted the floor to
+    6.0 — mathematically unreachable for real secrets (per-char Shannon entropy
+    is bounded by log2(len)) — silently disabling CWE-798 detection.
+    """
+    assert _secret_findings_at_floor(tmp_path, 3.5), (
+        "a real secret must be detected at the default 3.5 floor"
+    )
+
+
+def test_unreachable_entropy_floor_warns_and_suppresses(tmp_path: Path):
+    """Defense-in-depth: an entropy floor above the reachable ceiling warns
+    loudly and (proving the regression) suppresses the real secret.
+    """
+    with pytest.warns(UserWarning, match="effectively disabled"):
+        found = _secret_findings_at_floor(tmp_path, 6.0)
+    assert found == [], "6.0 floor is unreachable for real secrets — documents the regression"
 
 
 def test_ast_detects_dangerous_calls(tmp_path: Path):

@@ -69,8 +69,14 @@ def run_experiment(
     description: str,
     reference_time: float,
     base_critical: int,
-) -> Tuple[Dict[str, Any], float, bool, bool]:
-    """Returns (result, efficiency, ok_critical, ok_efficiency_gate)."""
+    base_findings: int,
+) -> Tuple[Dict[str, Any], float, bool, bool, bool]:
+    """Returns (result, efficiency, ok_critical, ok_efficiency_gate, ok_recall).
+
+    `ok_recall` guards TOTAL findings, not just CRITICAL. Entropy tuning affects
+    HIGH-severity hardcoded_secret findings, which the CRITICAL gate cannot see;
+    without this guard the loop is rewarded for deleting true positives. (cubic
+    P1/P2 — automated triage silently disabled secret detection.)"""
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     out = RESULTS_DIR / f"experiment_{exp_id:02d}_{variant}.json"
     meta = {
@@ -88,8 +94,12 @@ def run_experiment(
     )
     agg = result["aggregate"]
     crit = int(agg["total_critical"])
+    find = int(agg["total_findings"])
     eff = float(agg["aggregate_efficiency"] or 0.0)
     ok_crit = crit >= base_critical
+    # Recall guard: a "more efficient" config must not drop findings. This is the
+    # severity-blind spot the CRITICAL-only gate missed (secrets are HIGH).
+    ok_recall = find >= base_findings
     ok_eff = eff >= EFFICIENCY_COMMIT_MIN
     line = {
         "ts": result["generated_at"],
@@ -104,11 +114,12 @@ def run_experiment(
         "total_findings": int(agg["total_findings"]),
         "total_time_sec": float(agg["total_time_sec"]),
         "passed_critical_gate": ok_crit,
+        "passed_recall_gate": ok_recall,
         "passed_efficiency_gate": ok_eff,
         "output": str(out),
     }
     append_log(line)
-    return result, eff, ok_crit, ok_eff
+    return result, eff, ok_crit, ok_eff, ok_recall
 
 
 def patch_entropy(base: Dict[str, Any], value: float) -> Dict[str, Any]:
@@ -149,7 +160,7 @@ def main() -> None:
     print(
         f"Baseline: critical={base_crit} findings={base_find} "
         f"ref_time={ref_time:.4f}s efficiency≈{base_eff:.6f} "
-        f"(commit if eff>={EFFICIENCY_COMMIT_MIN} and no CRITICAL loss)\n"
+        f"(commit if eff>={EFFICIENCY_COMMIT_MIN} and no CRITICAL/recall loss)\n"
     )
 
     bench = _load_benchmark_module()
@@ -172,7 +183,7 @@ def main() -> None:
 
         exp_id += 1
         save_rules(rules)
-        _result, eff, ok_crit, ok_eff = run_experiment(
+        _result, eff, ok_crit, ok_eff, ok_recall = run_experiment(
             bench,
             exp_id=exp_id,
             hypothesis=hypothesis,
@@ -180,10 +191,11 @@ def main() -> None:
             description=description,
             reference_time=ref_time,
             base_critical=base_crit,
+            base_findings=base_find,
         )
         print(
             f"  [{exp_id}/{MAX_EXPERIMENTS}] {variant} eff={eff:.6f} "
-            f"ok_crit={ok_crit} ok_eff_gate={ok_eff}"
+            f"ok_crit={ok_crit} ok_recall={ok_recall} ok_eff_gate={ok_eff}"
         )
 
         if not ok_crit:
@@ -191,12 +203,21 @@ def main() -> None:
             save_rules(committed_head)
             return "fail_critical"
 
-        if ok_crit and ok_eff:
+        if not ok_recall:
+            # A config that drops findings is rejected regardless of efficiency —
+            # for a security scanner, lost recall is the real cost. This is the
+            # gate the entropy-floor ratchet (4.8→6.0) slipped past.
+            print("  -> revert (recall loss; findings dropped); restore last committed rules")
+            save_rules(committed_head)
+            return "fail_recall"
+
+        if ok_crit and ok_recall and ok_eff:
             best_eff = max(best_eff, eff)
             msg = (
                 f"optimize(triage): {description}\n\n"
                 f"Aggregate efficiency {eff:.4f} (gate {EFFICIENCY_COMMIT_MIN}). "
-                f"CRITICAL count unchanged at {base_crit}. "
+                f"CRITICAL count unchanged at {base_crit}; total findings >= "
+                f"baseline {base_find} (recall preserved). "
                 f"Baseline reference time {ref_time:.4f}s."
             )
             try:
