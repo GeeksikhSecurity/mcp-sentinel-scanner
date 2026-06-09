@@ -1,0 +1,33 @@
+tests/test_scanner.py
+  s_f46ef473a8be7f::t_e0ff5776786d53 1
+  s_f46ef473a8be7f::t_b76773041dbd91 39-73
+scripts/run_optimization_experiments.py
+  s_f46ef473a8be7f::t_f75c859568de74 72-79
+  s_f46ef473a8be7f::t_cbc65d3957575d 186,194,198,206-214
+  s_f46ef473a8be7f::t_609a2bbb7b915a 117,122
+  s_f46ef473a8be7f::t_a9b65ddea1612c 163
+  s_f46ef473a8be7f::t_f4758ee27ce9ee 219-220
+  s_f46ef473a8be7f::t_79a073e2d4282b 97,100-102
+src/mcp_sentinel_scanner.py
+  s_f46ef473a8be7f::t_97058e5d297090 648-658
+  s_f46ef473a8be7f::t_886e5244524b08 14
+  s_f46ef473a8be7f::t_67d1157656c219 52-58
+configs/security_rules.json
+  s_f46ef473a8be7f::t_66014dd18f6f43 98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "daa85717e920038df96a28f557d8d650b85532c1",
+  "prompts": {},
+  "sessions": {
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
