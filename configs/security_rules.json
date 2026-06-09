@@ -59,7 +59,8 @@
       "description": "Insecure random number generator for security-sensitive operations",
       "cwe": "CWE-338",
       "recommendation": "Use secrets module for cryptographic randomness",
-      "enabled": false
+      "enabled": false,
+      "disabled_reason": "Kept OFF deliberately, not by optimizer erosion. The pattern matches ALL random.random/randint/choice calls, the vast majority of which are non-security (sampling, shuffling, test data) -> high false-positive rate unacceptable for a default rule. It was auto-disabled by the optimize(triage) loop with no rationale (commit 95357d0); this field replaces that silent disable with an explicit decision. TO RE-ENABLE: narrow the pattern to security contexts (e.g. require a nearby token/secret/key/password/nonce/salt keyword) first, then set enabled:true. The optimizer recall gate (run_optimization_experiments.py) now prevents silent re-disabling of an enabled rule."
     }
   ],
   "false_positive_filters": [
