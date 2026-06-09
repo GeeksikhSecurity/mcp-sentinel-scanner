@@ -1,0 +1,22 @@
+tests/test_cli.py
+  s_f46ef473a8be7f::t_4a2ca4c983915b 39-42
+pyproject.toml
+  s_f46ef473a8be7f::t_b2cb5519405c94 50
+  s_f46ef473a8be7f::t_cdd82a6169d829 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5fe06eaa2f4534197cd5ca03809023f750b6cf63",
+  "prompts": {},
+  "sessions": {
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
