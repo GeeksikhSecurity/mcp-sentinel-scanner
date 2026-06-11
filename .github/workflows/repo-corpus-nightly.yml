@@ -3,7 +3,7 @@ name: Repo Corpus (Nightly)
 on:
   schedule:
     - cron: "0 3 * * *"
-    workflow_dispatch:
+  workflow_dispatch:
     inputs:
       tier:
         description: "Tier to run (smoke/full/nightly/all)"
