@@ -73,3 +73,23 @@ an MD5 used as a password hash).
 - ⚠️ FP sources to fix: subprocess and weak-hash rules need context gates (this doc);
   language coverage is Python/JS/TS-centric (issue #9); CWE-95 mislabel (issue #10);
   unified adapters fail silently (issue #8).
+
+## Lessons learned (resolved this round)
+
+1. **Prose rule ≠ prevention.** `CLAUDE.md` already documented the entropy-floor
+   hazard, yet the phase2 scripts re-baked it (6.5/6.0) because nothing *checked*
+   the committed scripts. Fix: `scripts/lint-invariants.py` + CI — the invariant
+   is now a commit-time gate (reads the ceiling from the scanner so it can't
+   drift). **When a reviewer catches what your rule already forbade, ship the
+   missing check, not just the fix.**
+2. **Silent tooling is worse than missing tooling.** The semgrep/trufflehog
+   adapters returned `[]` on timeout/error with no warning → false coverage
+   confidence. Removed them (issue #8); run those tools dedicated. A precise core
+   beats a silent aggregate.
+3. **Name-match detectors over-report; gate on context.** `subprocess.Popen`
+   without `shell=True` isn't command injection; `hashlib.md5(...,
+   usedforsecurity=False)` isn't weak crypto. Context gates + a regression test
+   eliminated 5 aws-mcp false positives with zero true-positive loss.
+4. **Duplicated logic drifts.** The same detectors live in
+   `src/mcp_sentinel_scanner.py` AND `src/sentinel/core/scanner.py`; both needed
+   the same fix. Consolidating to one source of truth is open follow-up.
