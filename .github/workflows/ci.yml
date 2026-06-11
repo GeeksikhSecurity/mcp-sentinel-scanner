@@ -14,6 +14,12 @@ jobs:
         with:
           python-version: "3.12"
 
+      # Fast, zero-dependency gate: turns the CLAUDE.md "Optimizer & Metric
+      # Integrity" prose rules into a commit-time check (entropy ceiling,
+      # mcp-insecure-random no-op, KQL injection, no silent adapters).
+      - name: Invariant lint (prevention rules)
+        run: python scripts/lint-invariants.py
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
