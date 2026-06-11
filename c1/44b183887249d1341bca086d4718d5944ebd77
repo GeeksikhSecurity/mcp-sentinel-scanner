@@ -1,0 +1,19 @@
+docs/SESSION-HANDOFF.md
+  s_f46ef473a8be7f::t_4ef60a57376e28 1-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "c144b183887249d1341bca086d4718d5944ebd77",
+  "prompts": {},
+  "sessions": {
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
