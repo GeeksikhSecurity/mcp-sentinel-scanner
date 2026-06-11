@@ -1,0 +1,19 @@
+docs/mcp-corpus-test-findings.md
+  s_f46ef473a8be7f::t_9b3e58c9aa2494 76-95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "5a793c2830a4210e5372c4591067c2a7cd148eb9",
+  "prompts": {},
+  "sessions": {
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
