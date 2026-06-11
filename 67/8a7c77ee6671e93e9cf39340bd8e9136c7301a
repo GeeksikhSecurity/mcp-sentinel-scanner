@@ -1,0 +1,40 @@
+scripts/phase2/production-scan.sh
+  s_f46ef473a8be7f::t_0184cc706a5fdd 30
+  e3acafa012db6f54 1-29,31-48
+scripts/phase2/baseline-scan.sh
+  s_f46ef473a8be7f::t_77683f73b36ab3 33
+  e3acafa012db6f54 1-32,34-51
+scripts/m365-identity-kql-adapter/MDI-IdentityKql-Templates.ps1
+  s_f46ef473a8be7f::t_54ef0c6c721541 7-21
+  s_f46ef473a8be7f::t_82d19aca06ac94 58
+  s_f46ef473a8be7f::t_5fc516eaf552c6 34-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "678a7c77ee6671e93e9cf39340bd8e9136c7301a",
+  "prompts": {
+    "e3acafa012db6f54": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "c33a2bb8-8eca-44e9-8acf-5d6119316006",
+        "model": "default"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>",
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 97,
+      "overriden_lines": 0
+    }
+  },
+  "sessions": {
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
