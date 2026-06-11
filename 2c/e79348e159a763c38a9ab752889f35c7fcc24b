@@ -1,0 +1,31 @@
+src/sentinel/core/unified.py
+  s_f46ef473a8be7f::t_273fea1644a01e 26-27
+tests/test_unified_scanner.py
+  s_f46ef473a8be7f::t_258855c83af963 15,20,25-30,39,44,49,52,54,56-58
+  s_f46ef473a8be7f::t_8ab82a83a60eb7 135,140-141
+src/sentinel/core/registry.py
+  s_f46ef473a8be7f::t_551a97359c7998 1-7,10,22,24,43-44,52,57,59-63,71,74-77,95
+src/sentinel/core/pipeline.py
+  s_f46ef473a8be7f::t_fd9cc7ad1d2a8e 85
+src/sentinel/cli/main.py
+  s_f46ef473a8be7f::t_e37ac431effda4 193
+  s_f46ef473a8be7f::t_85f231d62274ec 52-56
+src/unified_scanner.py
+  s_f46ef473a8be7f::t_cb680cfffd6818 23-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "2ce79348e159a763c38a9ab752889f35c7fcc24b",
+  "prompts": {},
+  "sessions": {
+    "s_f46ef473a8be7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e40eda9-169f-48ae-b6de-9fd8ab8bd496",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
