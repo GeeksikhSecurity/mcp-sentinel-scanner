@@ -476,13 +476,16 @@ class MCPSentinelScanner:
 
             def visit_Call(self, node: ast.Call) -> None:  # type: ignore[override]
                 callee = self._resolve_name(node.func)
+                # subprocess.* is intentionally NOT flagged here: without shell=True
+                # it does not invoke a shell (not command injection), and the
+                # shell=True case is caught by the dedicated command_injection regex.
+                # Flagging bare subprocess.Popen produced false positives, e.g.
+                # subprocess.Popen(['open', url]) — list args, no shell. (FP fix.)
                 if callee in {
                     "eval",
                     "exec",
                     "compile",
                     "os.system",
-                    "subprocess.Popen",
-                    "subprocess.call",
                 }:
                     self.calls.append((node.lineno, callee))
                 self.generic_visit(node)
@@ -544,7 +547,9 @@ class MCPSentinelScanner:
             },
             {
                 "category": "weak_crypto",
-                "regex": re.compile(r"hashlib\.(md5|sha1)"),
+                # usedforsecurity=False is the stdlib signal that the digest is for
+                # caching/checksums, not security — don't flag it. (FP fix.)
+                "regex": re.compile(r"hashlib\.(md5|sha1)(?!.*usedforsecurity\s*=\s*False)"),
                 "severity": "MEDIUM",
                 "description": "Weak cryptographic hash function",
                 "recommendation": "Replace with SHA-256 or stronger.",

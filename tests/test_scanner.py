@@ -71,6 +71,33 @@ def test_unreachable_entropy_floor_warns_and_suppresses(tmp_path: Path):
     assert found == [], "6.0 floor is unreachable for real secrets — documents the regression"
 
 
+def test_fp_gates_subprocess_and_weak_crypto(tmp_path: Path):
+    """Context gates: don't flag safe subprocess/MD5 usage (corpus FP fix).
+
+    - subprocess.Popen/call WITHOUT shell=True does not invoke a shell, so it is
+      not command injection; only shell=True should flag (via the regex). Bare
+      subprocess (e.g. Popen(['open', url])) must NOT flag.
+    - hashlib.md5(..., usedforsecurity=False) is the stdlib non-security signal —
+      must NOT flag; a bare hashlib.md5() still must.
+    """
+    sample = tmp_path / "ctx.py"
+    sample.write_text(
+        "import subprocess, hashlib\n"
+        "def f(url, data, pw):\n"
+        "    subprocess.Popen(['open', url])\n"            # line 3: safe, no shell
+        "    subprocess.call(cmd, shell=True)\n"            # line 4: shell injection (TP)
+        "    hashlib.md5(data, usedforsecurity=False)\n"    # line 5: cache hash, safe
+        "    hashlib.md5(pw)\n"                             # line 6: weak crypto (TP)
+    )
+    scanner = MCPSentinelScanner(config=_TEST_CONFIG)
+    flagged = {(f.category, f.line_number) for f in scanner.scan(sample).findings}
+
+    assert ("dangerous_function", 3) not in flagged, "bare subprocess.Popen must not flag"
+    assert ("command_injection", 4) in flagged, "shell=True subprocess must flag"
+    assert ("weak_crypto", 5) not in flagged, "md5 usedforsecurity=False must not flag"
+    assert ("weak_crypto", 6) in flagged, "bare md5 must flag"
+
+
 def test_ast_detects_dangerous_calls(tmp_path: Path):
     sample = tmp_path / "danger.py"
     # nosec: Creating intentionally vulnerable test code
