@@ -12,59 +12,50 @@ class TestUnifiedScanner:
 
     def test_initialization(self):
         """Test scanner initialization."""
-        config = {
-            "tools": {"truffleHog": {"enabled": True}, "semgrep": {"enabled": False}},
-            "parallel_workers": 8,
-        }
+        config = {"parallel_workers": 8}
 
         scanner = UnifiedScanner(config)
 
         assert scanner.config == config
-        assert scanner.trufflehog.enabled is True
-        assert scanner.semgrep.enabled is False
+        assert scanner.mcp_scanner is not None
 
     @patch("src.unified_scanner.UnifiedScanner._run_mcp_scanner")
-    @patch("src.unified_scanner.UnifiedScanner._run_trufflehog")
-    @patch("src.unified_scanner.UnifiedScanner._run_semgrep")
     @patch("src.unified_scanner.UnifiedScanner._run_react_analyzer")
     @patch("src.unified_scanner.UnifiedScanner._run_npm_analyzer")
-    def test_parallel_execution(
-        self, mock_npm, mock_react, mock_semgrep, mock_trufflehog, mock_mcp
-    ):
-        """Test parallel execution of all scanners."""
+    def test_parallel_execution(self, mock_npm, mock_react, mock_mcp):
+        """Test parallel execution of the internal analyzers.
+
+        The semgrep/trufflehog adapters were removed (issue #8 — silent failure);
+        the unified scanner now orchestrates only the internal analyzers.
+        """
         # Mock return values
         mock_mcp.return_value = [self._create_test_finding("mcp")]
-        mock_trufflehog.return_value = [self._create_test_finding("trufflehog")]
-        mock_semgrep.return_value = [self._create_test_finding("semgrep")]
         mock_react.return_value = [self._create_test_finding("react")]
         mock_npm.return_value = [self._create_test_finding("npm")]
 
         scanner = UnifiedScanner()
         result = scanner.scan(Path("."))
 
-        # All scanners should be called
+        # All internal analyzers should be called
         mock_mcp.assert_called_once()
-        mock_trufflehog.assert_called_once()
-        mock_semgrep.assert_called_once()
         mock_react.assert_called_once()
         mock_npm.assert_called_once()
 
-        # Should have findings from all scanners (after FP reduction)
+        # Should have findings from all analyzers (after FP reduction)
         assert len(result.findings) > 0
         assert result.summary.vulnerabilities_found > 0
 
     def test_error_handling(self):
-        """Test error handling when scanners fail."""
+        """Test error handling when a scanner fails."""
         scanner = UnifiedScanner()
 
-        # Mock failing scanners
+        # Mock a failing scanner — must not crash the run
         with patch.object(scanner, "_run_mcp_scanner", side_effect=Exception("MCP failed")):
-            with patch.object(scanner, "_run_trufflehog", return_value=[]):
-                result = scanner.scan(Path("."))
+            result = scanner.scan(Path("."))
 
-                # Should not crash and return valid result
-                assert isinstance(result.summary.files_scanned, int)
-                assert isinstance(result.summary.scan_time, float)
+            # Should not crash and return valid result
+            assert isinstance(result.summary.files_scanned, int)
+            assert isinstance(result.summary.scan_time, float)
 
     @patch("src.unified_scanner.UnifiedScanner._run_mcp_scanner")
     def test_false_positive_reduction(self, mock_mcp):
@@ -140,18 +131,14 @@ class TestUnifiedScanner:
     def test_config_integration(self):
         """Test configuration integration."""
         config = {
-            "tools": {
-                "truffleHog": {"enabled": False},
-                "semgrep": {"enabled": True, "rules": ["security"]},
-            },
             "falsePositives": {"mlModel": {"enabled": False}},
+            "parallel_workers": 4,
         }
 
         scanner = UnifiedScanner(config)
 
-        assert not scanner.trufflehog.enabled
-        assert scanner.semgrep.enabled
-        assert scanner.semgrep.rules == ["security"]
+        assert scanner.config == config
+        assert scanner.context_analyzer is not None
 
     def _create_test_finding(self, source: str, severity: str = "HIGH") -> VulnerabilityFinding:
         """Create a test finding."""

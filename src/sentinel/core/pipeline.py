@@ -82,7 +82,7 @@ class ScanPipeline:
 
     Usage:
         registry = ScannerRegistry()
-        # ... register adapters and analyzers ...
+        # ... register analyzers ...
         pipeline = ScanPipeline(registry)
         result = pipeline.run(Path("/path/to/project"))
     """

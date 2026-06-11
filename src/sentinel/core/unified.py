@@ -5,8 +5,6 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from ..adapters.semgrep import SemgrepAdapter
-from ..adapters.trufflehog import TruffleHogAdapter
 from ..analyzers.npm import NpmAnalyzer
 from ..analyzers.react import ReactAnalyzer
 from ..fp_reducer.context_analyzer import ContextAnalyzer
@@ -25,8 +23,8 @@ class UnifiedScanner:
         self.mcp_scanner = MCPSentinelScanner(
             config, parallel_workers=self.config.get("parallel_workers", 4)
         )
-        self.trufflehog = TruffleHogAdapter(self.config.get("tools", {}).get("truffleHog", {}))
-        self.semgrep = SemgrepAdapter(self.config.get("tools", {}).get("semgrep", {}))
+        # semgrep/trufflehog adapters removed (issue #8 — silent coverage loss).
+        # Run those as dedicated tools; this scanner is the precise internal layer.
 
         # Initialize analyzers
         self.react_analyzer = ReactAnalyzer()
@@ -47,8 +45,6 @@ class UnifiedScanner:
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = {
                 executor.submit(self._run_mcp_scanner, target_path): "mcp",
-                executor.submit(self._run_trufflehog, target_path): "trufflehog",
-                executor.submit(self._run_semgrep, target_path): "semgrep",
                 executor.submit(self._run_react_analyzer, target_path): "react",
                 executor.submit(self._run_npm_analyzer, target_path): "npm",
             }
@@ -82,14 +78,6 @@ class UnifiedScanner:
             return result.findings
         except Exception:
             return []
-
-    def _run_trufflehog(self, target: Path) -> List[VulnerabilityFinding]:
-        """Run TruffleHog scanner."""
-        return self.trufflehog.run(target)
-
-    def _run_semgrep(self, target: Path) -> List[VulnerabilityFinding]:
-        """Run Semgrep scanner."""
-        return self.semgrep.run(target)
 
     def _run_react_analyzer(self, target: Path) -> List[VulnerabilityFinding]:
         """Run React analyzer."""

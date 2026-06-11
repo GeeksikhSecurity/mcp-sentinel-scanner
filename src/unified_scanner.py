@@ -5,7 +5,6 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from .adapters import SemgrepAdapter, TruffleHogAdapter
 from .analyzers import NpmAnalyzer, ReactAnalyzer
 from .fp_reducer import ContextAnalyzer, MLClassifier
 from .mcp_sentinel_scanner import MCPSentinelScanner, ScanResult, ScanSummary, VulnerabilityFinding
@@ -21,8 +20,11 @@ class UnifiedScanner:
         self.mcp_scanner = MCPSentinelScanner(
             config, parallel_workers=self.config.get("parallel_workers", 4)
         )
-        self.trufflehog = TruffleHogAdapter(self.config.get("tools", {}).get("truffleHog", {}))
-        self.semgrep = SemgrepAdapter(self.config.get("tools", {}).get("semgrep", {}))
+        # NOTE: the semgrep/trufflehog adapters were removed from the default run.
+        # In external-corpus testing they silently contributed nothing (returned []
+        # on timeout/error with no warning — see issue #8), so they gave a false
+        # sense of coverage. Run semgrep/trufflehog as dedicated tools instead; this
+        # scanner is the precise, validated layer (internal analyzers below).
 
         # Initialize analyzers
         self.react_analyzer = ReactAnalyzer()
@@ -43,8 +45,6 @@ class UnifiedScanner:
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = {
                 executor.submit(self._run_mcp_scanner, target_path): "mcp",
-                executor.submit(self._run_trufflehog, target_path): "trufflehog",
-                executor.submit(self._run_semgrep, target_path): "semgrep",
                 executor.submit(self._run_react_analyzer, target_path): "react",
                 executor.submit(self._run_npm_analyzer, target_path): "npm",
             }
@@ -78,14 +78,6 @@ class UnifiedScanner:
             return result.findings
         except Exception:
             return []
-
-    def _run_trufflehog(self, target: Path) -> List[VulnerabilityFinding]:
-        """Run TruffleHog scanner."""
-        return self.trufflehog.run(target)
-
-    def _run_semgrep(self, target: Path) -> List[VulnerabilityFinding]:
-        """Run Semgrep scanner."""
-        return self.semgrep.run(target)
 
     def _run_react_analyzer(self, target: Path) -> List[VulnerabilityFinding]:
         """Run React analyzer."""

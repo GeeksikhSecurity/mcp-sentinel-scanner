@@ -49,18 +49,11 @@ def _build_registry(tools: Optional[str] = None) -> ScannerRegistry:
     # the `sentinel.sarif.prose_sarif` helpers; they do not execute in a normal
     # scan. Do not assume prose findings appear in CLI output until wired.
 
-    # External tool adapters (optional — skip if tool not installed)
-    try:
-        from ..adapters.semgrep import SemgrepAdapter
-        registry.register_adapter(SemgrepAdapter())
-    except (ImportError, Exception):
-        pass
-
-    try:
-        from ..adapters.trufflehog import TruffleHogAdapter
-        registry.register_adapter(TruffleHogAdapter())
-    except (ImportError, Exception):
-        pass
+    # External tool adapters (semgrep/trufflehog) are intentionally NOT registered.
+    # In external-corpus testing they silently contributed nothing — the adapters
+    # returned [] on timeout/error with no warning (issue #8), giving a false sense
+    # of coverage. Run semgrep/trufflehog as dedicated tools; this scanner is the
+    # precise, validated layer. The adapter modules remain for explicit/opt-in use.
 
     return registry
 
@@ -197,7 +190,7 @@ def doctor() -> None:
         style = "green" if available else "red"
         table.add_row(
             name,
-            "adapter",
+            "external (run separately)",
             cmd,
             f"[{style}]{'yes' if available else 'no'}[/{style}]",
             "[green]yes[/green]",
