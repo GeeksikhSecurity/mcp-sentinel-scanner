@@ -108,22 +108,58 @@ class TypeScriptAnalyzer:
         
         return findings
     
+    # child_process discriminator (MCP bug-bounty lesson, docker-mcp-server
+    # GHSA-j4p2-6qf7-754c-adjacent finding): exec()/execSync() always hand the
+    # command to a shell, so ANY dynamic (template-literal or concatenated)
+    # command string is a command-injection sink. spawn()/execFile()/
+    # spawnSync()/execFileSync() pass argv straight to the OS and do NOT
+    # invoke a shell -- that is the SAFE form -- unless the caller opts back
+    # into shell parsing with `shell: true`, which collapses them back to
+    # exec-equivalent. The prior rule flagged spawn() the same as exec()
+    # whenever a template literal appeared anywhere in the call, which is
+    # the textbook-SAFE usage (`spawn('docker', ['exec', `${id}`, 'ls'])`)
+    # -- a false positive -- while missing string-concatenated exec() calls
+    # with no template literal at all (a false negative).
+    _EXEC_SINK_RE = re.compile(r'(?:child_process\.)?(?:exec|execSync)\s*\(')
+    _ARGV_FUNC_RE = re.compile(
+        r'(?:child_process\.)?(?:spawn|execFile|spawnSync|execFileSync)\s*\('
+    )
+    _DYNAMIC_COMMAND_RE = re.compile(r'\$\{.*?\}|["\']\s*\+|\+\s*["\']')
+    _SHELL_OPTION_RE = re.compile(r'shell\s*:\s*true')
+
     def _analyze_node_security(self, content: str, file_path: str) -> List[Dict[str, Any]]:
         """Analyze Node.js-specific security issues."""
         findings = []
         lines = content.split('\n')
-        
+
         for i, line in enumerate(lines, 1):
-            # Command injection via child_process
-            if re.search(r'exec\(.*\$\{.*\}.*\)', line) or re.search(r'spawn\(.*\$\{.*\}.*\)', line):
+            # exec()/execSync() always run through a shell: any dynamic
+            # command string (template literal OR string concatenation) is
+            # command injection.
+            if self._EXEC_SINK_RE.search(line) and self._DYNAMIC_COMMAND_RE.search(line):
                 findings.append({
                     'rule_id': 'node-command-injection',
-                    'message': 'Potential command injection in child_process',
+                    'message': 'Potential command injection in child_process.exec — dynamic '
+                                'command string is interpreted by a shell',
                     'file_path': file_path,
                     'start_line': i,
                     'end_line': i,
                     'severity': 'CRITICAL',
                     'confidence': 0.95
+                })
+
+            # spawn()/execFile() are argv-safe by default; they only become
+            # exec-equivalent when the caller opts in with `shell: true`.
+            elif self._ARGV_FUNC_RE.search(line) and self._SHELL_OPTION_RE.search(line):
+                findings.append({
+                    'rule_id': 'node-command-injection-shell-option',
+                    'message': "child_process.spawn/execFile called with `shell: true` — "
+                                "this re-enables shell parsing of argv, same risk as exec()",
+                    'file_path': file_path,
+                    'start_line': i,
+                    'end_line': i,
+                    'severity': 'CRITICAL',
+                    'confidence': 0.9
                 })
             
             # Path traversal
