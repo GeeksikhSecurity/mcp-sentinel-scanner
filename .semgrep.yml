@@ -200,3 +200,128 @@ rules:
       cwe: ["CWE-502"]
       category: security
       confidence: HIGH
+
+  # ============================================================
+  # MCP Bug-Bounty Lesson Archetypes (mcp-huntr sweep, 2026-07/08)
+  # Each rule below is the mechanical form of one ranked archetype from
+  # MCP-SCAN-LESSONS.md — see that doc for the yield evidence per archetype.
+  # All four were validated against true-positive/true-negative fixtures
+  # with `semgrep --test` before being added here (see tests/semgrep/); two
+  # had non-functional patterns in the original draft that would not have
+  # matched real code — fixed below, noted per rule.
+  # ============================================================
+
+  - id: mcp-nodejs-shell-string-interpolation
+    patterns:
+      - pattern-either:
+          - pattern: child_process.exec(`...${$VAR}...`, ...)
+          - pattern: child_process.exec($STR + $VAR, ...)
+          - pattern: exec(`...${$VAR}...`, ...)
+          - pattern: $CP.exec(`...${$VAR}...`, ...)
+    message: >
+      Shell execution via a dynamically-built command string (template
+      literal or concatenation). exec()/execSync() always hand the string to
+      a shell, so any tool-parameter-controlled content here is command
+      injection — including from an LLM that an attacker steered via
+      (possibly indirect) prompt injection.
+      Fix: use child_process.spawn() or execFile() with an argv array instead
+      of a shell string (archetype #4 — docker-mcp-server class).
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-78"]
+      category: security
+      subcategory: [ai-security, mcp]
+      confidence: HIGH
+      owasp: ["LLM01: Prompt Injection"]
+
+  - id: mcp-python-shell-true-interpolation
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.Popen(f"...{$VAR}...", ..., shell=True, ...)
+          - pattern: subprocess.run(f"...{$VAR}...", ..., shell=True, ...)
+          - pattern: subprocess.call(f"...{$VAR}...", ..., shell=True, ...)
+          - pattern: subprocess.Popen("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.run("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.call("...".format(...), ..., shell=True, ...)
+          - pattern: os.system(f"...{$VAR}...")
+          - pattern: os.system("...".format(...))
+    message: >
+      subprocess call with shell=True (or os.system) on a dynamically-built
+      command string (f-string or .format()). This lets an LLM or user break
+      out of the intended command context.
+      Fix: set shell=False and pass a list of arguments (argv), or use
+      shlex.quote() if a shell string is unavoidable (archetype #4).
+      Note: this intentionally does NOT flag shell=True on a fully static
+      string — that has no injection surface, and the repo's own dedicated
+      command_injection rule already covers the blanket shell=True case.
+    languages: [python]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-78"]
+      category: security
+      subcategory: [ai-security, mcp]
+      confidence: HIGH
+      owasp: ["LLM01: Prompt Injection"]
+
+  - id: mcp-lexical-path-containment-bypass
+    patterns:
+      - pattern: $PATH.startsWith($BASE)
+      - pattern-inside: |
+          $PATH = path.join(...);
+          ...
+          $PATH.startsWith($BASE)
+      - pattern-not-inside: |
+          $PATH = fs.realpathSync(...);
+          ...
+          $PATH.startsWith($BASE)
+      - pattern-not-inside: |
+          $PATH = await fs.promises.realpath(...);
+          ...
+          $PATH.startsWith($BASE)
+    message: >
+      Path boundary enforced with a lexical startsWith() check on a
+      path.join() result, with no realpath resolution in between. Symlinks
+      or ../ segments the joined path doesn't lexically eliminate can escape
+      the intended directory.
+      Fix: resolve with fs.realpathSync()/fs.promises.realpath() (or
+      path.resolve() against the base) before the startsWith comparison
+      (archetype #9 — sandbox escape via lexical path checks).
+      Scope note: this only catches the assign-then-check shape shown above;
+      an inline `path.join(base, p).startsWith(base)` with no intermediate
+      variable is not matched.
+    languages: [javascript, typescript]
+    severity: ERROR
+    metadata:
+      cwe: ["CWE-22"]
+      category: security
+      subcategory: [ai-security, mcp]
+      confidence: MEDIUM
+      owasp: ["LLM06: Excessive Agency"]
+
+  - id: mcp-insecure-url-allowlist
+    patterns:
+      - pattern-either:
+          - pattern: $URL.startsWith("...")
+          - pattern: $URL.includes($DOMAIN)
+      - pattern-inside: |
+          function $FUNC(..., $URL, ...) {
+            ...
+          }
+    message: >
+      URL/hostname allowlist enforced with startsWith()/includes() on the raw
+      string. An attacker (or an LLM steered via indirect prompt injection)
+      can bypass this with a URL like "https://allowed.com.attacker.net/" or
+      "https://attacker.net/?x=allowed.com" — both pass a naive
+      startsWith/includes check.
+      Fix: parse with `new URL(input).hostname` and compare against a strict
+      Set of allowed hostnames (archetype #5 / #8 — prefix-allowlist and
+      SSRF-filter bypass).
+    languages: [javascript, typescript]
+    severity: WARNING
+    metadata:
+      cwe: ["CWE-918"]
+      category: security
+      subcategory: [ai-security, mcp]
+      confidence: MEDIUM
+      owasp: ["LLM06: Excessive Agency"]
