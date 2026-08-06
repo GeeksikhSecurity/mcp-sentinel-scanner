@@ -1,0 +1,25 @@
+src/sentinel/analyzers/multi_language.py
+  s_923da2b72d4091::t_0ab6d50a826b73 111-129,134,136-139,142-143,150-162
+  s_923da2b72d4091::t_48377c1136bbc9 163
+tests/test_node_command_injection.py
+  s_923da2b72d4091::t_232239c1fd2cce 1-74
+src/multi_language_analyzer.py
+  s_923da2b72d4091::t_e29af1c2feaa43 111-129,134,136-139,142-143,150-162
+  s_923da2b72d4091::t_d1a5a19c90dbda 163
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ec137baa55e2fc4bdfde3493dc45d078ccebaa78",
+  "prompts": {},
+  "sessions": {
+    "s_923da2b72d4091": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f932c48-b173-4657-bf57-3bc4091bdc6c",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
