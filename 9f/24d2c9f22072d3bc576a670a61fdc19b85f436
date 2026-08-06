@@ -1,0 +1,31 @@
+.semgrep.yml
+  s_923da2b72d4091::t_4b0ddddcf83a1f 203-327
+tests/semgrep/fixtures/mcp_python_shell_true_interpolation.py
+  s_923da2b72d4091::t_1f3e2ea3e0938f 1-25
+tests/semgrep/fixtures/mcp_nodejs_shell_string_interpolation.js
+  s_923da2b72d4091::t_1f3e2ea3e0938f 1-21
+tests/test_semgrep_mcp_bounty_rules.py
+  s_923da2b72d4091::t_61b43f313993d2 1-97
+tests/semgrep/fixtures/mcp_insecure_url_allowlist.js
+  s_923da2b72d4091::t_1f3e2ea3e0938f 1-16
+tests/semgrep/fixtures/mcp_lexical_path_containment_bypass.js
+  s_923da2b72d4091::t_1f3e2ea3e0938f 1-22
+docs/mcp-bounty-lessons-owasp-mapping.md
+  s_923da2b72d4091::t_6201214dd06c9f 1-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "9f24d2c9f22072d3bc576a670a61fdc19b85f436",
+  "prompts": {},
+  "sessions": {
+    "s_923da2b72d4091": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f932c48-b173-4657-bf57-3bc4091bdc6c",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
