@@ -1,0 +1,19 @@
+.semgrep.yml
+  s_c917e937ce69de::t_68cf111c652ebe 328-407
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d833563aa6b080fb121b71967e08447cd2ba9764",
+  "prompts": {},
+  "sessions": {
+    "s_c917e937ce69de": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3a78ef5a-20fc-44f9-a174-5e6220828d27",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
