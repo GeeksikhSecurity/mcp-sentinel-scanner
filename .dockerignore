@@ -1,0 +1,46 @@
+.git/
+.github/
+.gitignore
+
+# Local scan output / research artifacts — never ship into the published image
+*.json
+!configs/*.json
+!package.json
+!test_package.json
+*.html
+!docs/INFOGRAPHIC.html
+*.sarif
+reports/
+security_research/
+bug_bounty_data/
+conference_submissions/
+vulnerability_database/
+research_findings/
+manualreview/
+scans/
+
+# Test / coverage / build artifacts
+.coverage
+htmlcov/
+coverage.xml
+.pytest_cache/
+.mypy_cache/
+.tox/
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.py[cod]
+
+# Editor / assistant tooling — not part of the runtime image
+.idea/
+.vscode/
+.claude/
+.amazonq/
+.codacy/
+
+# Docs are large and not needed at runtime (README.md is required at build
+# time: setup.py reads it as the package long_description)
+docs/
+*.md
+!README.md

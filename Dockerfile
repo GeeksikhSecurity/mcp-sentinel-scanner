@@ -3,7 +3,7 @@ FROM python:3.11-slim
 # Set metadata
 LABEL maintainer="MCP Security Team <mcp-security@example.com>"
 LABEL description="MCP Sentinel Scanner - Security scanner for Model Context Protocol services"
-LABEL version="1.5"
+LABEL version="1.5.0"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -36,8 +36,9 @@ USER scanner
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Create alias for convenience
-RUN echo 'alias mcp-scan="python -m scripts.sentinel_cli"' >> ~/.bashrc
+# Create alias for convenience (not "mcp-scan": that name collides with
+# Invariant Labs' unrelated MCP protocol scanner)
+RUN echo 'alias mcp-sentinel="python -m scripts.sentinel_cli"' >> ~/.bashrc
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \

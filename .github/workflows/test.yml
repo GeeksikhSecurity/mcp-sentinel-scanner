@@ -28,9 +28,9 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
     
-    - name: Run tests with flaky test management
+    - name: Run tests
       run: |
-        python -m pytest tests/ -v --tb=short || echo "Tests completed with issues"
+        python -m pytest tests/ -v --tb=short
     
     - name: Upload coverage
       uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4.6.0
