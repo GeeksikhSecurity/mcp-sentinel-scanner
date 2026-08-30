@@ -104,13 +104,33 @@ class ResultAnonymizer:
     # matched `key="value"`), along with common vendor secret formats and
     # other value shapes that show up verbatim in scanned (third-party) code
     # snippets and must never reach a public commit.
+    # Shared alternation for secret-shaped field names, reused by both the
+    # redaction patterns and the residual-secret safety net below so they
+    # can't silently drift apart.
+    _SECRET_KEY_NAMES = (
+        r'client_secret|api[_-]?key|secret[_-]?key|password|passwd|'
+        r'token|access[_-]?token|auth[_-]?token|private[_-]?key'
+    )
+
     SENSITIVE_PATTERNS = [
-        # key="value" / key='value' assignments for common secret-shaped names
+        # key="value" / key='value' / "key": "value" (JSON) / 'key': 'value'
+        # assignments for common secret-shaped names. The optional \1?/\4?
+        # quote pair handles the key name itself being quoted (as in JSON),
+        # not just the value — a bare `\s*[:=]\s*` right after the key name
+        # (no optional quote) misses `"api_key": "..."` entirely because the
+        # key's own closing quote sits between the name and the colon.
         (re.compile(
-            r'(?i)\b(client_secret|api[_-]?key|secret[_-]?key|password|passwd|'
-            r'token|access[_-]?token|auth[_-]?token|private[_-]?key)'
-            r'(\s*[:=]\s*)(["\'])[^"\']*\3'
-        ), r'\1\2\3<REDACTED>\3'),
+            r'(?i)(["\'])?\b(' + _SECRET_KEY_NAMES + r')\b\1?'
+            r'(\s*[:=]\s*)(["\'])[^"\']*\4'
+        ), r'\1\2\1\3\4<REDACTED>\4'),
+        # Unquoted assignments (YAML/env/shell style), e.g. `password: hunter2`
+        # or `API_KEY=abcdef123456`. Bounded to 6+ chars to avoid mangling
+        # short type annotations like `token: str`; over-redaction here is
+        # the safe failure mode, under-redaction is the one that leaks.
+        (re.compile(
+            r'(?i)\b(' + _SECRET_KEY_NAMES + r')\b(\s*[:=]\s*)'
+            r'(?!["\'])([A-Za-z0-9_\-./+]{6,})'
+        ), r'\1\2<REDACTED>'),
         # Authorization / Bearer headers
         (re.compile(r'(?i)\bauthorization["\']?\s*[:=]\s*["\']?Bearer\s+\S+'),
          'Authorization: Bearer <REDACTED>'),
@@ -146,7 +166,17 @@ class ResultAnonymizer:
         re.compile(r'\bAKIA[0-9A-Z]{16}\b'),
         re.compile(r'\bAIza[0-9A-Za-z\-_]{35}\b'),
         re.compile(r'-----BEGIN [A-Z ]*PRIVATE KEY-----'),
-        re.compile(r'(?i)\b(api[_-]?key|secret|password|token)(\s*[:=]\s*)(["\'])(?!<REDACTED)[^"\']{4,}\3'),
+        # Same key-name set and quoted-key handling as SENSITIVE_PATTERNS
+        # above — this check exists specifically to catch what redaction
+        # missed, so it must not share redaction's blind spots.
+        re.compile(
+            r'(?i)(["\'])?\b(' + _SECRET_KEY_NAMES + r')\b\1?'
+            r'(\s*[:=]\s*)(["\'])(?!<REDACTED)[^"\']{4,}\4'
+        ),
+        re.compile(
+            r'(?i)\b(' + _SECRET_KEY_NAMES + r')\b(\s*[:=]\s*)'
+            r'(?!["\'])(?!<REDACTED\b)([A-Za-z0-9_\-./+]{6,})'
+        ),
     ]
 
     def find_residual_secrets(self, text: str) -> List[str]:
