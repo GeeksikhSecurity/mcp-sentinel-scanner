@@ -168,7 +168,10 @@ class ResultAnonymizer:
     
     def _hash_string(self, text: str) -> str:
         """Generate consistent hash for string."""
-        return hashlib.md5(text.encode()).hexdigest()
+        # Not used for security (no secrets, no integrity/signature check) —
+        # just a stable short identifier for anonymized filenames. Flagged
+        # by bandit (B324) regardless, so mark intent explicitly.
+        return hashlib.md5(text.encode(), usedforsecurity=False).hexdigest()
 
 
 class UnredactedSecretError(RuntimeError):
