@@ -560,3 +560,22 @@ This roadmap provides a clear path from the current MVP (v1.0) to a comprehensiv
 **Document Status:** Draft for Review
 **Approvers:** MCP Security Team, Open Source Maintainers
 **Review Date:** October 11, 2025
+
+---
+
+## Addendum (2026-08-30): Competitive Comparison + Bug-Bounty-Research-Driven Items
+
+Sourced from `docs/gap_analysis_revised_honest.md` (full "vs. claude-mcp-sentinel" comparison, 2026-08-30) and the live MCP bug-bounty research pipeline (Notion: "MCP Security Gap Analysis Research", "MCP Scanner Toolkit — from mcp-huntr", "Specialization Tracks — MCP & Vibe-Code Scan Playbooks"). These are concrete, not aspirational — several are backed by a confirmed finding or a live disclosure.
+
+| # | Item | Effort | Impact / Source |
+|---|------|--------|------|
+| 1 | **D6 — osv.dev + GitHub Advisory cross-reference at scan time.** Query for the target's declared dependencies and any MCP servers it wraps, flag known-CVE matches inline in SARIF. | 2-3 days | Closes the one real capability gap vs. claude-mcp-sentinel. Reuse `tools/prior-art-gate.sh`'s existing osv.dev query rather than a second implementation. |
+| 2 | **D7 — Tool-description/manifest snapshot + coherence-diff hashing.** Hash each scanned server's tool names, descriptions, and parameter schemas; flag drift on re-scan before silently accepting a new version. | 3-4 days | Mechanical answer to Postmark-class supply-chain drift. Independently item #1 on the arXiv-research scanner roadmap (Phase 1). |
+| 3 | **Non-tool entrypoint coverage** — extend detection to `resources/read` and `prompts` handlers, not just `tools/*`. | 1 week | A confirmed real SQLi (`executeautomation/mcp-database-server`) lived in a resource handler; tool-only scanners (including most off-the-shelf ones) miss this surface entirely. |
+| 4 | **Guard-asymmetry cross-handler pass.** When a validator exists on one path to a shared sink (e.g. `tableNames.includes()` on a tool handler), flag sibling handlers reaching the same sink without the same guard. | Custom pass, not a single Semgrep rule | This *was* the confirmed SQLi's root cause. Not expressible as clean taint-tracking since a throw-guard isn't in the dataflow — needs a small cross-handler diff pass in the scanner itself. |
+| 5 | **CWE-346 (Origin/DNS-rebinding) check for HTTP-transport MCP servers.** | Medium | Currently the highest-yield class in live hunting — 3/3 source-checked HTTP-capable targets had the gap (confirmed findings in disclosure on `comfyui-mcp`, `mcp-proxy`). Worth a dedicated detector before the class saturates. |
+| 6 | **Tool-poisoning (MCP03) test corpus, MCPTox-paradigm-labeled.** Extend the existing `known_safe/`/`known_vuln/` corpus (Action Item #5 above) with P1/P2/P3 tool-poisoning cases (explicit-trigger hijacking, implicit-trigger hijacking, parameter tampering) per Fang et al.'s MCPTox benchmark (arXiv:2508.14925). | 1 week | 97.1% of tool descriptions in one 856-tool study contained defects; this is the class the current hit-list is thinnest on relative to the official OWASP MCP Top 10. |
+| 7 | **OWASP MCP Top 10 crosswalk citations in report/SARIF output.** Tag each finding with its MCP Top 10 category (MCP01–MCP10) alongside the existing OWASP LLM Top 10 / AISVS mapping. | 2-3 days | Standards crosswalk (OWASP MCP Top 10 × LLM Top 10 × AISVS × NIST AI RMF) already exists as research; wiring it into output is the direct fix for "triagers may not grasp MCP impact." |
+| 8 | **Explicit "vs. claude-mcp-sentinel" README positioning**, naming the 6-repo "MCP Sentinel" collision. | 1 hour | Done — see README `⚖️ Naming & Trademarks`. |
+
+**Explicitly out of scope for this repo** (per the comparison's "do not adopt" call): a live PreToolUse runtime-blocking hook. Different product surface (Claude-Code-specific, fail-open-by-design) from a pre-deployment/CI static scanner that needs to fail closed. If pursued at all, it stays a separate companion project, not a mcp-sentinel-scanner feature.
