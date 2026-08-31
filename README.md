@@ -401,8 +401,19 @@ See [docs/RESEARCH_FOUNDATION.md](docs/RESEARCH_FOUNDATION.md) for details.
 - 🚧 **Multi-Language AST** - TypeScript, JavaScript, Go, Rust support
 - 📋 **Enterprise Dashboard** - Real-time metrics, compliance reporting
 - 🔮 **AI-Powered Detection** - ML anomaly detection, behavioral analysis
+- 🌐 **Threat-intel cross-reference** - osv.dev + GitHub Advisory CVE matching at scan time
+- 🔁 **Tool-description drift detection** - manifest hashing to catch a Postmark-style silent malicious update
+- 📚 **Non-tool entrypoint coverage** - `resources/read` and `prompts` handlers, not just `tools/*`
 
-See [ENTERPRISE_SCALING_ROADMAP.md](ENTERPRISE_SCALING_ROADMAP.md) for detailed enterprise timeline and [STATUS.md](STATUS.md) for current progress.
+See [ROADMAP.md](ROADMAP.md) for the full addendum (comparison-driven and bug-bounty-research-driven items), [ENTERPRISE_SCALING_ROADMAP.md](ENTERPRISE_SCALING_ROADMAP.md) for detailed enterprise timeline, and [STATUS.md](STATUS.md) for current progress.
+
+## ⚖️ Naming & Trademarks
+
+"MCP Sentinel" is the project name chosen by the author. This project is independent and not affiliated with, endorsed by, or connected to Microsoft Sentinel (the Microsoft Azure SIEM), SentinelOne, Redis Sentinel, HashiCorp Sentinel, or any other product that includes "Sentinel" in its name. "Sentinel" is a common, descriptive term in the security industry. GitHub, Claude, Anthropic, Snyk, Microsoft, and other product names mentioned in this repository are trademarks of their respective owners.
+
+"MCP Sentinel" is also a name at least six other, unrelated public repositories currently use — [soy-rafa/claude-mcp-sentinel](https://github.com/soy-rafa/claude-mcp-sentinel), [BashaarJavaid/MCP-Sentinel](https://github.com/BashaarJavaid/MCP-Sentinel), [mizcausevic-dev/mcp-sentinel-dashboard](https://github.com/mizcausevic-dev/mcp-sentinel-dashboard), [wdm0006/mcp-sentinel](https://github.com/wdm0006/mcp-sentinel), and [GCS-ZHN/mcp-sentinel](https://github.com/GCS-ZHN/mcp-sentinel) among them. None of these projects are affiliated with each other; this disclaimer approach follows the same pattern soy-rafa's repo uses to head off the same collision. If you found this repo looking for one of theirs (or vice versa), here's how they differ:
+
+> **vs. claude-mcp-sentinel (soy-rafa):** same "Sentinel" name, unrelated codebase, different layer entirely. It intercepts live tool calls inside Claude Code at the moment of execution, fail-open, to protect the person running the agent. This repo statically analyzes an MCP server's own source and protocol surface *before* anyone deploys or connects to it, and can fail closed in CI. Different layer, same name — complementary, not competing. A security-conscious team can run both.
 
 ## 📝 License
 
