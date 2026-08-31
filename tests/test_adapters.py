@@ -5,7 +5,10 @@ import subprocess
 from pathlib import Path
 from unittest.mock import Mock, patch
 
+import pytest
+
 from src.adapters import SemgrepAdapter, TruffleHogAdapter
+from src.adapters.trufflehog_adapter import TruffleHogScanError
 
 
 class TestTruffleHogAdapter:
@@ -57,24 +60,25 @@ class TestTruffleHogAdapter:
         assert len(findings) == 0
 
     @patch("subprocess.run")
-    def test_command_failure_returns_empty(self, mock_run):
-        """Test command failure returns empty list."""
-        mock_run.return_value = Mock(returncode=1, stdout="")
+    def test_command_failure_raises_instead_of_masking_as_clean(self, mock_run):
+        """A non-zero exit is a broken scan, not "0 verified secrets" — it
+        must be surfaced, never silently swallowed as a clean result."""
+        mock_run.return_value = Mock(returncode=1, stdout="", stderr="panic: chunking error")
 
         adapter = TruffleHogAdapter()
-        findings = adapter.run(Path("."))
 
-        assert findings == []
+        with pytest.raises(TruffleHogScanError):
+            adapter.run(Path("."))
 
     @patch("subprocess.run")
-    def test_timeout_returns_empty(self, mock_run):
-        """Test timeout returns empty list."""
+    def test_timeout_raises_instead_of_masking_as_clean(self, mock_run):
+        """A timeout is a broken scan, not "0 verified secrets"."""
         mock_run.side_effect = subprocess.TimeoutExpired("trufflehog", 300)
 
         adapter = TruffleHogAdapter()
-        findings = adapter.run(Path("."))
 
-        assert findings == []
+        with pytest.raises(TruffleHogScanError):
+            adapter.run(Path("."))
 
 
 class TestSemgrepAdapter:

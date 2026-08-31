@@ -104,10 +104,10 @@ The **MCP Sentinel Scanner** is a research-inspired security analysis tool desig
 pip install mcp-sentinel-scanner
 
 # Basic scan
-mcp-scan /path/to/code
+mcp-sentinel /path/to/code
 
 # Unified scan with all tools
-mcp-scan /path/to/code --unified --format html -o report.html
+mcp-sentinel /path/to/code --unified --format html -o report.html
 ```
 
 ### Docker
@@ -214,7 +214,7 @@ Create `config.json`:
 
 Use it:
 ```bash
-mcp-scan /path --config config.json
+mcp-sentinel /path --config config.json
 ```
 
 ## 📚 Documentation

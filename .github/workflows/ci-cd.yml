@@ -26,17 +26,6 @@ jobs:
           pip install psutil requests pyyaml
           pip install pytest black isort flake8 mypy bandit coverage
 
-      - name: Create test directories
+      - name: Run tests
         run: |
-          mkdir -p tests
-          touch tests/__init__.py
-          echo "def test_basic(): assert True" > tests/test_basic.py
-
-      - name: Run basic tests
-        run: |
-          python -c "print('Basic test passed')"
-          pytest tests/ -v || echo "Tests completed"
-
-      - name: Run demo scan
-        run: |
-          echo "Demo scan placeholder - scanner ready for development"
+          pytest tests/ -v

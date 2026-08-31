@@ -84,7 +84,11 @@ Issues = "https://github.com/mcp-security/mcp-sentinel-scanner/issues"
 Changelog = "https://github.com/mcp-security/mcp-sentinel-scanner/blob/main/CHANGELOG.md"
 
 [project.scripts]
-mcp-scan = "scripts.sentinel_cli:main"
+# NOTE: do not add a "mcp-scan" entry here. That name collides with
+# Invariant Labs' unrelated MCP protocol scanner
+# (https://github.com/invariantlabs-ai/mcp-scan) — whichever package is
+# installed last silently shadows the other's binary on PATH. Use
+# "mcp-sentinel" (or "unified-scanner") instead.
 mcp-sentinel = "scripts.sentinel_cli:main"
 unified-scanner = "scripts.sentinel_cli:main"
 
@@ -162,6 +166,10 @@ addopts = [
     "--cov-report=xml",
 ]
 testpaths = ["tests"]
+# Restrict collection to test_*.py so fixtures like tests/vulnerable_test.py
+# (a sample vulnerable-code fixture, not a test module) aren't picked up by
+# pytest's default "*_test.py" collection pattern and imported on every run.
+python_files = ["test_*.py"]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
