@@ -28,7 +28,7 @@ Instead, please report security issues through one of the following methods:
    - Our security team will respond within 48 hours
 
 2. **Email**
-   - Send details to: security@sayvainc.com
+   - Send details to: security@geeksikh.com
    - Use PGP key: [Available on request]
    - Include "MCP Sentinel Scanner Security" in the subject line
 
@@ -143,7 +143,7 @@ Current Security Status:
 
 ## Contact
 
-- **Security Team**: security@sayvainc.com
+- **Security Team**: security@geeksikh.com
 - **General Issues**: [GitHub Issues](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/discussions)
 

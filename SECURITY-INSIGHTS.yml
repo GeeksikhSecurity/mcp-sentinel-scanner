@@ -2,7 +2,7 @@ header:
   schema-version: 2.1.0
   last-updated: '2026-09-23'
   last-reviewed: '2026-09-23'
-  expiration-date: '2027-09-23T00:00:00.000Z'
+  expiration-date: '2027-09-23'
   project-url: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner'
   license: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/LICENSE'
 project-lifecycle:
@@ -13,6 +13,10 @@ project-lifecycle:
 contribution-policy:
   accepts-pull-requests: true
   accepts-automated-pull-requests: true
+  automated-tools-list:
+    - type: dependabot
+      name: 'Dependabot'
+      comment: 'Configured in .github/dependabot.yml.'
   contributing-policy: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/CONTRIBUTING.md'
 documentation:
   security-policy: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md'
@@ -25,34 +29,30 @@ security-artifacts:
 security-testing:
   - name: 'Dependabot'
     type: SCA
-    url: 'https://github.com/dependabot/dependabot-core'
     rulesets:
       - default
     integration:
-      adhoc: false
+      adhoc: true
       ci: true
       release: false
     results: {}
-    comment: 'Weekly pip + github-actions dependency updates, configured in .github/dependabot.yml.'
+    comment: 'Weekly pip + github-actions dependency updates, configured in .github/dependabot.yml. Tool homepage: https://github.com/dependabot/dependabot-core'
   - name: 'OpenSSF Scorecard'
     type: other
-    url: 'https://github.com/ossf/scorecard'
     rulesets:
       - default
     integration:
-      adhoc: false
+      adhoc: true
       ci: true
       release: false
     results: {}
-    comment: 'Scorecard type is ''other'' — the security-insights-spec tool-type enum (SCA/SAST/container/secret/fuzzing/other) has no ''scorecard'' value.'
+    comment: 'Scorecard type is ''other'' — the security-insights-spec tool-type enum (SCA/SAST/container/secret/fuzzing/other) has no ''scorecard'' value. Tool homepage: https://github.com/ossf/scorecard'
 security-contacts:
   - type: email
-    value: security@sayvainc.com
+    value: security@geeksikh.com
     primary: true
 vulnerability-reporting:
   accepts-vulnerability-reports: true
-  email-contact: security@sayvainc.com
+  email-contact: security@geeksikh.com
   security-policy: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md'
   bug-bounty-available: false
-dependencies:
-  third-party-packages: true
