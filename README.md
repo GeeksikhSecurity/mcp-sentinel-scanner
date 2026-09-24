@@ -419,6 +419,8 @@ See [ROADMAP.md](ROADMAP.md) for the full addendum (comparison-driven and bug-bo
 
 This project is distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
+Security practices are documented voluntarily in [CRA-CHECKLIST.md](CRA-CHECKLIST.md); machine-readable metadata is in [security-insights.yml](security-insights.yml).
+
 ## 🙏 Acknowledgments
 
 - **Zhao et al. (2025)** - Research foundation
