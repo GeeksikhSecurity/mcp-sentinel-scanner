@@ -28,7 +28,7 @@ security-testing:
     rulesets:
       - default
     integration:
-      adhoc: false
+      adhoc: true
       ci: true
       release: false
     results: {}
@@ -38,7 +38,7 @@ security-testing:
     rulesets:
       - default
     integration:
-      adhoc: false
+      adhoc: true
       ci: true
       release: false
     results: {}
@@ -52,5 +52,3 @@ vulnerability-reporting:
   email-contact: security@geeksikh.com
   security-policy: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md'
   bug-bounty-available: false
-dependencies:
-  third-party-packages: true
