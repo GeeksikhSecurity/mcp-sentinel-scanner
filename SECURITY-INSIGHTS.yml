@@ -13,6 +13,10 @@ project-lifecycle:
 contribution-policy:
   accepts-pull-requests: true
   accepts-automated-pull-requests: true
+  automated-tools-list:
+    - type: dependabot
+      name: 'Dependabot'
+      comment: 'Configured in .github/dependabot.yml.'
   contributing-policy: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/CONTRIBUTING.md'
 documentation:
   security-policy: 'https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md'
