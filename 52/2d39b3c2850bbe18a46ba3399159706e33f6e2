@@ -1,0 +1,25 @@
+.github/workflows/cra-checklist.yml
+  s_22c0f23bf74c45::t_83e0fd680dc295 1-16
+CRA-CHECKLIST.md
+  s_22c0f23bf74c45::t_51ce4410eb39f8 1-35
+README.md
+  s_22c0f23bf74c45::t_287d23e3cbfaed 422-423
+scripts/check-cra-checklist.py
+  s_22c0f23bf74c45::t_9c65ac3a68758c 1-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "522d39b3c2850bbe18a46ba3399159706e33f6e2",
+  "prompts": {},
+  "sessions": {
+    "s_22c0f23bf74c45": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5df8faa5-34e3-456e-ad9b-2811d381fdb3",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
