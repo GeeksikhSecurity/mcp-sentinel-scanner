@@ -1,0 +1,80 @@
+# Security Insights v2.2.0: https://github.com/ossf/security-insights-spec/tree/v2.2.0
+# Validate: cue vet -c schema.cue security-insights.yml -d '#SecurityInsights'
+# Every claim below is backed by a file or setting in this repository; see CRA-CHECKLIST.md.
+header:
+  schema-version: 2.2.0
+  last-reviewed: '2026-09-24'
+  last-updated: '2026-09-24'
+  url: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/security-insights.yml
+project:
+  name: MCP Sentinel Scanner
+  homepage: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner
+  administrators:
+    - name: Gurvinder Singh
+      primary: true
+  repositories:
+    - name: mcp-sentinel-scanner
+      comment: Scanner source, rules, and tests
+      url: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner
+  vulnerability-reporting:
+    reports-accepted: true
+    bug-bounty-available: false
+    policy: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md
+    comment: GitHub private vulnerability reporting is enabled; email is the alternative channel in SECURITY.md.
+    contact:
+      name: Security contact
+      primary: true
+      email: security@sayvainc.com
+  documentation:
+    support-policy: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md
+repository:
+  status: active
+  url: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner
+  accepts-change-request: true
+  accepts-automated-change-request: true
+  core-team:
+    - name: Gurvinder Singh
+      primary: true
+  license:
+    url: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/LICENSE
+    expression: MIT
+  security:
+    assessments:
+      self:
+        comment: No formal self-assessment is published. The voluntary checklist in CRA-CHECKLIST.md records what is and is not in place.
+        evidence: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/CRA-CHECKLIST.md
+        date: '2026-09-24'
+    tools:
+      - name: Dependabot
+        type: SCA
+        comment: Weekly pip and github-actions updates, configured in .github/dependabot.yml.
+        rulesets:
+          - default
+        integration:
+          adhoc: false
+          ci: true
+          release: false
+        results: {}
+      - name: OpenSSF Scorecard
+        type: other
+        comment: Runs on push and on a schedule via .github/workflows/scorecard.yml; the spec's tool type enum has no scorecard value.
+        rulesets:
+          - default
+        integration:
+          adhoc: false
+          ci: true
+          release: false
+        results: {}
+      - name: MCP Sentinel Scanner
+        type: SAST
+        comment: This project scans itself on push, pull request, and a schedule via .github/workflows/security-scan.yml.
+        rulesets:
+          - default
+        integration:
+          adhoc: false
+          ci: true
+          release: false
+        results: {}
+  documentation:
+    contributing-guide: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/CONTRIBUTING.md
+    security-policy: https://github.com/GeeksikhSecurity/mcp-sentinel-scanner/blob/main/SECURITY.md
