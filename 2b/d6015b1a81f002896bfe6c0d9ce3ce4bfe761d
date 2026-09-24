@@ -1,0 +1,19 @@
+security-insights.yml
+  s_22c0f23bf74c45::t_31cc17e82dabd1 1-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2bd6015b1a81f002896bfe6c0d9ce3ce4bfe761d",
+  "prompts": {},
+  "sessions": {
+    "s_22c0f23bf74c45": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5df8faa5-34e3-456e-ad9b-2811d381fdb3",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
