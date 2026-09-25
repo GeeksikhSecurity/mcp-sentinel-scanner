@@ -1,0 +1,19 @@
+src/unified_scanner.py
+  s_22c0f23bf74c45::t_f42b460e8cf4c3 6,35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bfdc25fc84a1b54c957cddca3b442a974a866688",
+  "prompts": {},
+  "sessions": {
+    "s_22c0f23bf74c45": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5df8faa5-34e3-456e-ad9b-2811d381fdb3",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
