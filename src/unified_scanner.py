@@ -3,7 +3,7 @@
 import concurrent.futures
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 from .adapters import SemgrepAdapter, TruffleHogAdapter
 from .analyzers import NpmAnalyzer, ReactAnalyzer
@@ -32,7 +32,7 @@ class UnifiedScanner:
         self.context_analyzer = ContextAnalyzer()
         self.ml_classifier = MLClassifier()
 
-    def scan(self, target: str | Path) -> ScanResult:
+    def scan(self, target: Union[str, Path]) -> ScanResult:
         """Run unified scan with all tools."""
         start_time = time.perf_counter()
         target_path = Path(target)
