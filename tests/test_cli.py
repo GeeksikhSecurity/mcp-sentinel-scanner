@@ -29,7 +29,7 @@ def test_cli_outputs(args, capsys):
 
 def test_cli_respects_output_file(tmp_path, capsys):
     output = tmp_path / "report.json"
-    exit_code = cli_main(["tests", "--format", "json", "--output", str(output)])
+    exit_code = cli_main(["tests", "--scan-fixtures", "--format", "json", "--output", str(output)])
 
     assert exit_code == 0
     captured = capsys.readouterr()

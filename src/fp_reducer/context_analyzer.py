@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 from typing import List, Optional
 
+from ..filters.false_positive_filter import is_dangerous_path_context
 from ..mcp_sentinel_scanner import VulnerabilityFinding
 
 
@@ -57,7 +58,10 @@ class ContextAnalyzer:
     def _is_test_file(self, file_path: str) -> bool:
         """Check if file is a test file."""
         path = Path(file_path)
-        path_str = str(path).lower()
+        path_str = str(path).replace("\\", "/").lower()
+        if not path_str.startswith("/"):
+            # Directory indicators such as "/tests/" must also match relative paths.
+            path_str = "/" + path_str
 
         # Aggressive test file detection
         test_indicators = [
@@ -84,13 +88,8 @@ class ContextAnalyzer:
     
     def _is_dangerous_path_context(self, code_snippet: str) -> bool:
         """Check if path traversal is in a dangerous context."""
-        dangerous_contexts = [
-            "open(", "readFile", "writeFile", "file(", "File(",
-            "path.join(", "os.path.join", "filepath.Join",
-            "exec(", "system(", "popen(", "subprocess"
-        ]
-        return any(ctx in code_snippet for ctx in dangerous_contexts)
-    
+        return is_dangerous_path_context(code_snippet)
+
     def _is_placeholder_value(self, code_snippet: str) -> bool:
         """Check if secret is a placeholder/example value."""
         placeholder_patterns = [

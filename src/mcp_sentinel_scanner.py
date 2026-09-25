@@ -296,7 +296,9 @@ class MCPSentinelScanner:
             'confidence': f.confidence
         } for f in findings]
         
-        filtered_findings_dict = apply_false_positive_filter(findings_dict)
+        filtered_findings_dict = apply_false_positive_filter(
+            findings_dict, scan_fixtures=bool(self.config.get("scan_fixtures", False))
+        )
         
         # Convert back to VulnerabilityFinding objects
         filtered_findings = [VulnerabilityFinding(
