@@ -93,8 +93,16 @@ class TestUnifiedScanner:
 
         mock_mcp.return_value = findings
 
-        scanner = UnifiedScanner()
-        result = scanner.scan(Path("."))
+        # FP reduction is opt-in (see UnifiedScanner._reduce_false_positives).
+        scanner = UnifiedScanner(config={"falsePositives": {"enabled": True}})
+        # Only the mocked findings should reach the reducer: without this the other
+        # tools scan the whole repository for real and add unrelated findings.
+        with patch.object(scanner, "_run_trufflehog", return_value=[]), patch.object(
+            scanner, "_run_semgrep", return_value=[]
+        ), patch.object(scanner, "_run_react_analyzer", return_value=[]), patch.object(
+            scanner, "_run_npm_analyzer", return_value=[]
+        ):
+            result = scanner.scan(Path("."))
 
         # Should filter out test file finding
         assert len(result.findings) < len(findings)
