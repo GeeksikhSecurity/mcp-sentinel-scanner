@@ -1,0 +1,23 @@
+.github/workflows/ci-cd.yml
+  s_22c0f23bf74c45::t_c9b4cfc26f2838 26
+.github/workflows/scorecard.yml
+  s_22c0f23bf74c45::t_9ae8780877c237 36
+requirements.txt
+  s_22c0f23bf74c45::t_e58b80706b02fb 2-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2aa62c971c4f469242d0d0fc1aa4d30681af4296",
+  "prompts": {},
+  "sessions": {
+    "s_22c0f23bf74c45": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5df8faa5-34e3-456e-ad9b-2811d381fdb3",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "GeeksikhSecurity <gurvinder@sayvainc.com>"
+    }
+  }
+}
