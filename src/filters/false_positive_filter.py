@@ -9,8 +9,25 @@ import math
 from typing import List, Dict, Any, Optional
 from collections import Counter
 
+# A "../" match is only a finding when it reaches a file or process API.
+# Shared with fp_reducer.ContextAnalyzer so both scanners apply the same rule.
+DANGEROUS_PATH_CONTEXTS = (
+    "open(", "readFile", "writeFile", "file(", "File(",
+    "path.join(", "os.path.join", "filepath.Join",
+    "exec(", "system(", "popen(", "subprocess",
+)
+
+
+def is_dangerous_path_context(code_snippet: str) -> bool:
+    return any(ctx in code_snippet for ctx in DANGEROUS_PATH_CONTEXTS)
+
+
 class FalsePositiveFilter:
-    def __init__(self):
+    def __init__(self, scan_fixtures: bool = False):
+        # When True, findings in test/demo/example content are kept: the
+        # test-word and test-path suppressions below are skipped. Credential
+        # format heuristics (entropy, placeholders, ...) still apply.
+        self.scan_fixtures = scan_fixtures
         self.test_indicators = [
             'test', 'demo', 'example', 'sample', 'placeholder', 'dummy',
             'fake', 'mock', 'stub', 'template', 'tutorial', 'docs'
@@ -149,7 +166,7 @@ class FalsePositiveFilter:
             return True
         
         # Check for test indicators
-        if self.has_test_indicators(credential, context):
+        if not self.scan_fixtures and self.has_test_indicators(credential, context):
             return True
         
         # Check for placeholder patterns
@@ -165,7 +182,7 @@ class FalsePositiveFilter:
             return True
         
         # Check file path for test indicators
-        if file_path:
+        if file_path and not self.scan_fixtures:
             test_paths = ['test/', 'tests/', 'spec/', 'demo/', 'example/', 'sample/']
             if any(test_path in file_path.lower() for test_path in test_paths):
                 return True
@@ -175,6 +192,23 @@ class FalsePositiveFilter:
             return True
         
         return False
+
+    CREDENTIAL_KEYWORDS = ("hardcoded", "credential", "secret")
+    FIXTURE_PATH_MARKERS = ('test/', 'tests/', 'spec/', 'demo/', 'example/', 'sample/')
+
+    @classmethod
+    def is_credential_finding(cls, vuln_type: str) -> bool:
+        """Only credential findings are judged by credential heuristics.
+
+        Entropy, "realistic credential format", placeholder and fake-value checks
+        describe a secret's value. Applied to a SQL-injection or eval() line they
+        discard the finding for not looking like an API key.
+        """
+        return any(keyword in vuln_type.lower() for keyword in cls.CREDENTIAL_KEYWORDS)
+
+    def is_fixture_path(self, file_path: str) -> bool:
+        path = "/" + file_path.replace("\\", "/").lower().lstrip("/")
+        return any(f"/{marker}" in path for marker in self.FIXTURE_PATH_MARKERS)
 
     def filter_findings(self, findings: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Filter a list of vulnerability findings to remove false positives"""
@@ -186,6 +220,16 @@ class FalsePositiveFilter:
             file_path = finding.get('file_path', '')
             vuln_type = finding.get('vulnerability_type', '')
             
+            if not self.is_credential_finding(vuln_type):
+                # Non-credential finding: keep it unless it sits in fixture content
+                # and the caller has not asked to scan fixtures.
+                if not self.scan_fixtures and self.is_fixture_path(file_path):
+                    continue
+                if vuln_type == "path_traversal" and not is_dangerous_path_context(credential):
+                    continue
+                filtered_findings.append(finding)
+                continue
+
             # Extract credential from code snippet if needed
             if 'hardcoded' in vuln_type.lower() or 'credential' in vuln_type.lower():
                 # Try to extract the actual credential value
@@ -235,9 +279,15 @@ class FalsePositiveFilter:
         return min(1.0, max(0.0, score))
 
 # Integration with existing scanner
-def apply_false_positive_filter(findings: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Apply false positive filtering to scanner results"""
-    filter_instance = FalsePositiveFilter()
+def apply_false_positive_filter(
+    findings: List[Dict[str, Any]], scan_fixtures: bool = False
+) -> List[Dict[str, Any]]:
+    """Apply false positive filtering to scanner results.
+
+    scan_fixtures=True keeps findings in test/demo/example content instead of
+    suppressing them (see FalsePositiveFilter).
+    """
+    filter_instance = FalsePositiveFilter(scan_fixtures=scan_fixtures)
     return filter_instance.filter_findings(findings)
 
 if __name__ == "__main__":

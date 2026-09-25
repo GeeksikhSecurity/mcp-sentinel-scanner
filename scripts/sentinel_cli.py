@@ -47,6 +47,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--deep-scan", action="store_true", help="Enable advanced detection modules"
     )
     parser.add_argument("--unified", action="store_true", help="Use unified scanner with all tools")
+    parser.add_argument(
+        "--scan-fixtures",
+        action="store_true",
+        help="Report findings in test/demo/example files instead of suppressing them",
+    )
     return parser.parse_args(argv)
 
 
@@ -126,6 +131,9 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:  # pragma: no cover - defensive
         print(f"Failed to load configuration: {exc}", file=sys.stderr)
         return 2
+
+    if args.scan_fixtures:
+        config["scan_fixtures"] = True
 
     if args.unified:
         scanner = UnifiedScanner(config=config)

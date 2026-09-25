@@ -7,7 +7,7 @@ from src import MCPSentinelScanner
 
 
 def test_scan_detects_expected_categories():
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner({"scan_fixtures": True})
     result = scanner.scan(Path("tests"))
 
     categories = {finding.category for finding in result.findings}
@@ -45,7 +45,7 @@ def runner(cmd):
 """
     )
 
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner({"scan_fixtures": True})
     result = scanner.scan(sample)
 
     categories = {finding.category for finding in result.findings}
@@ -57,7 +57,7 @@ def runner(cmd):
 
 
 def test_advanced_detection_identifies_semantic_issues():
-    scanner = MCPSentinelScanner()
+    scanner = MCPSentinelScanner({"scan_fixtures": True})
     result = scanner.scan(Path("tests") / "vulnerable_test.py")
 
     advanced_categories = {finding.category for finding in result.advanced_findings}
@@ -84,3 +84,14 @@ def test_report_serialisers(output_format: str):
         markdown = scanner.to_markdown(result)
         assert "## Findings" in markdown
         assert "ASR Score" in markdown
+
+
+def test_fixture_findings_are_suppressed_unless_scan_fixtures_is_set():
+    """The switch is the only difference: same fixture, same scanner, opposite result."""
+    fixture = Path("tests") / "vulnerable_test.py"
+
+    default_result = MCPSentinelScanner().scan(fixture)
+    assert default_result.findings == []
+
+    opt_in_result = MCPSentinelScanner({"scan_fixtures": True}).scan(fixture)
+    assert {f.category for f in opt_in_result.findings} >= {"sql_injection", "command_injection"}
